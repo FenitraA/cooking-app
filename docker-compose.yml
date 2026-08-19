@@ -1,0 +1,7 @@
+services:
+  backend:
+    build: ./cooking-app-backend
+    env_file:
+      - ./cooking-app-backend/.env
+    ports:
+      - "8000:8000"

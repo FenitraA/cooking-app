@@ -1,0 +1,322 @@
+{
+  "General": {
+    "app_title": "Home cooking",
+    "delete_confirmation_title": "Confirm deletion",
+    "search_filters": "Search filters",
+    "price": "Price",
+    "stock": "Stock",
+    "total_cost": "Total cost",
+    "items_selected": "item(s) selected",
+    "actions": {
+      "select_all": "Select all",
+      "deselect_all": "Deselect all",
+      "save": "Save",
+      "save_changes": "Save changes",
+      "save_image_changes": "Save image changes",
+      "saving": "Saving...",
+      "next": "Next",
+      "previous": "Previous",
+      "select": "Select",
+      "today": "Today",
+      "this_week": "This week",
+      "all": "All",
+      "change_view": "Change view",
+      "logout": "Logout"
+    },
+    "labels": {
+      "number": "Num"
+    },
+    "placeholders": {
+      "example": "e.g ",
+      "slash": "/"
+    },
+    "status": {
+      "success": "Success",
+      "error": "Error"
+    }
+  },
+  "Sidebar": {
+    "menu": "Menu",
+    "ingredients": "Ingredients",
+    "recipes_list": "Recipes list",
+    "recipes_create": "Create Recipe",
+    "meals": "Meals",
+    "planning": "Planning",
+    "shopping": "Shopping",
+    "shopping_item": "Shopping items",
+    "item_to_buy": "Items to buy"
+  },
+  "User": {
+    "welcome_back_title": "Welcome Back",
+    "enter_credentials": "Enter your credentials to continue",
+    "logging": "Log In",
+    "logging_in": "Logging In...",
+    "setting_title": "Settings",
+    "description": "Change your username or password.",
+    "sections": {
+      "change_username": "Change username",
+      "change_password": "Change password"
+    },
+    "fields": {
+      "username": "Username",
+      "password": "Password",
+      "new_username": "New username",
+      "old_password": "Old password",
+      "new_password": "New password",
+      "confirm_new_password": "Confirm new password"
+    },
+    "placeholders": {
+      "username": "e.g. john_doe",
+      "password": "••••••••"
+    },
+    "actions": {
+      "update_username": "Update username",
+      "update_password": "Update password"
+    },
+    "success": {
+      "username_updated": "Username updated",
+      "password_updated": "Password updated"
+    },
+    "errors": {
+      "username_required": "Username is required.",
+      "password_required": "Password is required.",
+      "login_failed": "Login failed. Please try again.",
+      "no_user": "No user connected",
+      "old_password_required": "Old password is required",
+      "new_password_required": "New password is required",
+      "password_min_length": "New password must be at least 6 characters",
+      "passwords_not_match": "Passwords do not match"
+    }
+  },
+  "IngredientType": {
+    "type_to_search": "Choose a type"
+  },
+  "Ingredient": {
+    "title": "Ingredients",
+    "list_title": "List of ingredients",
+    "create_title": "Create ingredient",
+    "description": "Manage your ingredients stock.",
+    "count_label": "Total",
+    "edit_title": "Ingredient details",
+    "type_to_search": "Ingredient name",
+    "images": {
+      "choose": "Choose an image",
+      "choose_new": "Choose a new image"
+    },
+    "fields": {
+      "name": "Name",
+      "ingredient_type": "Ingredient type",
+      "estimated_price": "Estimated price",
+      "quantity_left": "Quantity left",
+      "quantity": "Quantity",
+      "unit": "Unit",
+      "seller": "Seller",
+      "unit_cost": "Unit cost",
+      "ingredient": "Ingredient",
+      "quantity_per_serving": "Quantity per serving"
+    },
+    "filters": {
+      "name": "Name",
+      "type": "Type",
+      "min_stock": "Min stock",
+      "unit": "Unit"
+    },
+    "table": {
+      "name": "Name",
+      "ingredient_type": "Type",
+      "estimated_price": "Estimated price",
+      "quantity_left": "Quantity left",
+      "unit": "Unit",
+      "unit_cost": "Unit cost",
+      "seller": "Seller"
+    },
+    "actions": {
+      "save": "Add ingredient",
+      "save_stock": "Register stock",
+      "edit_ingredient": "Edit ingredient",
+      "delete_ingredient": "Delete ingredient"
+    },
+    "errors": {
+      "required_name": "Name is required.",
+      "required_unit": "Unit is required.",
+      "required_ingredient_type_id": "Ingredient type is required.",
+      "required_ingredient_id": "Ingredient is required.",
+      "required_estimated_price": "Estimated price must be greater than 0.",
+      "required_unit_cost": "Unit cost is required.",
+      "required_seller": "Seller is required.",
+      "required_quantity": "Quantity is required.",
+      "not_enough_stock": "Not enough from this stock.",
+      "upload_error": "An error occurred while uploading the image.",
+      "no_results": "No results found",
+      "update_failed": "Failed to update ingredient: {message}",
+      "create_failed": "Failed to create ingredient: {message}",
+      "create_stock_failed": "Failed to create ingredient stock: {message}"
+    },
+    "success": {
+      "created": "Ingredient created successfully.",
+      "updated": "Ingredient updated successfully.",
+      "image_change_success": "Ingredient image updated successfully."
+    }
+  },
+  "Recipe": {
+    "title": "Recipes",
+    "list_title": "List of recipes",
+    "edit_title": "Edit recipe",
+    "create_title": "Create recipe",
+    "description": "Manage your recipes.",
+    "basic_infos": "Basic informations",
+    "type_to_search": "Type a recipe name",
+    "filters": {
+      "name": "Name",
+      "max_making_time": "Max making time",
+      "ingredients": "Ingredients"
+    },
+    "fields": {
+      "name": "Name",
+      "description": "Description",
+      "no_description": "No description available",
+      "estimated_time": "Estimated Time (minutes)",
+      "parallel_cooking": "Parallel Cooking",
+      "ingredients": "Ingredients"
+    },
+    "images": {
+      "choose": "Choose an image",
+      "choose_new": "Choose a new image"
+    },
+    "actions": {
+      "save": "Save Recipe"
+    },
+    "success": {
+      "created": "Recipe created successfully.",
+      "updated": "Recipe updated successfully."
+    },
+    "errors": {
+      "required_name": "Recipe name is required.",
+      "required_description": "Recipe description is required.",
+      "required_estimated_time": "Estimated cooking time must be greater than 0.",
+      "required_parallel_cooking": "Parallel cooking value must be greater than 0.",
+      "required_ingredients": "At least one ingredient is required.",
+      "update_failed": "Failed to update Recipe: {message}",
+      "create_failed": "Failed to create Recipe: {message}"
+    }
+  },
+  "Meal": {
+    "list_title": "List of meals",
+    "choose_recipe": "Choose a recipe",
+    "meal_ingredients": "Choose ingredients to use",
+    "create_title": "Production",
+    "ingredients_list": "Ingredients list",
+    "filters": {
+      "end_date": "End date",
+      "start_date": "Start date",
+      "recipe_name": "Recipe name"
+    },
+    "table": {
+      "recipe_name": "Recipe name",
+      "nb_serving": "Nb serving",
+      "total_cost": "Total cost",
+      "date": "Date"
+    },
+    "actions": {
+      "save": "Produce a meal"
+    },
+    "fields": {
+      "nb_serving": "Number of serving"
+    },
+    "errors": {
+      "required_nb_serving": "Number of serving is required.",
+      "setup_failed": "Failed to setup meal from recipe: {message}",
+      "create_failed": "Failed to produce meal: {message}",
+      "required_recipe_id": "No recipe selected"
+    },
+    "success": {
+      "created": "Meal created successfully."
+    }
+  },
+  "IngredientStock": {
+    "type_to_search": "Select stock...",
+    "errors": {
+      "no_results": "No stock found"
+    }
+  },
+  "Planning": {
+    "title": "Weekly recipe planning",
+    "create_title": "Plan a recipe",
+    "edit_title": "Planning details",
+    "no_recipe_planned": "No recipe planned",
+    "servings": "servings",
+    "ingredients_list": "Ingredients of the week",
+    "fields": {
+      "ingredients": "Ingredients",
+      "description": "Description",
+      "choose_recipe": "Choose a recipe",
+      "planning_date": "Planning date",
+      "nb_serving": "Number of serving"
+    },
+    "actions": {
+      "save": "Save plan"
+    },
+    "success": {
+      "updated": "Planning updated successfully."
+    },
+    "errors": {
+      "required_nb_serving": "Number of serving is required.",
+      "required_recipe": "No recipe selected",
+      "required_planning_date": "No planning date",
+      "create_failed": "Failed to produce meal: {message}"
+    }
+  },
+  "Shopping": {
+    "items": "Item(s)",
+    "list_title": "Shopping history",
+    "filters": {
+      "end_date": "End date",
+      "start_date": "Start date"
+    },
+    "tabs": {
+      "shopping_history": "Shopping history",
+      "shopping_item_list": "Shopping item list"
+    }
+  },
+  "ItemToBuy": {
+    "list_title": "Items to buy",
+    "create_title": "Register an item to buy",
+    "estimated_total": "Est. Total",
+    "actions": {
+      "register_shopping": "Register items"
+    },
+    "filters": {
+      "name": "Item name",
+      "ingredient": "Ingredient name"
+    },
+    "fields": {
+      "name": "Name",
+      "description": "Description",
+      "units_to_buy": "Units to buy",
+      "ingredient": "Ingredient",
+      "estimated_unit_price": "Estimated unit price (Ar)",
+      "item_category": "Item category"
+    },
+    "errors": {
+      "required_shopping_date": "Shopping date required",
+      "required_name": "Name is required",
+      "required_item_selection": "Items need to be selected",
+      "required_estimated_unit_price": "Estimated unit price must be greater than 0",
+      "required_units_to_buy": "Units to buy must be greater than 0",
+      "required_item_category": "Item category is required",
+      "create_failed": "Failed to create item to buy: {message}"
+    },
+    "success": {
+      "created": "Item to buy created successfully"
+    }
+  },
+  "ItemCategory": {
+    "type_to_search": "Type a category..."
+  },
+  "ShoppingItems": {
+    "list_title": "Shopping items",
+    "filters": {
+      "name": "Item name"
+    }
+  }
+}

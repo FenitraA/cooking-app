@@ -1,0 +1,52 @@
+@import "tailwindcss";
+@source "../../.flowbite-react/class-list.json";
+@import "flowbite-react/plugin/tailwindcss";
+@source "../.flowbite-react/class-list.json";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --custom-emerald: #23d89c;
+  --custom-gray-blue: #464d77;
+  --custom-blue: #32589e;
+  --custom-dark-blue: #031926;
+  --custom-sand-dune: #D6C96F;
+  --custom-validation-green: #69995D;
+  --custom-money-green: #4ade80;
+  --custom-button-red: #d8667e;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-custom-emerald: var(--custom-emerald);
+  --color-custom-gray-blue: var(--custom-gray-blue);
+  --color-custom-blue: var(--custom-blue);
+  --color-custom-dark-blue: var(--custom-dark-blue);
+  --color-custom-sand-dune: var(--custom-sand-dune);
+  --color-custom-validation-green: var(--custom-validation-green);
+  --color-custom-money-green: var(--custom-money-green);
+  --color-custom-button-red: var(--custom-button-red);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --shadow-hard-br: 4px 4px 0 0 rgb(0 0 0 / 0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

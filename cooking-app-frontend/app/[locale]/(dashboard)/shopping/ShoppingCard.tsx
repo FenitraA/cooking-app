@@ -78,8 +78,8 @@ export default function RecipeCard({ data }: RecipeCardProps) {
                     </span>
                     <span className="ml-2 text-custom-money-green font-semibold">
                       {formatNumberToCurrency(
-                        item.shopping_item.units_bought *
-                          item.shopping_item.unit_price,
+                        Number(item.shopping_item.units_bought) *
+                          Number(item.shopping_item.unit_price),
                       )}
                     </span>
                   </span>

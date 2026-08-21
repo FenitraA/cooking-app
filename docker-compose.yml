@@ -1,7 +1,58 @@
 services:
+  db:
+    image: postgres:17
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cooking"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   backend:
     build: ./cooking-app-backend
     env_file:
       - ./cooking-app-backend/.env
     ports:
       - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    develop:
+      watch:
+        - action: sync
+          path: ./cooking-app-backend
+          target: /app
+          ignore:
+            - __pycache__/
+            - .venv/
+            - "*.pyc"
+        - action: rebuild
+          path: ./cooking-app-backend/requirements.txt
+  frontend:
+    build: ./cooking-app-frontend
+    env_file:
+      - ./cooking-app-frontend/.env.local
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    develop:
+      watch:
+        - action: sync
+          path: ./cooking-app-frontend
+          target: /app
+          ignore:
+            - node_modules/
+            - .next/
+
+        - action: rebuild
+          path: ./cooking-app-frontend/package.json
+volumes:
+  postgres_data:

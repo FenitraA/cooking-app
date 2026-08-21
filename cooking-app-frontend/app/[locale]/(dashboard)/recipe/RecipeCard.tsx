@@ -24,9 +24,6 @@ export default function RecipeCard({
 
   const translations = useTranslations("Recipe");
 
-  useEffect(() => {
-    console.log("RecipeCard data:", data);
-  }, [data]);
   return (
     <CustomAccordion
       title={

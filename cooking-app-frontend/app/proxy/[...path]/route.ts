@@ -50,6 +50,8 @@ async function proxy(request: Request) {
   if (contentType) headers["content-type"] = contentType;
   headers["accept-encoding"] = "identity";
   
+  console.log(target)
+  
   // 1) First attempt
   let res = await fetch(target, {
     method: request.method,

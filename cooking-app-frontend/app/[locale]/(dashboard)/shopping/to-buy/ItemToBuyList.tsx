@@ -381,7 +381,7 @@ export default function ItemToBuyListPage({
             return (
               <div
                 key={item.item_to_buy.id}
-                className={`relative flex flex-row items-start sm:items-center w-full min-h-12 px-3 py-2 sm:py-1 bg-white/10 border text-gray-300 transition-colors ${
+                className={`relative flex flex-row items-start sm:items-center w-full px-3 py-2 sm:py-1 bg-white/10 border text-gray-300 transition-colors ${
                   isSelected ? "border-custom-sand-dune" : "border-white/20"
                 }`}
               >

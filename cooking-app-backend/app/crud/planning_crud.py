@@ -118,8 +118,8 @@ class PlanningCRUD:
         # Filters
         query = query.where(
             PlanningRecipe.ref_household_id == household_id,
-            PlanningRecipe.created_at >= start_of_week,
-            PlanningRecipe.created_at < (end_of_week + timedelta(days=1)),
+            PlanningRecipe.planning_date >= start_of_week,
+            PlanningRecipe.planning_date < (end_of_week + timedelta(days=1)),
         )
 
         # Execute

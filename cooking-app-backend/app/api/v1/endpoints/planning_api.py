@@ -31,7 +31,7 @@ router = APIRouter(tags=["Planning"])
 
 @router.post("", response_model=list[PlanningRecipeBase])
 @limiter.limit("5/minute")
-# @handle_endpoint_errors()
+@handle_endpoint_errors()
 async def create_planning_recipe(
     request: Request,
     data: PlanningRecipeCreate,
@@ -85,14 +85,12 @@ async def get_planning(
     household_id = current_user["ref_household_id"]
     start_date = today_date - timedelta(days=today_date.weekday())
     end_date = start_date + timedelta(days=days - 1)
-
     plannings = await planning_crud_instance.get_by_date(
         db,
         household_id,
         start_date,
         end_date,
     )
-
     planning_repartitions = redistribute_to_repartition(
         start_date,
         end_date,

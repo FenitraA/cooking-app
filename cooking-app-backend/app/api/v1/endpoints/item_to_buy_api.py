@@ -54,7 +54,7 @@ async def search_items_to_buy(
 
 
 @router.put("/delete", response_model=ItemToBuyBase)
-@limiter.limit("5/minute")
+@limiter.limit("20/minute")
 @handle_endpoint_errors()
 async def delete_item_to_buy(
     request: Request,

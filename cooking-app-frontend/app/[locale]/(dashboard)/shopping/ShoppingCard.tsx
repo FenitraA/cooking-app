@@ -2,7 +2,11 @@
 
 import CustomAccordion from "@/components/forms/CustomAccordion";
 import { ShoppingRead } from "@/lib/shopping/types";
-import { formatDateFRNoTime, formatNumber, formatNumberToCurrency } from "@/lib/utils";
+import {
+  formatDateFRNoTime,
+  formatNumber,
+  formatNumberToCurrency,
+} from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -67,22 +71,43 @@ export default function RecipeCard({ data }: RecipeCardProps) {
                   flex-1
                 "
               >
-                <div className="flex flex-col sm:flex-row sm:justify-between gap-2 flex-1 items-center">
-                  <span className="font-semibold">
+                <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4 flex-1 w-full">
+                  <span className="font-semibold text-base sm:text-sm mt-0.5 sm:mt-0 wrap-break-word">
                     {item.shopping_item.name}
                   </span>
 
-                  <span className="font-medium text-sm">
-                    <span className="text-custom-sand-dune pr-4">
-                      x {formatNumber(item.shopping_item.units_bought)}
-                    </span>
-                    <span className="ml-2 text-custom-money-green font-semibold">
-                      {formatNumberToCurrency(
-                        Number(item.shopping_item.units_bought) *
-                          Number(item.shopping_item.unit_price),
-                      )}
-                    </span>
-                  </span>
+                  {/* Math & Actions Container */}
+                  <div className="flex flex-row flex-wrap items-center gap-2 sm:gap-4 font-medium text-sm w-full sm:w-auto">
+                    {/* Price & Quantity Group */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-custom-money-green">
+                        <span>
+                          {formatNumberToCurrency(
+                            item.shopping_item.unit_price,
+                          )}
+                        </span>
+                      </span>
+                      <span className="text-custom-sand-dune">x</span>
+                      <span className="text-custom-sand-dune">
+                        <span>
+                          {formatNumber(item.shopping_item.units_bought)}
+                        </span>
+                      </span>
+                    </div>
+
+                    {/* Total & Action Buttons Group */}
+                    <div className="flex items-center justify-between flex-1 sm:flex-initial gap-4">
+                      <span className="text-custom-money-green font-semibold flex items-center gap-1.5">
+                        <span>=</span>
+                        <span>
+                          {formatNumberToCurrency(
+                            Number(item.shopping_item.units_bought) *
+                              Number(item.shopping_item.unit_price),
+                          )}
+                        </span>
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}

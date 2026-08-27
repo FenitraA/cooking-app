@@ -5,7 +5,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useDebounce } from "@/lib/hooks/useDebounce";
 import { getErrorMessage, UnauthorizedError } from "@/lib/errors";
-import { CalendarArrowDown, CalendarArrowUp, ChevronsLeftRightEllipsis } from "lucide-react";
+import {
+  CalendarArrowDown,
+  CalendarArrowUp,
+  ChevronsLeftRightEllipsis,
+} from "lucide-react";
 import FilterField from "@/components/forms/FilterField";
 import CustomPagination from "@/components/forms/CustomPagination";
 import {
@@ -138,35 +142,35 @@ export default function ShoppingItemListPage() {
         )}
 
         <div className="flex sm:flex-row flex-col justify-center just gap-4 items-center mb-3 border-b border-custom-sand-dune pb-3">
-            <FilterField
-              className="w-full sm:max-w-100"
-              icon={CalendarArrowDown}
-              value={String(shoppingItemSearchParams.name ?? "")}
-              onChange={setName}
-              placeholder={translations("filters.name")}
-            />
-            <GeneralAutocomplete<IngredientBase>
-              translationsKey="Ingredient"
-              showShadow={false}
-              className="w-full sm:max-w-100"
-              value={selectedIngredient}
-              onSelect={(d) => {
-                setSelectedIngredient(d);
-                setShoppingItemSearchParams((p) => ({
-                  ...p,
-                  ingredient_id: d.id,
-                }));
-              }}
-              onClear={() => {
-                setSelectedIngredient(null);
-                setShoppingItemSearchParams((p) => ({
-                  ...p,
-                  ingredient_id: undefined,
-                }));
-              }}
-              getName={getIngredientName}
-              fetchOptions={fetchIngredientByName}
-            />
+          <FilterField
+            className="w-full sm:max-w-100"
+            icon={CalendarArrowDown}
+            value={String(shoppingItemSearchParams.name ?? "")}
+            onChange={setName}
+            placeholder={translations("filters.name")}
+          />
+          <GeneralAutocomplete<IngredientBase>
+            translationsKey="Ingredient"
+            showShadow={false}
+            className="w-full sm:max-w-100"
+            value={selectedIngredient}
+            onSelect={(d) => {
+              setSelectedIngredient(d);
+              setShoppingItemSearchParams((p) => ({
+                ...p,
+                ingredient_id: d.id,
+              }));
+            }}
+            onClear={() => {
+              setSelectedIngredient(null);
+              setShoppingItemSearchParams((p) => ({
+                ...p,
+                ingredient_id: undefined,
+              }));
+            }}
+            getName={getIngredientName}
+            fetchOptions={fetchIngredientByName}
+          />
           <FilterField
             className="w-full sm:w-auto"
             type="date"
@@ -193,24 +197,43 @@ export default function ShoppingItemListPage() {
               key={item.shopping_item.id}
               className={`relative flex flex-row items-center w-full min-h-12 px-3 py-1 bg-white/10 border border-white/20 text-gray-300 cursor-pointer`}
             >
-              <div className="flex flex-col sm:flex-row sm:justify-between gap-2 flex-1 items-center">
-                <span className="font-semibold">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4 flex-1 w-full">
+                <span className="font-semibold text-base sm:text-sm mt-0.5 sm:mt-0 wrap-break-word">
                   <span className="text-custom-sand-dune">
                     {formatDateFRNoTime(item.shopping_date)}
                   </span> {" - "}
                   {item.shopping_item.name}
                 </span>
 
-                <div className="font-medium text-sm">
-                  <span className="text-custom-sand-dune pr-4">
-                    x {formatNumber(item.shopping_item.units_bought)}
-                  </span>
-                  <span className="ml-2 text-custom-money-green font-semibold">
-                    {formatNumberToCurrency(
-                        Number(item.shopping_item.units_bought) *
-                          Number(item.shopping_item.unit_price),
-                      )}
-                  </span>
+                {/* Math & Actions Container */}
+                <div className="flex flex-row flex-wrap items-center gap-2 sm:gap-4 font-medium text-sm w-full sm:w-auto">
+                  {/* Price & Quantity Group */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-custom-money-green">
+                      <span>
+                        {formatNumberToCurrency(
+                          item.shopping_item.unit_price,
+                        )}
+                      </span>
+                    </span>
+                    <span className="text-custom-sand-dune">x</span>
+                    <span className="text-custom-sand-dune">
+                      <span>{formatNumber(item.shopping_item.units_bought)}</span>
+                    </span>
+                  </div>
+
+                  {/* Total & Action Buttons Group */}
+                  <div className="flex items-center justify-between flex-1 sm:flex-initial gap-4">
+                    <span className="text-custom-money-green font-semibold flex items-center gap-1.5">
+                      <span>=</span>
+                      <span>
+                        {formatNumberToCurrency(
+                          Number(item.shopping_item.units_bought) *
+                            Number(item.shopping_item.unit_price),
+                        )}
+                      </span>
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

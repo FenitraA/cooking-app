@@ -116,7 +116,7 @@ export default function AccountSettingsForm() {
   }
 
   return (
-    <div className="rounded-xl border h-auto bg-white/10 border-white/20 p-6 shadow-hard-br space-y-6 w-1/2 mt-6">
+    <div className="rounded-xl border h-auto bg-white/10 border-white/20 p-6 shadow-hard-br space-y-6 lg:w-1/2 w-full mt-6">
       <header className="text-center mb-3 px-6 py-2 border-b-2 border-custom-sand-dune">
         <h1 className="text-xl font-semibold text-custom-sand-dune tracking-tight">
           {translations("setting_title")}

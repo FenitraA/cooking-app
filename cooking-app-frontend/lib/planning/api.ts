@@ -52,6 +52,27 @@ export async function fetchWeeklyPlanning(
   return planning;
 }
 
+export async function fetchPlanningByDate(
+  start_date: string,
+  end_date: string,
+): Promise<PlanningResult> {
+  const res = await fetch(
+    `${BASE_URL}/proxy/planning/by-dates?start_date=${encodeURIComponent(start_date)}&end_date=${encodeURIComponent(end_date)}`,
+  );
+
+  if (res.status === 401) {
+    throw new UnauthorizedError();
+  }
+
+  if (!res.ok) {
+    const msg = await safeReadError(res);
+    throw new Error(msg || "Failed to fetch planning");
+  }
+
+  const planning = (await res.json()) as PlanningResult;
+  return planning;
+}
+
 export async function fetchPlanning(
   today_date: string,
 ): Promise<PlanningResult> {

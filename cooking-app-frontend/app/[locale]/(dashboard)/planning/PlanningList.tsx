@@ -6,7 +6,11 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getErrorMessage, UnauthorizedError } from "@/lib/errors";
-import { deletePlanningRecipe, fetchPlanning } from "@/lib/planning/api";
+import {
+  deletePlanningRecipe,
+  fetchPlanning,
+  fetchPlanningByDate,
+} from "@/lib/planning/api";
 import {
   formatDate,
   formatNumber,
@@ -61,9 +65,8 @@ export default function PlanningList({
 
   const [openIngredientsModal, setOpenIngredientsModal] = useState(false);
 
-  const [datePage, setDatePage] = useState(() => {
+  const [startDate, setStartDate] = useState(() => {
     const today = new Date();
-
     const day = today.getDay();
     const diff = day === 0 ? -6 : 1 - day;
 
@@ -73,7 +76,19 @@ export default function PlanningList({
     return monday;
   });
 
-  const { start, end } = getWeekRange(datePage);
+  const [endDate, setEndDate] = useState(() => {
+    const today = new Date();
+    const day = today.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + diff);
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    return sunday;
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -82,11 +97,18 @@ export default function PlanningList({
       try {
         setLoading(true);
         setError(null);
-        const dateString = datePage.toISOString().split("T")[0];
 
-        const data: PlanningResult = await fetchPlanning(dateString);
+        const startDateString = startDate.toISOString().split("T")[0];
+        const endDateString = endDate.toISOString().split("T")[0];
 
-        setPlanning(data);
+        const data: PlanningResult = await fetchPlanningByDate(
+          startDateString,
+          endDateString,
+        );
+
+        if (!cancelled) {
+          setPlanning(data);
+        }
       } catch (e: unknown) {
         if (cancelled) return;
 
@@ -97,7 +119,9 @@ export default function PlanningList({
 
         setError(getErrorMessage(e));
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
@@ -106,10 +130,16 @@ export default function PlanningList({
     return () => {
       cancelled = true;
     };
-  }, [router, datePage, refreshKey]);
+  }, [router, startDate, endDate, refreshKey]);
 
   function goToNextWeek() {
-    setDatePage((current) => {
+    setStartDate((current) => {
+      const next = new Date(current);
+      next.setDate(next.getDate() + 7);
+      return next;
+    });
+
+    setEndDate((current) => {
       const next = new Date(current);
       next.setDate(next.getDate() + 7);
       return next;
@@ -117,11 +147,31 @@ export default function PlanningList({
   }
 
   function goToPreviousWeek() {
-    setDatePage((current) => {
+    setStartDate((current) => {
       const previous = new Date(current);
       previous.setDate(previous.getDate() - 7);
       return previous;
     });
+
+    setEndDate((current) => {
+      const previous = new Date(current);
+      previous.setDate(previous.getDate() - 7);
+      return previous;
+    });
+  }
+  function goToCurrentWeek() {
+    const today = new Date();
+    const day = today.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + diff);
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    setStartDate(monday);
+    setEndDate(sunday);
   }
 
   function handleDeleteClick(planningRecipeId: string) {
@@ -131,18 +181,6 @@ export default function PlanningList({
   function handleEditClick(stockId: string) {
     setOpenEditModal(true);
     setSelectedPlanningRecipeId(stockId);
-  }
-
-  function goToCurrentWeek() {
-    const today = new Date();
-
-    const day = today.getDay();
-    const diff = day === 0 ? -6 : 1 - day;
-
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + diff);
-
-    setDatePage(monday);
   }
 
   async function handleDeletePlanningRecipe() {
@@ -165,13 +203,45 @@ export default function PlanningList({
         </div>
       </header>
       <div className="flex flex-row gap-2 justify-center items-center my-4 text-sm text-gray-300">
-        <div className="px-5 py-1 bg-white/10 rounded-lg">
-          {formatDate(start)}
-        </div>{" "}
-        <ArrowRight size={16} />{" "}
-        <div className="px-5 py-1 bg-white/10 rounded-lg">
-          {formatDate(end)}
-        </div>
+        <input
+          type="date"
+          value={startDate.toISOString().split("T")[0]}
+          onChange={(e) => {
+            if (!e.target.value) return;
+
+            const newStart = new Date(`${e.target.value}T00:00:00`);
+
+            if (newStart > endDate) {
+              setError("Start date cannot be after end date");
+              return;
+            }
+
+            setError(null);
+            setStartDate(newStart);
+          }}
+          className="rounded-lg border border-white/10 bg-white/10 px-4 py-2 text-gray-300 outline-none transition focus:border-custom-sand-dune/50 focus:ring-1 focus:ring-custom-sand-dune/30"
+        />
+
+        <ArrowRight size={16} className="text-custom-sand-dune" />
+
+        <input
+          type="date"
+          value={endDate.toISOString().split("T")[0]}
+          onChange={(e) => {
+            if (!e.target.value) return;
+
+            const newEnd = new Date(`${e.target.value}T00:00:00`);
+
+            if (newEnd < startDate) {
+              setError("End date cannot be before start date");
+              return;
+            }
+
+            setError(null);
+            setEndDate(newEnd);
+          }}
+          className="rounded-lg border border-white/10 bg-white/10 px-4 py-2 text-gray-300 outline-none transition focus:border-custom-sand-dune/50 focus:ring-1 focus:ring-custom-sand-dune/30"
+        />
       </div>
 
       {error && (

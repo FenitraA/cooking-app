@@ -134,10 +134,12 @@ export default function RecipeCreatePage({
 
   return (
     <div className="flex flex-col rounded-xl border w-full mx-auto min-h-full bg-white/10 py-4 px-6 shadow-hard-br space-y-6 mt-6">
-      <header className="text-center mb-3 px-6 py-2 border-b-2 border-custom-sand-dune">
-        <h1 className="text-xl font-semibold text-custom-sand-dune tracking-tight">
-          {translations("create_title")}
-        </h1>
+      <header className="relative mb-4 mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
+            {translations("create_title")}
+          </h1>
+        </div>
       </header>
 
       <form onSubmit={handleSubmit} className="flex flex-col xl:flex-row gap-6">

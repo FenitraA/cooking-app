@@ -9,6 +9,7 @@ import { Modal, ModalBody } from "flowbite-react";
 import {
   Apple,
   ArrowDownAZ,
+  Funnel,
   SortAsc,
   SortDesc,
   SquareMinus,
@@ -188,12 +189,95 @@ export default function IngredientListPage({
   function preview_image(imageUrl: string) {
     setSelectedImage(imageUrl);
   }
+
+  // Filter section control
+  const [openFilters, setOpenFilters] = useState(false);
+
+  function changeOpenFilter() {
+    setOpenFilters((p) => !p);
+  }
+
+  const Filters = (
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 items-end">
+      <FilterField
+        icon={Apple}
+        value={ingredientSearchParams.name ?? ""}
+        onChange={setName}
+        placeholder={translations("filters.name")}
+      />
+
+      <FilterField
+        icon={SquareMinus}
+        value={String(ingredientSearchParams.min_stock ?? "")}
+        onChange={setMinStock}
+        placeholder={translations("filters.min_stock")}
+      />
+      <GeneralAutocomplete<IngredientTypeBase>
+        translationsKey="IngredientType"
+        showShadow={false}
+        value={selectedIngredientType}
+        onSelect={(d) => {
+          setSelectedIngredientType(d);
+          setIngredientSearchParams((p) => ({ ...p, type_id: d.id }));
+        }}
+        onClear={() => {
+          setSelectedIngredientType(null);
+          setIngredientSearchParams((p) => ({ ...p, type_id: undefined }));
+        }}
+        getName={getIngredientTypeName}
+        fetchOptions={fetchIngredientTypes}
+      />
+      <div className="flex flex-row gap-3">
+        <FilterSelect<string>
+          value={ingredientSearchParams.sort_by || ""}
+          icon={ArrowDownAZ}
+          onChange={setSortBy}
+          className="flex-1"
+          placeholder="Sort by"
+          options={[
+            { value: "", label: "None" },
+            { value: "quantity_left", label: "Stock" },
+            { value: "unit_cost", label: "Price" },
+          ]}
+        />
+        <button
+          type="button"
+          onClick={setSortDirection}
+          className="h-10 border border-white/20 px-3 rounded-lg bg-white/10 text-gray-300 cursor-pointer hover:bg-white/20 "
+        >
+          {isDesc ? <SortDesc size={18} /> : <SortAsc size={18} />}
+        </button>
+      </div>
+      <div
+        onClick={() => setIsImageViewList(!isImageViewList)}
+        className="flex flex-row gap-6 justify-center items-center h-10 border border-white/20 px-3 rounded-lg bg-white/10 text-gray-300 cursor-pointer hover:bg-white/20 "
+      >
+        <SwitchCamera size={20} onClick={changeListType} />
+        <span className="mr-2">
+          {general_translations("actions.change_view")}
+        </span>{" "}
+      </div>
+    </div>
+  );
+
   return (
     <div className="rounded-xl border w-full mx-auto min-h-full bg-white/10 py-4 px-2 sm:px-6 shadow-hard-br space-y-6">
-      <header className="text-center mb-3 px-6 py-2 border-b-2 border-custom-sand-dune">
-        <h1 className="text-xl font-semibold text-custom-sand-dune tracking-tight">
-          {translations("list_title")}
-        </h1>
+      <header className="relative mb-4 mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
+            {translations("list_title")}
+          </h1>
+        </div>
+
+        <div className="lg:hidden absolute right-2">
+          <button
+            type="button"
+            onClick={changeOpenFilter}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-300 transition-all hover:border-custom-sand-dune/40 hover:bg-custom-sand-dune/10 hover:text-custom-sand-dune"
+          >
+            <Funnel size={16} />
+          </button>
+        </div>
       </header>
 
       <div className="flex flex-col h-full">
@@ -202,67 +286,19 @@ export default function IngredientListPage({
             {error}
           </div>
         )}
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4 items-end mb-3">
-          <FilterField
-            icon={Apple}
-            value={ingredientSearchParams.name ?? ""}
-            onChange={setName}
-            placeholder={translations("filters.name")}
-          />
-
-          <FilterField
-            icon={SquareMinus}
-            value={String(ingredientSearchParams.min_stock ?? "")}
-            onChange={setMinStock}
-            placeholder={translations("filters.min_stock")}
-          />
-          <GeneralAutocomplete<IngredientTypeBase>
-            translationsKey="IngredientType"
-            showShadow={false}
-            value={selectedIngredientType}
-            onSelect={(d) => {
-              setSelectedIngredientType(d);
-              setIngredientSearchParams((p) => ({ ...p, type_id: d.id }));
-            }}
-            onClear={() => {
-              setSelectedIngredientType(null);
-              setIngredientSearchParams((p) => ({ ...p, type_id: undefined }));
-            }}
-            getName={getIngredientTypeName}
-            fetchOptions={fetchIngredientTypes}
-          />
-          <div className="flex flex-row gap-3">
-            <FilterSelect<string>
-              value={ingredientSearchParams.sort_by || ""}
-              icon={ArrowDownAZ}
-              onChange={setSortBy}
-              className="flex-1"
-              placeholder="Sort by"
-              options={[
-                { value: "", label: "None" },
-                { value: "quantity_left", label: "Stock" },
-                { value: "unit_cost", label: "Price" },
-              ]}
-            />
-            <button
-              type="button"
-              onClick={setSortDirection}
-              className="h-10 border border-white/20 px-3 rounded-lg bg-white/10 text-gray-300 cursor-pointer hover:bg-white/20 "
-            >
-              {isDesc ? <SortDesc size={18} /> : <SortAsc size={18} />}
-            </button>
-          </div>
-          <div
-            onClick={() => setIsImageViewList(!isImageViewList)}
-            className="flex flex-row gap-6 justify-center items-center h-10 border border-white/20 px-3 rounded-lg bg-white/10 text-gray-300 cursor-pointer hover:bg-white/20 "
-          >
-            <SwitchCamera size={20} onClick={changeListType} />
-            <span className="mr-2">
-              {general_translations("actions.change_view")}
-            </span>{" "}
-          </div>
+        <div className="hidden lg:block mb-3">{Filters}</div>
+        <div
+          className={`
+            lg:hidden
+            overflow-hidden
+            transition-all
+            duration-300
+            my-2
+            ${openFilters ? "max-h-125 opacity-100" : "max-h-1 opacity-0"}
+          `}
+        >
+          {Filters}
         </div>
-
         <div className="relative flex-1 bg-white/10 border border-white/20 p-2 rounded-xl shadow-hard-br mb-3">
           {loading && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-xl">
@@ -309,7 +345,9 @@ export default function IngredientListPage({
                           name={item.ingredient.name}
                           imageUrl={item.ingredient.image_url}
                           unit={item.ingredient_unit.symbol}
-                          estimatedPrice={Number(item.ingredient.estimated_price)}
+                          estimatedPrice={Number(
+                            item.ingredient.estimated_price,
+                          )}
                           quantityLeft={item.quantity_left}
                           ingredientType={item.ingredient_type.name}
                           onImageClick={preview_image}
@@ -387,7 +425,6 @@ export default function IngredientListPage({
             </div>
           )}
         </div>
-
         <div className="relative flex flex-row justify-center bg-white/10 border p-2 rounded-xl border-white/20 overflow-auto shadow-hard-br">
           <div className="overflow-x-auto">
             <CustomPagination

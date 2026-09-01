@@ -157,21 +157,22 @@ export default function PlanningList({
   }
   return (
     <div className="rounded-xl border bg-white/10 p-6 shadow-hard-br">
-      <header className="text-center mb-6 border-b border-custom-sand-dune pb-3">
-        <h2 className="text-xl font-semibold text-custom-sand-dune">
-          {translations("title")}
-        </h2>
-
-        <div className="flex flex-row gap-2 justify-center items-center mt-2 text-sm text-gray-300">
-          <div className="px-5 py-1 bg-white/10 rounded-lg">
-            {formatDate(start)}
-          </div>{" "}
-          <ArrowRight size={16} />{" "}
-          <div className="px-5 py-1 bg-white/10 rounded-lg">
-            {formatDate(end)}
-          </div>
+      <header className="relative mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
+            {translations("title")}
+          </h1>
         </div>
       </header>
+      <div className="flex flex-row gap-2 justify-center items-center my-4 text-sm text-gray-300">
+        <div className="px-5 py-1 bg-white/10 rounded-lg">
+          {formatDate(start)}
+        </div>{" "}
+        <ArrowRight size={16} />{" "}
+        <div className="px-5 py-1 bg-white/10 rounded-lg">
+          {formatDate(end)}
+        </div>
+      </div>
 
       {error && (
         <div className="rounded-lg bg-white/10 px-3 py-2 mb-4 text-sm text-red-500">

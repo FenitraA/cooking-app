@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useDebounce } from "@/lib/hooks/useDebounce";
 import { getErrorMessage, UnauthorizedError } from "@/lib/errors";
 import { Modal, ModalBody } from "flowbite-react";
-import { Clock, Soup, X } from "lucide-react";
+import { Clock, Funnel, Soup, X } from "lucide-react";
 import FilterField from "@/components/forms/FilterField";
 import { IngredientBase } from "@/lib/ingredient/types";
 import CustomPagination from "@/components/forms/CustomPagination";
@@ -52,7 +52,7 @@ export default function RecipeListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [recipes, setRecipes] = useState<RecipeRead[]>([]);
-    
+
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const pagination = useMemo(() => {
@@ -131,47 +131,76 @@ export default function RecipeListPage() {
     };
   }, [router, debouncedSearchParams, refreshKey]);
 
+  // Filter section control
+  const [openFilters, setOpenFilters] = useState(false);
+
+  function changeOpenFilter() {
+    setOpenFilters((p) => !p);
+  }
+  const Filters = (
+    <div className="flex flex-col sm:p-6 gap-6 mb-3 w-full h-full lg:min-w-64 sm:bg-white/10 rounded-xl sm:border border-white/20">
+      <header className="lg:block hidden text-center mb-2 px-2 py-2 border-b border-custom-sand-dune">
+        <h2 className="text-md font-semibold text-custom-sand-dune tracking-tight">
+          {general_translations("search_filters")}
+        </h2>
+      </header>
+      <FilterField
+        icon={Soup}
+        value={recipeSearchParams.name ?? ""}
+        onChange={setName}
+        placeholder={translations("filters.name")}
+      />
+
+      <FilterField
+        icon={Clock}
+        value={String(recipeSearchParams.max_making_time ?? "")}
+        onChange={setMaxMakingTime}
+        placeholder={translations("filters.max_making_time")}
+      />
+      <GeneralAutocompleteList
+        translationsKey="Ingredient"
+        label="Ingredients"
+        values={selectedIngredients}
+        onChange={setSelectedIngredients}
+        getKey={(i) => i.id}
+        getName={(i) => i.name}
+        fetchOptions={fetchIngredientByName}
+      />
+    </div>
+  );
+
   return (
     <div className="rounded-xl border w-full mt-6 mx-auto min-h-full bg-white/10 py-4 px-6 shadow-hard-br space-y-6">
-      <header className="text-center mb-5 px-6 py-2 border-b-2 border-custom-sand-dune">
-        <h1 className="text-xl font-semibold text-custom-sand-dune tracking-tight">
-          {translations("list_title")}
-        </h1>
+      <header className="relative mb-4 mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
+            {translations("list_title")}
+          </h1>
+        </div>
+
+        <div className="lg:hidden absolute right-2">
+          <button
+            type="button"
+            onClick={changeOpenFilter}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-300 transition-all hover:border-custom-sand-dune/40 hover:bg-custom-sand-dune/10 hover:text-custom-sand-dune"
+          >
+            <Funnel size={16} />
+          </button>
+        </div>
       </header>
 
-      <div className="flex flex-col lg:flex-row h-full gap-4 ">
-        <div className="flex flex-col sm:p-6 gap-6 mb-3 w-full lg:w-1/5 lg:min-w-64 sm:bg-white/10 rounded-xl sm:border border-white/20">
-          <header className="text-center mb-2 px-2 py-2 border-b border-custom-sand-dune">
-            <h2 className="text-md font-semibold text-custom-sand-dune tracking-tight">
-              {general_translations("search_filters")}
-            </h2>
-          </header>
-          <div className="col-span-1">
-            <FilterField
-              icon={Soup}
-              value={recipeSearchParams.name ?? ""}
-              onChange={setName}
-              placeholder={translations("filters.name")}
-            />
-          </div>
-
-          <div className="col-span-1">
-            <FilterField
-              icon={Clock}
-              value={String(recipeSearchParams.max_making_time ?? "")}
-              onChange={setMaxMakingTime}
-              placeholder={translations("filters.max_making_time")}
-            />
-          </div>
-          <GeneralAutocompleteList
-            translationsKey="Ingredient"
-            label="Ingredients"
-            values={selectedIngredients}
-            onChange={setSelectedIngredients}
-            getKey={(i) => i.id}
-            getName={(i) => i.name}
-            fetchOptions={fetchIngredientByName}
-          />
+      <div className="flex flex-col lg:flex-row h-full">
+        <div className="hidden lg:block mb-3">{Filters}</div>
+        <div
+          className={`
+            lg:hidden
+            overflow-hidden
+            transition-all
+            duration-300
+            ${openFilters ? "max-h-125 opacity-100" : "max-h-1 opacity-0"}
+          `}
+        >
+          {Filters}
         </div>
         <div className="flex flex-col gap-6 mb-3 flex-1 min-w-32 rounded-xl">
           {error && (

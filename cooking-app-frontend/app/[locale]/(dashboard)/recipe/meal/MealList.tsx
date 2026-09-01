@@ -136,10 +136,12 @@ export default function MealListPage({
 
   return (
     <div className="rounded-xl w-full mx-auto min-h-full space-y-6">
-      <header className="text-center mb-4 px-2 py-2 border-b border-custom-sand-dune mx-4 mt-2">
-        <h2 className="text-md font-semibold text-custom-sand-dune tracking-tight">
-          {translations("list_title")}
-        </h2>
+      <header className="relative mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
+            {translations("list_title")}
+          </h1>
+        </div>
       </header>
 
       <div className="flex flex-col space-y-4">

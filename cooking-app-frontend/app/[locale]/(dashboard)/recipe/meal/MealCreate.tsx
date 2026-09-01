@@ -183,10 +183,12 @@ export default function MealCreatePage({
   }
   return (
     <form onSubmit={handleSubmit} className="flex flex-col flex-wrap gap-6">
-      <header className="text-center mb-2 px-2 py-2 border-b border-custom-sand-dune mx-4 mt-2">
-        <h2 className="text-md font-semibold text-custom-sand-dune tracking-tight">
-          {translations("create_title")}
-        </h2>
+      <header className="relative mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
+            {translations("create_title")}
+          </h1>
+        </div>
       </header>
       <div className="flex flex-row flex-wrap items-end border-b border-white/20 mx-4 pb-4 gap-6">
         <GeneralAutocomplete<RecipeBase>
@@ -222,10 +224,12 @@ export default function MealCreatePage({
           </button>
         </div>
       </div>
-      <header className="text-center px-2 py-2 border-b border-custom-sand-dune">
-        <h2 className="text-md font-semibold text-custom-sand-dune tracking-tight">
-          {translations("meal_ingredients")}
-        </h2>
+      <header className="relative mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-4 py-2 shadow-sm">
+        <div className="flex items-center gap-2">
+          <h2 className="text-md font-semibold tracking-tight text-custom-sand-dune">
+            {translations("meal_ingredients")}
+          </h2>
+        </div>
       </header>
       <MealIngredientChoice
         values={meal.meal_ingredients}

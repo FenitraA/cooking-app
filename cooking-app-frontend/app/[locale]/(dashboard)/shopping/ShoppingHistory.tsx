@@ -9,6 +9,7 @@ import {
   CalendarArrowDown,
   CalendarArrowUp,
   ChevronsLeftRightEllipsis,
+  Funnel,
   RefreshCcw,
   X,
 } from "lucide-react";
@@ -110,45 +111,82 @@ export default function ShoppingHistoryPage() {
     };
   }, [router, debouncedSearchParams]);
 
+  // Filter section control
+  const [openFilters, setOpenFilters] = useState(false);
+
+  function changeOpenFilter() {
+    setOpenFilters((p) => !p);
+  }
+  const Filters = (
+    <div className="flex sm:flex-row flex-col justify-center items-center sm:grid-cols-3 gap-4 mb-3 px-2">
+      <FilterField
+        className="w-full sm:w-auto"
+        type="date"
+        icon={CalendarArrowDown}
+        value={String(shoppingSearchParams.start_date ?? "")}
+        onChange={setStartDate}
+        placeholder={translations("filters.start_date")}
+      />
+      <ChevronsLeftRightEllipsis
+        size={24}
+        className="text-custom-sand-dune hidden sm:inline"
+      />
+      <FilterField
+        className="w-full sm:w-auto"
+        type="date"
+        icon={CalendarArrowUp}
+        value={String(shoppingSearchParams.end_date ?? "")}
+        onChange={setEndDate}
+        placeholder={translations("filters.end_date")}
+      />
+    </div>
+  );
+
   return (
     <div className="rounded-xl bg-white/10 p-6 w-full mx-auto min-h-full">
-      <header className="text-center mb-4 px-2 py-2 border-b border-custom-sand-dune mx-4 mt-2">
-        <h2 className="text-md font-semibold text-custom-sand-dune tracking-tight">
-          {translations("list_title")}
-        </h2>
+      <header className="relative mb-4 mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
+            {translations("list_title")}
+          </h1>
+        </div>
+
+        <div className="lg:hidden absolute right-2">
+          <button
+            type="button"
+            onClick={changeOpenFilter}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-300 transition-all hover:border-custom-sand-dune/40 hover:bg-custom-sand-dune/10 hover:text-custom-sand-dune"
+          >
+            <Funnel size={16} />
+          </button>
+        </div>
       </header>
 
       <div className="flex flex-col space-y-4">
+        <div className="hidden lg:block mb-3">{Filters}</div>
+        <div
+          className={`
+            lg:hidden
+            overflow-hidden
+            transition-all
+            duration-300
+            ${openFilters ? "max-h-125 opacity-100" : "max-h-1 opacity-0"}
+          `}
+        >
+          {Filters}
+        </div>
         {error && (
           <div className="rounded-lg bg-white/10 px-3 py-2 text-sm text-red-500">
             {error}
           </div>
         )}
 
-        <div className="flex sm:flex-row flex-col justify-center items-center sm:grid-cols-3 gap-4 mb-3 px-2">
-          <FilterField
-            className="w-full sm:w-auto"
-            type="date"
-            icon={CalendarArrowDown}
-            value={String(shoppingSearchParams.start_date ?? "")}
-            onChange={setStartDate}
-            placeholder={translations("filters.start_date")}
-          />
-          <ChevronsLeftRightEllipsis
-            size={24}
-            className="text-custom-sand-dune hidden sm:inline"
-          />
-          <FilterField
-            className="w-full sm:w-auto"
-            type="date"
-            icon={CalendarArrowUp}
-            value={String(shoppingSearchParams.end_date ?? "")}
-            onChange={setEndDate}
-            placeholder={translations("filters.end_date")}
-          />
-        </div>
-
-        <div className="flex flex-col gap-4 overflow-y-auto h-[60vh] lg:h-150">
+        <div className="relative flex flex-col gap-4 overflow-y-auto h-[60vh] lg:h-150">
+          {loading && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-xl">
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-gray-800" />
+            </div>
+          )}
           {shoppings.map((item) => (
             <div
               key={item.shopping.id}

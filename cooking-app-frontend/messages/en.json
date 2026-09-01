@@ -1,5 +1,6 @@
 {
   "General": {
+    "filters": "Filters",
     "app_title": "Home cooking",
     "delete_confirmation_title": "Confirm deletion",
     "search_filters": "Search filters",

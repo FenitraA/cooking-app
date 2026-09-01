@@ -15,6 +15,7 @@ import {
   SquareX,
   SquareCheck,
   Undo2,
+  Funnel,
 } from "lucide-react";
 import FilterField from "@/components/forms/FilterField";
 import CustomPagination from "@/components/forms/CustomPagination";
@@ -301,51 +302,83 @@ export default function ItemToBuyListPage({
       setSubmitting(false);
     }
   }
+  // Filter section control
+  const [openFilters, setOpenFilters] = useState(false);
+
+  function changeOpenFilter() {
+    setOpenFilters((p) => !p);
+  }
+  const Filters = (
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 items-end mb-3">
+      <div className="col-span-1">
+        <FilterField
+          icon={PackagePlus}
+          value={String(itemToBuySearchParams.name ?? "")}
+          onChange={setName}
+          placeholder={translations("filters.name")}
+        />
+      </div>
+
+      <div className="col-span-1">
+        <GeneralAutocomplete<IngredientBase>
+          translationsKey="ItemCategory"
+          showShadow={false}
+          className="col-span-1"
+          value={selectedIngredient}
+          onSelect={(d) => {
+            setSelectedIngredient(d);
+            setIngredientId(d.id);
+          }}
+          onClear={() => {
+            setSelectedIngredient(null);
+            setIngredientId(null);
+          }}
+          getName={getIngredientName}
+          fetchOptions={fetchIngredientByName}
+        />
+      </div>
+    </div>
+  );
 
   return (
     <div className="rounded-xl border w-full mx-auto min-h-full bg-white/10 py-4 px-3 sm:px-6 shadow-hard-br space-y-6">
-      <header className="text-center mb-4 px-2 py-2 border-b border-custom-sand-dune mx-2 sm:mx-4 mt-2">
-        <h2 className="text-md font-semibold text-custom-sand-dune tracking-tight">
-          {translations("list_title")}
-        </h2>
+      <header className="relative mb-4 mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
+            {translations("list_title")}
+          </h1>
+        </div>
+
+        <div className="lg:hidden absolute right-2">
+          <button
+            type="button"
+            onClick={changeOpenFilter}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-300 transition-all hover:border-custom-sand-dune/40 hover:bg-custom-sand-dune/10 hover:text-custom-sand-dune"
+          >
+            <Funnel size={16} />
+          </button>
+        </div>
       </header>
 
       <div className="flex flex-col space-y-4">
+        <div className="hidden lg:block mb-3">{Filters}</div>
+        <div
+          className={`
+            lg:hidden
+            overflow-hidden
+            transition-all
+            duration-300
+            ${openFilters ? "max-h-125 opacity-100" : "max-h-1 opacity-0"}
+          `}
+        >
+          {Filters}
+        </div>
+
         {error && (
           <div className="rounded-lg bg-white/10 px-3 py-2 text-sm text-red-500">
             {error}
           </div>
         )}
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 items-end mb-3">
-          <div className="col-span-1">
-            <FilterField
-              icon={PackagePlus}
-              value={String(itemToBuySearchParams.name ?? "")}
-              onChange={setName}
-              placeholder={translations("filters.name")}
-            />
-          </div>
-
-          <div className="col-span-1">
-            <GeneralAutocomplete<IngredientBase>
-              translationsKey="ItemCategory"
-              showShadow={false}
-              className="col-span-1"
-              value={selectedIngredient}
-              onSelect={(d) => {
-                setSelectedIngredient(d);
-                setIngredientId(d.id);
-              }}
-              onClear={() => {
-                setSelectedIngredient(null);
-                setIngredientId(null);
-              }}
-              getName={getIngredientName}
-              fetchOptions={fetchIngredientByName}
-            />
-          </div>
-        </div>
 
         {/* Select All Bar */}
         <div className="flex items-center justify-between px-3 py-2 bg-white/5 rounded-lg border border-white/10 text-sm text-gray-300">
@@ -375,13 +408,18 @@ export default function ItemToBuyListPage({
         </div>
 
         {/* Item List */}
-        <div className="flex flex-col gap-3 sm:gap-4 overflow-y-auto h-[60vh] lg:h-150 pr-1">
+        <div className="relative flex flex-col gap-3 sm:gap-4 overflow-y-auto h-[60vh] lg:h-150 pr-1">
+          {loading && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-gray-800" />
+            </div>
+          )}
           {itemsToBuy.map((item) => {
             const isSelected = selectedIds.has(item.item_to_buy.id);
             return (
               <div
                 key={item.item_to_buy.id}
-                className={`relative flex flex-row items-start sm:items-center w-full px-3 py-2 sm:py-1 bg-white/10 border text-gray-300 transition-colors ${
+                className={`relative flex flex-row items-start sm:items-center w-full px-3 py-2 sm:py-1 lg:min-h-12 bg-white/10 border text-gray-300 transition-colors ${
                   isSelected ? "border-custom-sand-dune" : "border-white/20"
                 }`}
               >

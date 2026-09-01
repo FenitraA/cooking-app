@@ -70,6 +70,32 @@ async def get_planning_weekly(
         ),
         ingredients_to_buy=get_total_ingredients_to_buy(planning_repartitions),
     )
+    
+@router.get("/by-dates", response_model=PlanningResult)
+@limiter.limit("30/minute")
+@handle_endpoint_errors()
+async def get_planning_from_dates(
+    request: Request,
+    start_date: date,
+    end_date: date,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(require_roles(settings.READ_ONLY_ROLE_DENOMINATION)),
+):
+    household_id = current_user["ref_household_id"]
+
+    plannings = await planning_crud_instance.get_by_date(
+        db, household_id, start_date, end_date
+    )
+    planning_repartitions = redistribute_to_repartition(
+        start_date, end_date, plannings
+    )
+    return PlanningResult(
+        planning_repartitions=planning_repartitions,
+        total_estimated_cost_price=get_total_estimated_price_from_repartitions(
+            planning_repartitions
+        ),
+        ingredients_to_buy=get_total_ingredients_to_buy(planning_repartitions),
+    )
 
 
 @router.get("", response_model=PlanningResult)

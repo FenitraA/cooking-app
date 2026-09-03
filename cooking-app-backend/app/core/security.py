@@ -143,24 +143,6 @@ def get_current_user(request: Request):
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-
-def get_current_user_no_check(request: Request):
-    try:
-        token = request.cookies.get("access_token")
-        if not token:
-            return None
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
-        )
-        user_id: str = payload.get("sub")
-        user_roles: str = payload.get("roles")
-        if user_id is None:
-            return None
-        return {"id": user_id, "roles": user_roles}
-    except JWTError:
-        return None
-
-
 def require_roles(*roles: str):
 
     def role_checker(user=Depends(get_current_user)):
@@ -173,3 +155,39 @@ def require_roles(*roles: str):
         return user
 
     return role_checker
+
+def is_secure_cookie() -> bool:
+    return settings.ENVIRONMENT in {"online_dev", "online_prod"}
+
+
+def clear_auth_cookies(response: JSONResponse) -> None:
+    response.delete_cookie("access_token", path="/")
+    response.delete_cookie("refresh_token", path="/")
+
+
+def set_auth_cookies(
+    response: JSONResponse,
+    access_token: str,
+    refresh_token: str,
+) -> None:
+    secure = is_secure_cookie()
+
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        path="/",
+        httponly=True,
+        secure=secure,
+        samesite="None" if secure else "lax",
+        max_age=60 * settings.ACCESS_TOKEN_EXPIRE_MINUTES,
+    )
+
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        path="/",
+        httponly=True,
+        secure=secure,
+        samesite="None" if secure else "lax",
+        max_age=24 * 3600 * settings.REFRESH_TOKEN_EXPIRE_DAYS,
+    )

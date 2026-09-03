@@ -7,8 +7,10 @@ from app.crud.app_user_crud import app_user_crud_instance
 from app.models.refresh_token import RefreshToken
 from app.schemas.app_user import AppUserLogin
 from app.core.security import (
+    clear_auth_cookies,
     create_refresh_token,
     get_current_user,
+    set_auth_cookies,
     verify_password,
     create_access_token,
 )
@@ -18,7 +20,11 @@ from jose import JWTError
 from app.core.config import settings
 
 from app.crud.refresh_token_crud import refresh_token_crud_instance
-from app.schemas.exceptions import RefreshTokenInvalid, RefreshTokenNotFound
+from app.schemas.exceptions import (
+    RefreshTokenInvalid,
+    RefreshTokenNotFound,
+    RefreshTokenRevoked,
+)
 from app.core.security import limiter
 
 router = APIRouter(tags=["Auth"])
@@ -28,16 +34,22 @@ router = APIRouter(tags=["Auth"])
 @limiter.limit("5/minute")
 @handle_endpoint_errors()
 async def login(
-    request: Request, data: AppUserLogin, db: AsyncSession = Depends(get_db)
+    request: Request,
+    data: AppUserLogin,
+    db: AsyncSession = Depends(get_db),
 ):
     now = datetime.now(timezone.utc)
-    # access_expire_delta = timedelta(seconds=1)
-    access_expire_delta = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    refresh_expire_delta = timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
-    user = await app_user_crud_instance.get_user_by_username(db, data.username)
+
+    user = await app_user_crud_instance.get_user_by_username(
+        db,
+        data.username,
+    )
+
     if not user or not verify_password(data.password, user.password):
-        return JSONResponse({"detail": "Invalid credentials"}, status_code=401)
-    # create JWT
+        return JSONResponse(
+            {"detail": "Invalid credentials"},
+            status_code=401,
+        )
 
     roles = await app_user_crud_instance.list_user_roles(db, user.id)
 
@@ -48,9 +60,10 @@ async def login(
             "default_language": user.default_language,
             "ref_household_id": user.ref_household_id,
         },
-        expires_delta=access_expire_delta,
+        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
         now=now,
     )
+
     refresh_token = create_refresh_token()
 
     await refresh_token_crud_instance.create(
@@ -58,14 +71,11 @@ async def login(
         token_hash=RefreshToken.hash_refresh(refresh_token),
         user_id=user.id,
         created_at=now,
-        expire_at=now + refresh_expire_delta,
+        expire_at=now + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS),
     )
 
-    isSecure = False
-    if settings.ENVIRONMENT in ["online_dev", "online_prod"]:
-        isSecure = True
+    await db.commit()
 
-    #  return token in HTTP-only cookie
     response = JSONResponse(
         {
             "message": "Login successful",
@@ -74,26 +84,12 @@ async def login(
             "ref_household_id": user.ref_household_id,
         }
     )
-    response.set_cookie(
-        key="access_token",
-        path="/",
-        value=access_token,
-        httponly=True,  # cannot be accessed by JS
-        secure=isSecure,  # True in production (HTTPS)
-        samesite="None" if isSecure else "lax",
-        max_age=60 * settings.ACCESS_TOKEN_EXPIRE_MINUTES,  # 15 minutes
-    )
-    response.set_cookie(
-        key="refresh_token",
-        path="/",
-        value=refresh_token,
-        httponly=True,
-        secure=isSecure,
-        samesite="None" if isSecure else "lax",
-        max_age=24 * 3600 * settings.REFRESH_TOKEN_EXPIRE_DAYS,
-    )
 
-    await db.commit()
+    set_auth_cookies(
+        response,
+        access_token,
+        refresh_token,
+    )
 
     return response
 
@@ -101,70 +97,75 @@ async def login(
 @router.post("/refresh")
 @limiter.limit("5/minute")
 @handle_endpoint_errors()
-async def refresh_token(request: Request, db: AsyncSession = Depends(get_db)):
-    refresh_token = request.cookies.get("refresh_token")
-    if not refresh_token:
-        print("Refresh token missing")
-        return JSONResponse({"detail": "Refresh token missing"}, status_code=401)
-
-    try:
-        refresh_token_obj, user = await refresh_token_crud_instance.get_valid_token(
-            db, RefreshToken.hash_refresh(refresh_token)
+async def refresh_token(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    refresh_token_value = request.cookies.get("refresh_token")
+    if not refresh_token_value:
+        return JSONResponse(
+            {"detail": "Refresh token missing"},
+            status_code=401,
         )
-        roles = await app_user_crud_instance.list_user_roles(db, user.id)
-
-        new_refresh_token, new_refresh_token_value = refresh_token_obj.get_heir_token()
-        refresh_token_obj.revoke_token()
-        db.add(new_refresh_token)
-        await db.flush()
-        await db.refresh(new_refresh_token)
-
-        # issue a new access token
-        new_access_token = create_access_token(
+    try:
+        token, user = await refresh_token_crud_instance.get_valid_token(
+            db,
+            RefreshToken.hash_refresh(refresh_token_value),
+        )
+        roles = await app_user_crud_instance.list_user_roles(
+            db,
+            user.id,
+        )
+        new_token, new_token_value = token.get_heir_token()
+        token.revoke_token()
+        db.add(new_token)
+        access_token = create_access_token(
             {
                 "sub": user.id,
                 "roles": roles,
                 "default_language": user.default_language,
                 "ref_household_id": user.ref_household_id,
             },
-            timedelta(minutes=15),
-        )
-        response = JSONResponse({"message": "Token refreshed"})
-
-        isSecure = False
-        if settings.ENVIRONMENT in ["online_dev", "online_prod"]:
-            isSecure = True
-
-        response.set_cookie(
-            key="access_token",
-            path="/",
-            value=new_access_token,
-            httponly=True,  # cannot be accessed by JS
-            secure=isSecure,  # True in production (HTTPS)
-            samesite="None" if isSecure else "lax",
-            max_age=60 * settings.ACCESS_TOKEN_EXPIRE_MINUTES,
-        )
-        response.set_cookie(
-            key="refresh_token",
-            path="/",
-            value=new_refresh_token_value,
-            httponly=True,
-            secure=isSecure,
-            samesite="None" if isSecure else "lax",
-            max_age=24 * 3600 * settings.REFRESH_TOKEN_EXPIRE_DAYS,
+            timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
         )
         await db.commit()
-
+        response = JSONResponse({"message": "Token refreshed"})
+        set_auth_cookies(
+            response,
+            access_token,
+            new_token_value,
+        )
         return response
 
-    except RefreshTokenNotFound as ex:
-        return JSONResponse({"detail": str(ex)}, status_code=401)
-    except RefreshTokenInvalid as ex:
-        return JSONResponse({"detail": str(ex)}, status_code=401)
-    except JWTError:
-        return JSONResponse(
-            {"detail": "Invalid or expired refresh token"}, status_code=401
+    except RefreshTokenRevoked:
+        # replay attack detected
+        token, user = await refresh_token_crud_instance.get_by_hash_including_revoked(
+            db,
+            RefreshToken.hash_refresh(refresh_token_value),
         )
+        await refresh_token_crud_instance.revoke_all_for_user(
+            db,
+            user.id,
+        )
+        await db.commit()
+        response = JSONResponse(
+            {"detail": "Refresh token reuse detected. All sessions revoked."},
+            status_code=401,
+        )
+        clear_auth_cookies(response)
+        return response
+
+    except (RefreshTokenInvalid, RefreshTokenNotFound):
+        await db.rollback()
+        response = JSONResponse(
+            {"detail": "Invalid refresh token"},
+            status_code=401,
+        )
+        clear_auth_cookies(response)
+        return response
+    except Exception:
+        await db.rollback()
+        raise
 
 
 @router.post("/logout")
@@ -172,12 +173,49 @@ async def refresh_token(request: Request, db: AsyncSession = Depends(get_db)):
 @handle_endpoint_errors()
 async def logout(
     request: Request,
+    db: AsyncSession = Depends(get_db),
 ):
-    response = JSONResponse({"message": "Logged out"})
-    response.delete_cookie("access_token")
-    response.delete_cookie("refresh_token")
+    response = JSONResponse(
+        {"message": "Logged out"}
+    )
+
+    clear_auth_cookies(response)
+    refresh_token_value = request.cookies.get("refresh_token")
+    if not refresh_token_value:
+        return response
+    try:
+        await refresh_token_crud_instance.revoke_one(
+            db,
+            RefreshToken.hash_refresh(refresh_token_value),
+        )
+
+        await db.commit()
+    except (
+        RefreshTokenNotFound,
+        RefreshTokenInvalid,
+        RefreshTokenRevoked,
+    ):
+        await db.rollback()
     return response
 
+@router.post("/logout-all")
+@limiter.limit("5/minute")
+@handle_endpoint_errors()
+async def logout_all(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    await refresh_token_crud_instance.revoke_all_for_user(
+        db,
+        current_user["id"],
+    )
+    await db.commit()
+    response = JSONResponse(
+        {"message": "Logged out from all devices"}
+    )
+    clear_auth_cookies(response)
+    return response
 
 @router.get("/me")
 @limiter.limit("50/minute")
@@ -189,6 +227,7 @@ async def me(
 ):
     full_user = await app_user_crud_instance.get_user_by_id(db, id=current_user["id"])
     return {"id": full_user.id, "username": full_user.username}
+
 
 @router.get("/health")
 async def health():

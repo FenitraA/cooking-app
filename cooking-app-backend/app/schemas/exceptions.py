@@ -2,6 +2,9 @@ class RefreshTokenNotFound(Exception):
     """Raised when the RefreshToken does not have a corresponding database equivalent."""
     
 class RefreshTokenInvalid(Exception):
+    """Raised when the RefreshToken is invalid or expired."""
+    
+class RefreshTokenRevoked(Exception):
     """Raised when the RefreshToken is revoked."""
     
 class NotEnoughStock(Exception):

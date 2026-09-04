@@ -7,14 +7,30 @@ from app.core.config import settings
 class Base(DeclarativeBase):
     pass
 
+
 ENGINES = {}
 
-if(settings.ENVIRONMENT=="dev"):
-    ENGINES["dev"] = create_async_engine(settings.DEV_DATABASE_URL, echo=settings.DEBUG)
-if(settings.ENVIRONMENT=="online_dev"):
-    ENGINES["online_dev"] = create_async_engine(settings.ONLINE_DEV_DATABASE_URL, echo=settings.DEBUG) 
-if(settings.ENVIRONMENT=="online_prod"):
-    ENGINES["online_prod"] = create_async_engine(settings.ONLINE_PROD_DATABASE_URL, echo=settings.DEBUG)
+if settings.ENVIRONMENT == "dev":
+    ENGINES["dev"] = create_async_engine(
+        settings.DEV_DATABASE_URL,
+        echo=settings.DEBUG,
+        pool_pre_ping=True,
+        pool_recycle=1800,
+    )
+if settings.ENVIRONMENT == "online_dev":
+    ENGINES["online_dev"] = create_async_engine(
+        settings.ONLINE_DEV_DATABASE_URL,
+        echo=settings.DEBUG,
+        pool_pre_ping=True,
+        pool_recycle=1800,
+    )
+if settings.ENVIRONMENT == "online_prod":
+    ENGINES["online_prod"] = create_async_engine(
+        settings.ONLINE_PROD_DATABASE_URL,
+        echo=settings.DEBUG,
+        pool_pre_ping=True,
+        pool_recycle=1800,
+    )
 
 # ENGINES = {
 #     # "dev": create_async_engine(settings.DEV_DATABASE_URL, echo=settings.DEBUG),
@@ -22,8 +38,13 @@ if(settings.ENVIRONMENT=="online_prod"):
 #     "online_prod": create_async_engine(settings.ONLINE_PROD_DATABASE_URL, echo=settings.DEBUG),
 # }
 
-SESSION_MAKERS = {k: sessionmaker(bind=e, class_=AsyncSession, autoflush=False, expire_on_commit=False)
-                  for k, e in ENGINES.items()}
+SESSION_MAKERS = {
+    k: sessionmaker(
+        bind=e, class_=AsyncSession, autoflush=False, expire_on_commit=False
+    )
+    for k, e in ENGINES.items()
+}
+
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     env = settings.ENVIRONMENT

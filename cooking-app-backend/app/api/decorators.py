@@ -1,47 +1,38 @@
+import logging
+
 from fastapi import HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
 from functools import wraps
 
-def handle_endpoint_errors():
-    """
-    Decorator for FastAPI endpoints that:
-    - preserves HTTPExceptions
-    - converts unexpected errors into HTTPExceptions
-    - rolls back DB session when available
-    """
+logger = logging.getLogger(__name__)
 
+
+def handle_endpoint_errors():
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
-            db = kwargs.get("db")  # AsyncSession (if injected via Depends)
-
+            db = kwargs.get("db")
             try:
                 return await func(*args, **kwargs)
-
             except HTTPException:
-                # Preserve FastAPI HTTPExceptions
                 if db:
                     await db.rollback()
                 raise
-
             except SQLAlchemyError as e:
-                # Database-level errors
+                logger.exception("Database error")
                 if db:
                     await db.rollback()
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=f"Erreur base de données : {str(e)}",
+                    detail="Database error",
                 )
-
-            except Exception as e:
-                # Any other unexpected error
+            except Exception:
+                logger.exception("Unexpected error")
                 if db:
                     await db.rollback()
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=f"{str(e)}",
+                    detail="Internal server error",
                 )
-
         return wrapper
-
     return decorator

@@ -167,7 +167,6 @@ export default function ShoppingHistoryPage() {
         <div
           className={`
             lg:hidden
-            overflow-hidden
             transition-all
             duration-300
             ${openFilters ? "max-h-125 opacity-100" : "max-h-1 opacity-0"}

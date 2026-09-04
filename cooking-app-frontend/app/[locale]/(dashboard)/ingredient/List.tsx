@@ -290,7 +290,6 @@ export default function IngredientListPage({
         <div
           className={`
             lg:hidden
-            overflow-hidden
             transition-all
             duration-300
             my-2

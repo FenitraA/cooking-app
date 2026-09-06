@@ -33,7 +33,7 @@ class RefreshTokenCRUD:
 
     async def get_valid_token(
         self, db: AsyncSession, token_hash: str
-    ) -> tuple[RefreshToken, AppUser]:
+    ) -> tuple[RefreshToken, AppUser] | None:
         stmt = (
             select(RefreshToken, AppUser)
             .join(AppUser, AppUser.id == RefreshToken.ref_user_id)

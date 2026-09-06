@@ -31,7 +31,7 @@ class ItemToBuy(Base):
     name : Mapped[str] = mapped_column(String(128), nullable=False)
     description : Mapped[str] = mapped_column(String(128), nullable=True)
     estimated_unit_price: Mapped[Decimal] = mapped_column(DECIMAL(16, 2))
-    units_to_buy: Mapped[Decimal] = mapped_column(DECIMAL(16, 2))
+    units_to_buy: Mapped[Decimal] = mapped_column(DECIMAL(16, 3))
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
     )

@@ -16,7 +16,7 @@ from app.db.database import Base
 class MealIngredient(Base):
     __tablename__ = "meal_ingredient"
 
-    quantity: Mapped[Decimal] = mapped_column(DECIMAL(16, 2), nullable=False)
+    quantity: Mapped[Decimal] = mapped_column(DECIMAL(16, 3), nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)

@@ -29,7 +29,7 @@ class IngredientStock(Base):
     )
 
     unit_cost: Mapped[Decimal] = mapped_column(DECIMAL(16, 2))
-    quantity: Mapped[Decimal] = mapped_column(DECIMAL(16, 2))
+    quantity: Mapped[Decimal] = mapped_column(DECIMAL(16, 3))
 
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)

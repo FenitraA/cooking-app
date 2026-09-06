@@ -24,17 +24,20 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    develop:
-      watch:
-        - action: sync
-          path: ./cooking-app-backend
-          target: /app
-          ignore:
-            - __pycache__/
-            - .venv/
-            - "*.pyc"
-        - action: rebuild
-          path: ./cooking-app-backend/requirements.txt
+    volumes:
+      - ./cooking-app-backend:/app
+      - /app/.venv
+    # develop:
+    #   watch:
+    #     - action: sync
+    #       path: ./cooking-app-backend
+    #       target: /app
+    #       ignore:
+    #         - __pycache__/
+    #         - .venv/
+    #         - "*.pyc"
+    #     - action: rebuild
+    #       path: ./cooking-app-backend/requirements.txt
   frontend:
     build: ./cooking-app-frontend
     env_file:

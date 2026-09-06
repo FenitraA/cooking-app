@@ -37,7 +37,7 @@ from app.models import (
 config = context.config
 
 # Choose DB URL depending on environment
-config.set_main_option("sqlalchemy.url", settings.ONLINE_DEV_DATABASE_URL)
+config.set_main_option("sqlalchemy.url", settings.DEV_DATABASE_URL)
 
 # Logging
 if config.config_file_name is not None:

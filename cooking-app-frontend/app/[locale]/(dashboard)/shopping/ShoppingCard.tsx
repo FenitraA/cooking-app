@@ -49,7 +49,7 @@ export default function RecipeCard({ data }: RecipeCardProps) {
     >
       <div className="flex flex-col lg:flex-row gap-6 text-gray-300">
         {/* Items */}
-        <div className="w-full lg:w-1/2">
+        <div className="w-full">
           <header className="mb-2 px-2 py-2 border-b border-custom-sand-dune">
             <h2 className="text-md font-semibold text-custom-sand-dune tracking-tight">
               {translations("items")}

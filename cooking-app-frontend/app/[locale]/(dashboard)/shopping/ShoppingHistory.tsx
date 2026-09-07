@@ -186,14 +186,16 @@ export default function ShoppingHistoryPage() {
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-gray-800" />
             </div>
           )}
-          {shoppings.map((item) => (
-            <div
-              key={item.shopping.id}
-              className="relative rounded-xl w-full sm:px-3"
-            >
-              <ShoppingCard data={item} />
-            </div>
-          ))}
+          <div className="flex lg:flex-row flex-col flex-wrap gap-y-4">
+            {shoppings.map((item) => (
+              <div
+                key={item.shopping.id}
+                className="relative rounded-xl lg:w-1/2 w-full sm:px-3"
+              >
+                <ShoppingCard data={item} />
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="relative flex flex-row justify-center bg-white/10 border p-2 rounded-xl border-white/20 overflow-auto shadow-hard-br">

@@ -23,7 +23,7 @@ router = APIRouter(tags=["Shoppings"])
 
 @router.post("", response_model=ShoppingCreateResponse)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def create_shopping(
     request: Request,
     data: ShoppingCreate,
@@ -38,7 +38,7 @@ async def create_shopping(
 
 @router.post("/from-items-to-buy", response_model=ShoppingCreateResponse)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def create_shopping_from_items_to_buy(
     request: Request,
     data: ShoppingCreateFromItemsToBuy,
@@ -53,7 +53,7 @@ async def create_shopping_from_items_to_buy(
 
 @router.get("", response_model=ShoppingSearchResult)
 @limiter.limit("10/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def search_shoppings(
     request: Request,
     start_date: date | None = None,
@@ -74,7 +74,7 @@ async def search_shoppings(
 
 @router.put("/delete", response_model=ShoppingBase)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def delete_shopping(
     request: Request,
     delete_data: DeleteShoppingData,

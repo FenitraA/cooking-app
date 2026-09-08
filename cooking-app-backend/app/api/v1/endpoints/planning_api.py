@@ -31,7 +31,7 @@ router = APIRouter(tags=["Planning"])
 
 @router.post("", response_model=list[PlanningRecipeBase])
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def create_planning_recipe(
     request: Request,
     data: PlanningRecipeCreate,
@@ -46,7 +46,7 @@ async def create_planning_recipe(
 
 @router.get("/weekly", response_model=PlanningResult)
 @limiter.limit("30/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def get_planning_weekly(
     request: Request,
     planning_date: date,
@@ -73,7 +73,7 @@ async def get_planning_weekly(
     
 @router.get("/by-dates", response_model=PlanningResult)
 @limiter.limit("30/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def get_planning_from_dates(
     request: Request,
     start_date: date,
@@ -100,7 +100,7 @@ async def get_planning_from_dates(
 
 @router.get("", response_model=PlanningResult)
 @limiter.limit("30/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def get_planning(
     request: Request,
     today_date: date,
@@ -133,7 +133,7 @@ async def get_planning(
 
 @router.get("/one", response_model=PlanningRecipeRead)
 @limiter.limit("10/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def get_planning_recipe(
     request: Request,
     planning_recipe_id: str,
@@ -146,7 +146,7 @@ async def get_planning_recipe(
 
 @router.put("/delete", response_model=PlanningRecipeBase)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def delete_stock(
     request: Request,
     delete_data: DeletePlanningData,
@@ -163,7 +163,7 @@ async def delete_stock(
 
 @router.put("/update", response_model=PlanningRecipeRead)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def update_planning_recipe(
     request: Request,
     data: PlanningRecipeUpdateData,
@@ -178,7 +178,7 @@ async def update_planning_recipe(
 
 @router.get("/print/")
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def print_planning(
     request: Request,
     start_date: date,

@@ -22,7 +22,7 @@ router = APIRouter(tags=["ItemsToBuy"])
 
 @router.post("", response_model=ItemToBuyBase)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def create_item_to_buy(
     request: Request,
     data: ItemToBuyData,
@@ -37,7 +37,7 @@ async def create_item_to_buy(
 
 @router.get("", response_model=ItemToBuySearchResult)
 @limiter.limit("10/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def search_items_to_buy(
     request: Request,
     name: str | None = None,
@@ -55,7 +55,7 @@ async def search_items_to_buy(
 
 @router.put("/delete", response_model=ItemToBuyBase)
 @limiter.limit("20/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def delete_item_to_buy(
     request: Request,
     delete_data: DeleteItemToBuyData,
@@ -72,7 +72,7 @@ async def delete_item_to_buy(
 
 @router.put("/update", response_model=ItemToBuyRead)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def update_ingredient(
     request: Request,
     data: ItemToBuyUpdateData,

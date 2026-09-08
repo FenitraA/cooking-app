@@ -10,7 +10,7 @@ import cloudinary.utils
 
 router = APIRouter(tags=["Cloudinary"])
 
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 @router.get("/sign")
 def sign_upload(
     folder: str = Query(default="lots"),

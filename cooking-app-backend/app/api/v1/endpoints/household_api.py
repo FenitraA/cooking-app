@@ -15,7 +15,7 @@ router = APIRouter(tags=["Households"])
 
 @router.post("", response_model=HouseholdBase)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def create_household(
     request : Request,
     data: HouseholdData,
@@ -29,7 +29,7 @@ async def create_household(
 
 @router.get("/select", response_model=list[HouseholdBase])
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def autocomplete_ingredients(
     request : Request,
     name: str | None = None,

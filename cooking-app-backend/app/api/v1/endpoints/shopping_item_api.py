@@ -17,7 +17,7 @@ router = APIRouter(tags=["ShoppingItems"])
 
 @router.get("", response_model=ShoppingItemSearchResult)
 @limiter.limit("10/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def search_shopping_items(
     request : Request,
     name: str | None = None,
@@ -35,7 +35,7 @@ async def search_shopping_items(
     
 @router.put("/delete", response_model=ShoppingItemBase)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def delete_shopping_item(
     request: Request,
     delete_data: DeleteShoppingItemData,

@@ -23,7 +23,7 @@ router = APIRouter(tags=["User"])
 
 @router.post("", response_model=AppUserRead, status_code=status.HTTP_201_CREATED)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def register(
     request : Request,
     user_in: AppUserData,
@@ -39,7 +39,7 @@ async def register(
     "/change-password", response_model=AppUserRead, status_code=status.HTTP_201_CREATED
 )
 @limiter.limit("1/hour")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def change_password(
     request : Request,
     user_in: AppUserPasswordChange,
@@ -59,7 +59,7 @@ async def change_password(
     "/password-reset", response_model=AppUserRead, status_code=status.HTTP_201_CREATED
 )
 @limiter.limit("5/hour")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def password_reset(
     request : Request,
     user_in: AppUserPasswordReset,
@@ -81,7 +81,7 @@ async def password_reset(
     "/change-username", response_model=AppUserRead, status_code=status.HTTP_201_CREATED
 )
 @limiter.limit("1/hour")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def change_username(
     request : Request,
     user_in: AppUserUsernameChange,
@@ -97,7 +97,7 @@ async def change_username(
 
 @router.post("/roles", response_model=RoleBase, status_code=status.HTTP_201_CREATED)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def register_roles(
     request : Request,
     role_in: RoleCreate,
@@ -113,7 +113,7 @@ async def register_roles(
     "/user-roles", response_model=list[str], status_code=status.HTTP_201_CREATED
 )
 @limiter.limit("20/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def get_user_roles(
     request : Request,
     user_id: str,

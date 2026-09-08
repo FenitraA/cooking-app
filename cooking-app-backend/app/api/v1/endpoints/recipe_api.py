@@ -27,7 +27,7 @@ router = APIRouter(tags=["Recipes"])
 
 @router.post("", response_model=RecipeCreateResponse)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def create_recipe(
     request : Request,
     data: RecipeCreate,
@@ -41,7 +41,7 @@ async def create_recipe(
 
 @router.put("/image", response_model=RecipeRead)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def set_recipe_image(
     request: Request,
     data: RecipeImageData,
@@ -56,7 +56,7 @@ async def set_recipe_image(
 
 @router.get("", response_model=RecipeSearchResult)
 @limiter.limit("10/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def search_recipes(
     request : Request,
     name: str | None = None,
@@ -74,7 +74,7 @@ async def search_recipes(
 
 @router.get("/select", response_model=list[RecipeBase])
 @limiter.limit("20/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def autocomplete_recipes(
     request: Request,
     name: str | None = None,
@@ -87,7 +87,7 @@ async def autocomplete_recipes(
 
 @router.get("/one", response_model=RecipeRead)
 @limiter.limit("10/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def get_recipe(
     request : Request,
     recipe_id: str,
@@ -100,7 +100,7 @@ async def get_recipe(
 
 @router.put("/update", response_model=RecipeRead)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def update_recipe(
     request : Request,
     data: RecipeUpdateData,
@@ -115,7 +115,7 @@ async def update_recipe(
 
 @router.post("/meals", response_model=MealCreateResponse)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def create_meal(
     request : Request,
     data: MealCreate,
@@ -128,7 +128,7 @@ async def create_meal(
 
 @router.get("/meals", response_model=MealSearchResult)
 @limiter.limit("10/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def search_meals(
     request : Request,
     recipe_name: str | None = None,
@@ -145,7 +145,7 @@ async def search_meals(
     
 @router.get("/meals/initial-setup", response_model=list[MealIngredientRead])
 @limiter.limit("10/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def search_meals(
     request : Request,
     recipe_id : str,
@@ -158,7 +158,7 @@ async def search_meals(
 
 @router.put("/meals/delete", response_model=MealBase)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def delete_meal(
     request : Request,
     delete_data: DeleteMealData,

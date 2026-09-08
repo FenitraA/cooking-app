@@ -32,7 +32,7 @@ router = APIRouter(tags=["Auth"])
 
 @router.post("/login")
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def login(
     request: Request,
     data: AppUserLogin,
@@ -96,7 +96,7 @@ async def login(
 
 @router.post("/refresh")
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def refresh_token(
     request: Request,
     db: AsyncSession = Depends(get_db),
@@ -170,7 +170,7 @@ async def refresh_token(
 
 @router.post("/logout")
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def logout(
     request: Request,
     db: AsyncSession = Depends(get_db),
@@ -200,7 +200,7 @@ async def logout(
 
 @router.post("/logout-all")
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def logout_all(
     request: Request,
     db: AsyncSession = Depends(get_db),
@@ -219,7 +219,7 @@ async def logout_all(
 
 @router.get("/me")
 @limiter.limit("50/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def me(
     request: Request,
     db: AsyncSession = Depends(get_db),

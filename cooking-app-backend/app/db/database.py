@@ -47,10 +47,13 @@ SESSION_MAKERS = {
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    env = settings.ENVIRONMENT
-    session_maker = SESSION_MAKERS.get(env, SESSION_MAKERS[settings.ENVIRONMENT])
+    session_maker = SESSION_MAKERS[settings.ENVIRONMENT]
     async with session_maker() as session:
-        yield session
+        try:
+            yield session
+        except Exception:
+            await session.rollback()
+            raise
 
 
 async def init_models(engine: AsyncEngine):

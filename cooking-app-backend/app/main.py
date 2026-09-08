@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from sqlalchemy.exc import SQLAlchemyError
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.api import api_router
 
 
+from app.core.exceptiond import sqlalchemy_exception_handler, unexpected_exception_handler
 from app.core.security import DelayMiddleware
 from app.core.security import limiter
 from app.core.config import settings
@@ -39,6 +41,17 @@ class CacheControlMiddleware(BaseHTTPMiddleware):
 # if settings.ENVIRONMENT == "dev":
 #     app.add_middleware(DelayMiddleware, delay=1.0)
 # app.add_middleware(TokenAuthMiddleware)
+
+app.add_exception_handler(
+    SQLAlchemyError,
+    sqlalchemy_exception_handler,
+)
+
+app.add_exception_handler(
+    Exception,
+    unexpected_exception_handler,
+)
+
 app.add_middleware(CacheControlMiddleware)
 
 app.add_middleware(

@@ -19,7 +19,7 @@ router = APIRouter(tags=["ItemCategories"])
 
 @router.post("", response_model=ItemCategoryBase)
 @limiter.limit("5/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def create_item_to_buy(
     request: Request,
     data: ItemCategoryData,
@@ -33,7 +33,7 @@ async def create_item_to_buy(
 
 @router.get("", response_model=list[ItemCategoryBase])
 @limiter.limit("20/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def select_search_category(
     request: Request,
     name: str | None = None,
@@ -45,7 +45,7 @@ async def select_search_category(
 
 @router.get("/ingredient", response_model=ItemCategoryRead)
 @limiter.limit("20/minute")
-@handle_endpoint_errors()
+#@handle_endpoint_errors()
 async def select_search_category(
     request: Request,
     name: str | None = None,

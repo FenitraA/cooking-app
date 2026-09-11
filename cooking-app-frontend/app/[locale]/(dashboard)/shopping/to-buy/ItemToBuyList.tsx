@@ -96,10 +96,6 @@ export default function ItemToBuyListPage({
     units_to_buy: "0",
   });
 
-  // submittting states
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState<string | null>(null);
-
   //  Selection & Gathering States
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isGathering, setIsGathering] = useState(false);
@@ -264,14 +260,12 @@ export default function ItemToBuyListPage({
 
   async function handleSubmit() {
     setError(null);
-    setSuccess(null);
-
     if (!shopping.shopping_date.trim())
       return setError(translations("errors.required_shopping_date"));
     if (!selectedIds || selectedIds.size == 0)
       return setError(translations("errors.required_item_selection"));
 
-    setSubmitting(true);
+    setIsGathering(true);
 
     try {
       let body: ShoppingCreateFromItemsToBuy = {
@@ -280,7 +274,6 @@ export default function ItemToBuyListPage({
       };
       await createShoppingFromItemsToBuy(body);
 
-      setSuccess(translations("success.created"));
       setShopping((v) => ({
         ...v,
         id: "",
@@ -299,7 +292,7 @@ export default function ItemToBuyListPage({
       const msg = getErrorMessage(e);
       setError(translations("errors.create_failed", { message: msg }));
     } finally {
-      setSubmitting(false);
+      setIsGathering(false);
     }
   }
   // Filter section control
@@ -380,9 +373,8 @@ export default function ItemToBuyListPage({
         )}
 
         {/* Select All Bar */}
-        <div className="flex items-center justify-between px-3 py-2 bg-white/5 rounded-lg border border-white/10 text-sm text-gray-300">
-          <button
-            type="button"
+        <div className="relative flex items-center justify-between px-3 py-2 bg-white/5 rounded-lg border border-white/10 text-sm text-gray-300">
+          <div
             onClick={toggleSelectAll}
             className="flex items-center gap-2 hover:text-white transition-colors"
           >
@@ -397,7 +389,7 @@ export default function ItemToBuyListPage({
                   "Deselect All")
                 : (general_translations("actions.select_all") ?? "Select All")}
             </span>
-          </button>
+          </div>
 
           {selectedIds.size > 0 && (
             <span className="text-xs text-custom-sand-dune font-medium">

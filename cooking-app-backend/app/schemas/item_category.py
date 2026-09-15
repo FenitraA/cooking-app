@@ -6,7 +6,7 @@ from app.schemas.validator import reject_empty_string
 
 
 class ItemCategoryData(BaseModel):
-    name: str = Field(example="Nettoyage")
+    name: str = Field(example="Nettoyage",min_length=2)
     code: str = Field(example="INGREDIENT")
 
     _reject_empty = field_validator("name")(reject_empty_string)

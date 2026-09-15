@@ -9,7 +9,7 @@ from app.schemas.validator import reject_empty_string
 
 
 class ItemToBuyData(BaseModel):
-    name: str = Field(example="Tomato", max_length=128)
+    name: str = Field(example="Tomato", max_length=128,min_length=2)
     description: str | None = Field(example="Shopping for groceries...", default=None)
     estimated_unit_price: Decimal = Field(gt=0, example=20000)
     units_to_buy: Decimal = Field(gt=0, example=2)

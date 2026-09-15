@@ -6,7 +6,7 @@ from app.schemas.validator import reject_empty_string
 
 
 class HouseholdData(BaseModel):
-    name: str = Field(example="Rajaonarison", max_length=128)
+    name: str = Field(example="Rajaonarison", max_length=128,min_length=2)
 
     _reject_empty = field_validator("name")(
         reject_empty_string

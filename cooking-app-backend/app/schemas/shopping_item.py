@@ -9,7 +9,7 @@ from app.schemas.validator import reject_empty_string
 
 
 class ShoppingItemData(BaseModel):
-    name: str = Field(example="Tomato", max_length=128)
+    name: str = Field(example="Tomato", max_length=128,min_length=2)
     description: str | None = Field(
         example="Shopping for groceries...",default=None
     )

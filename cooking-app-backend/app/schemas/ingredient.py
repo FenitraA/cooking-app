@@ -8,7 +8,7 @@ from app.schemas.validator import reject_empty_string
 
 
 class IngredientData(BaseModel):
-    name: str = Field(example="Tomato", max_length=128)
+    name: str = Field(example="Tomato", max_length=128,min_length=2)
     unit: str | None = Field(
         default=None,
         description="Used for selection that needs the unit without complexifying the query",

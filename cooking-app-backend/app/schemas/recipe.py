@@ -6,7 +6,7 @@ from app.schemas.validator import reject_empty_string
 
 
 class RecipeData(BaseModel):
-    name: str = Field(example="Pumpkin soup", max_length=128)
+    name: str = Field(example="Pumpkin soup", max_length=128,min_length=2)
     ref_household_id: str | None = Field(description="FK to household.id")
     description: str = Field(
         example="-Cut pumpkin, add salt and pepper, cook for 30min ..."

@@ -4,7 +4,7 @@ from app.schemas.validator import reject_empty_string
 
 
 class IngredientTypeData(BaseModel):
-    name: str = Field(example="Fruit")
+    name: str = Field(example="Fruit",min_length=2)
 
     _reject_empty = field_validator("name")(reject_empty_string)
 

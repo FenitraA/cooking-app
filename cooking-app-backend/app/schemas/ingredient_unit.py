@@ -7,7 +7,7 @@ from app.schemas.validator import reject_empty_string
 
 
 class IngredientUnitData(BaseModel):
-    name: str = Field(example="Gram")
+    name: str = Field(example="Gram",min_length=2)
     symbol: str = Field(example="g")
     multiplier_to_base: Decimal = Field(gt=0,example=1)
     ref_unit_group_id: str = Field(description="FK to unit_group.id")

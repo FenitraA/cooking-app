@@ -56,6 +56,7 @@ class ShoppingCRUD:
         items_to_buy = await item_to_buy_crud_instance.get_by_ids(
             db,
             data.item_to_buy_ids,
+            data.ref_household_id
         )
 
         shopping_items_data = [
@@ -155,7 +156,7 @@ class ShoppingCRUD:
 
         total = await db.scalar(count_query)
 
-        # Get Recipe ingredients
+        # Get shopping items
         shopping_ids = [row[0].id for row in rows]
         shopping_items_batch = (
             await shopping_item_crud_instance.get_shopping_items_batch(db, shopping_ids)

@@ -35,7 +35,11 @@ class ItemToBuyCRUD:
             select(ItemToBuy, ItemCategory, Ingredient)
             .join(ItemCategory, ItemCategory.id == ItemToBuy.ref_item_category_id)
             .outerjoin(Ingredient, Ingredient.id == ItemToBuy.ref_ingredient_id)
-            .where(ItemToBuy.id == item_to_buy_id, ItemToBuy.state > 0, ItemToBuy.state < 10)
+            .where(
+                ItemToBuy.id == item_to_buy_id,
+                ItemToBuy.state > 0,
+                ItemToBuy.state < 10,
+            )
         )
 
         row = result.one_or_none()
@@ -91,8 +95,13 @@ class ItemToBuyCRUD:
         self,
         db: AsyncSession,
         ids: list[str],
+        household_id: str,
     ) -> list[ItemToBuyBase]:
-        result = await db.execute(select(ItemToBuy).where(ItemToBuy.id.in_(ids)))
+        result = await db.execute(
+            select(ItemToBuy).where(
+                ItemToBuy.id.in_(ids), ItemToBuy.ref_household_id == household_id
+            )
+        )
 
         return result.scalars().all()
 

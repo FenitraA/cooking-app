@@ -119,7 +119,7 @@ export async function deleteItemToBuy(
   body: DeleteItemToBuyData,
 ): Promise<ItemToBuyBase> {
   const res = await fetch(`${BASE_URL}/proxy/items-to-buy/delete`, {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(body),
@@ -136,7 +136,7 @@ export async function updateItemToBuy(
   body: ItemToBuyUpdateData,
 ): Promise<ItemToBuyRead> {
   const res = await fetch(`${BASE_URL}/proxy/items-to-buy/update`, {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(body),
@@ -189,7 +189,7 @@ export async function deleteShoppingItem(
   body: DeleteShoppingItemData,
 ): Promise<ShoppingItemBase> {
   const res = await fetch(`${BASE_URL}/proxy/items-to-buy/delete`, {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(body),
@@ -283,7 +283,7 @@ export async function deleteShopping(
   body: DeleteShoppingData,
 ): Promise<ShoppingBase> {
   const res = await fetch(`${BASE_URL}/proxy/items-to-buy/delete`, {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(body),

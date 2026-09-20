@@ -115,7 +115,7 @@ export async function deletePlanningRecipe(
   body: DeletePlanningRecipeData,
 ): Promise<PlanningRecipeBase> {
   const res = await fetch(`${BASE_URL}/proxy/planning/delete`, {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(body),
@@ -132,7 +132,7 @@ export async function updatePlanningRecipe(
   body: PlanningRecipeUpdateData,
 ): Promise<PlanningRecipeRead> {
   const res = await fetch(`${BASE_URL}/proxy/planning/update`, {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(body),

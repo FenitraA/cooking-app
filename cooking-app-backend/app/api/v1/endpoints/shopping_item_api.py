@@ -33,7 +33,7 @@ async def search_shopping_items(
         db, name,ingredient_id,start_date,end_date, offset, limit
     )
     
-@router.put("/delete", response_model=ShoppingItemBase)
+@router.patch("/delete", response_model=ShoppingItemBase)
 @limiter.limit("5/minute")
 #@handle_endpoint_errors()
 async def delete_shopping_item(

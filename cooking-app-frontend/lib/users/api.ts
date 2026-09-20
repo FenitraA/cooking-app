@@ -43,7 +43,7 @@ export async function changeUserPassword(body: AppUserPasswordChange) {
   const res = await fetch(
     `${BASE_URL}/proxy/users/change-password`,
     {
-      method: "PUT",
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify(body),
@@ -60,7 +60,7 @@ export async function changeUsername(body: AppUserUsernameChange) {
   const res = await fetch(
     `${BASE_URL}/proxy/users/change-username`,
     {
-      method: "PUT",
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify(body),

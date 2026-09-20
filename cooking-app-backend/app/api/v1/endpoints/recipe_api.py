@@ -39,7 +39,7 @@ async def create_recipe(
     await db.commit()
     return result
 
-@router.put("/image", response_model=RecipeRead)
+@router.patch("/image", response_model=RecipeRead)
 @limiter.limit("5/minute")
 #@handle_endpoint_errors()
 async def set_recipe_image(
@@ -98,7 +98,7 @@ async def get_recipe(
     return await recipe_crud_instance.get_one(db,household_id, recipe_id)
 
 
-@router.put("/update", response_model=RecipeRead)
+@router.patch("/update", response_model=RecipeRead)
 @limiter.limit("5/minute")
 #@handle_endpoint_errors()
 async def update_recipe(
@@ -156,7 +156,7 @@ async def search_meals(
     household_id  = current_user["ref_household_id"]
     return await meal_crud_instance.get_meal_recipe_setup(db,household_id,recipe_id,nb_serving)
 
-@router.put("/meals/delete", response_model=MealBase)
+@router.patch("/meals/delete", response_model=MealBase)
 @limiter.limit("5/minute")
 #@handle_endpoint_errors()
 async def delete_meal(

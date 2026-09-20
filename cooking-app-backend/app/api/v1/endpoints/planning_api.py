@@ -144,7 +144,7 @@ async def get_planning_recipe(
     return await planning_crud_instance.get_one(db, household_id, planning_recipe_id)
 
 
-@router.put("/delete", response_model=PlanningRecipeBase)
+@router.patch("/delete", response_model=PlanningRecipeBase)
 @limiter.limit("5/minute")
 #@handle_endpoint_errors()
 async def delete_stock(
@@ -161,7 +161,7 @@ async def delete_stock(
     return result
 
 
-@router.put("/update", response_model=PlanningRecipeRead)
+@router.patch("/update", response_model=PlanningRecipeRead)
 @limiter.limit("5/minute")
 #@handle_endpoint_errors()
 async def update_planning_recipe(

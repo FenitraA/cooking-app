@@ -48,7 +48,7 @@ async def create_ingredient(
     return result
 
 
-@router.put("/image", response_model=IngredientRead)
+@router.patch("/image", response_model=IngredientRead)
 @limiter.limit("5/minute")
 #@handle_endpoint_errors()
 async def set_ingredient_image(
@@ -135,7 +135,7 @@ async def get_ingredient(
     return await ingredient_crud_instance.get_one(db, ingredient_id)
 
 
-@router.put("/update", response_model=IngredientRead)
+@router.patch("/update", response_model=IngredientRead)
 @limiter.limit("5/minute")
 #@handle_endpoint_errors()
 async def update_ingredient(
@@ -182,7 +182,7 @@ async def create_stock(
     return result
 
 
-@router.put("/stocks/delete", response_model=IngredientStockBase)
+@router.patch("/stocks/delete", response_model=IngredientStockBase)
 @limiter.limit("5/minute")
 #@handle_endpoint_errors()
 async def delete_stock(

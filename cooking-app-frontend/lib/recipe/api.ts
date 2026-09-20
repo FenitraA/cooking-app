@@ -119,7 +119,7 @@ export async function updateRecipe(
   body: RecipeUpdateData,
 ): Promise<RecipeRead> {
   const res = await fetch(`${BASE_URL}/proxy/recipes/update`, {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(body),
@@ -136,7 +136,7 @@ export async function setRecipeImage(
   body: RecipeImageData,
 ): Promise<RecipeRead> {
   const res = await fetch(`${BASE_URL}/proxy/recipes/image`, {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(body),
@@ -173,7 +173,7 @@ export async function createMeal(
 
 export async function deleteMeal(body: DeleteMealData): Promise<MealBase> {
   const res = await fetch(`${BASE_URL}/proxy/recipes/meals/delete`, {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(body),

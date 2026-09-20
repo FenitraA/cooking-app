@@ -35,7 +35,7 @@ async def register(
     return {"id": user.id, "username": user.username}
 
 
-@router.put(
+@router.patch(
     "/change-password", response_model=AppUserRead, status_code=status.HTTP_201_CREATED
 )
 @limiter.limit("1/hour")
@@ -55,7 +55,7 @@ async def change_password(
     await db.commit()
     return {"id": user.id, "username": user.username}
 
-@router.put(
+@router.patch(
     "/password-reset", response_model=AppUserRead, status_code=status.HTTP_201_CREATED
 )
 @limiter.limit("5/hour")
@@ -77,7 +77,7 @@ async def password_reset(
     return {"id": user.id, "username": user.username}
 
 
-@router.put(
+@router.patch(
     "/change-username", response_model=AppUserRead, status_code=status.HTTP_201_CREATED
 )
 @limiter.limit("1/hour")

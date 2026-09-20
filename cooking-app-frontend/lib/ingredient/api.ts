@@ -144,7 +144,7 @@ export async function updateIngredient(
   body: IngredientUpdateData,
 ): Promise<IngredientRead> {
   const res = await fetch(`${BASE_URL}/proxy/ingredients/update`, {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(body),
@@ -161,7 +161,7 @@ export async function setIngredientImage(
   body: IngredientImageData,
 ): Promise<IngredientRead> {
   const res = await fetch(`${BASE_URL}/proxy/ingredients/image`, {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(body),
@@ -220,7 +220,7 @@ export async function deleteIngredientStock(
   body: DeleteIngredientStockData,
 ): Promise<IngredientStockBase> {
   const res = await fetch(`${BASE_URL}/proxy/ingredients/stocks/delete`, {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(body),

@@ -53,7 +53,7 @@ async def search_items_to_buy(
     )
 
 
-@router.put("/delete", response_model=ItemToBuyBase)
+@router.patch("/delete", response_model=ItemToBuyBase)
 @limiter.limit("20/minute")
 #@handle_endpoint_errors()
 async def delete_item_to_buy(
@@ -70,7 +70,7 @@ async def delete_item_to_buy(
     return result
 
 
-@router.put("/update", response_model=ItemToBuyRead)
+@router.patch("/update", response_model=ItemToBuyRead)
 @limiter.limit("5/minute")
 #@handle_endpoint_errors()
 async def update_ingredient(

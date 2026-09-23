@@ -41,3 +41,13 @@ async def select_search_category(
     current_user=Depends(require_roles(settings.READ_ONLY_ROLE_DENOMINATION)),
 ):
     return await item_category_crud_instance.select_search(db, name)
+
+@router.get("/ingredient", response_model=ItemCategoryRead)
+@limiter.limit("20/minute")
+#@handle_endpoint_errors()
+async def select_search_category(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(require_roles(settings.READ_ONLY_ROLE_DENOMINATION)),
+):
+    return await item_category_crud_instance.get_ingredient_category(db)

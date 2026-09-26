@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import and_, case, func, select
 
+from app.models import IngredientStock
 from app.models.ingredient import Ingredient
 from app.models.ingredient_stock import IngredientStock
 from app.models.ingredient_unit import IngredientUnit
@@ -63,7 +64,7 @@ class IngredientStockCRUD:
 
     async def soft_delete(
         self, db: AsyncSession, household_id: str, ingredient_stock_id: str
-    ) -> IngredientStockBase:
+    ) -> IngredientStock | None:
         ingredient_stock = await db.scalar(
             select(IngredientStock).where(
                 IngredientStock.ref_household_id == household_id,

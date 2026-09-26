@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.api import api_router
 
 
+from app.core.cache import lifespan
 from app.core.exceptiond import sqlalchemy_exception_handler, unexpected_exception_handler
 from app.core.security import DelayMiddleware
 from app.core.security import limiter
@@ -23,6 +24,7 @@ app = FastAPI(
     title="Cooking App",
     description="A FastAPI backend for the cooking webapp",
     debug=True,
+    lifespan=lifespan
 )
 
 

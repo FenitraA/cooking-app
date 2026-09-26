@@ -1,5 +1,6 @@
 
 from fastapi import APIRouter, Depends, Request
+from fastapi_cache.decorator import cache
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.decorators import handle_endpoint_errors
@@ -28,6 +29,7 @@ async def create_household(
     return result
 
 @router.get("/select", response_model=list[HouseholdBase])
+@cache(expire=60 * 5)
 @limiter.limit("5/minute")
 #@handle_endpoint_errors()
 async def autocomplete_ingredients(

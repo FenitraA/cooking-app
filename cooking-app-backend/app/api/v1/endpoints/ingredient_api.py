@@ -2,6 +2,8 @@ import cloudinary
 import cloudinary.uploader
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 import asyncio
+
+from fastapi_cache.decorator import cache
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.decorators import handle_endpoint_errors
@@ -80,6 +82,7 @@ async def set_ingredient_image(
 
 
 @router.get("", response_model=IngredientSearchResult)
+@cache(expire=60 * 60)
 @limiter.limit("20/minute")
 #@handle_endpoint_errors()
 async def list_ingredients(
@@ -100,6 +103,7 @@ async def list_ingredients(
 
 
 @router.get("/types", response_model=list[IngredientTypeRead])
+@cache(expire=60 * 60 * 24)
 @limiter.limit("20/minute")
 #@handle_endpoint_errors()
 async def list_types(
@@ -112,6 +116,7 @@ async def list_types(
 
 
 @router.get("/units", response_model=list[IngredientUnitRead])
+@cache(expire=60 * 60 * 24)
 @limiter.limit("20/minute")
 #@handle_endpoint_errors()
 async def list_units(
@@ -124,6 +129,7 @@ async def list_units(
 
 
 @router.get("/one", response_model=IngredientRead)
+@cache(expire=60 * 60 * 24)
 @limiter.limit("10/minute")
 #@handle_endpoint_errors()
 async def get_ingredient(
@@ -153,6 +159,7 @@ async def update_ingredient(
 
 
 @router.get("/stocks", response_model=list[IngredientStockRead])
+@cache(expire=60)
 @limiter.limit("10/minute")
 #@handle_endpoint_errors()
 async def get_stock(
@@ -203,6 +210,7 @@ async def delete_stock(
 
 
 @router.get("/sellers", response_model=list[SellerRead])
+@cache(expire=60 * 60 * 24)
 @limiter.limit("20/minute")
 #@handle_endpoint_errors()
 async def list_sellers(
@@ -215,6 +223,7 @@ async def list_sellers(
 
 
 @router.get("/select", response_model=list[IngredientBase])
+@cache(expire=60 * 5)
 @limiter.limit("20/minute")
 #@handle_endpoint_errors()
 async def autocomplete_ingredients(

@@ -83,23 +83,6 @@ class PlanningCRUD:
         end_of_week: date,
     ) -> list[PlanningRecipeRead]:
 
-        # meal_done_subquery = select(
-        #     PlanningRecipe.id.label("planning_id"),
-        #     case(
-        #         (
-        #             exists().where(
-        #                 and_(
-        #                     Meal.ref_recipe_id == PlanningRecipe.ref_recipe_id,
-        #                     func.date(Meal.created_at)
-        #                     == func.date(PlanningRecipe.created_at),
-        #                 )
-        #             ),
-        #             True,
-        #         ),
-        #         else_=False,
-        #     ).label("is_done"),
-        # ).subquery()
-
         query = (
             select(
                 PlanningRecipe,

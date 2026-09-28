@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, Request
+from fastapi_cache import FastAPICache
+from fastapi_cache.decorator import cache
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.decorators import handle_endpoint_errors
+from app.api.v1.cache_utils import household_aware_key_builder
 from app.core.security import require_roles
 from app.core.security import limiter
 from app.core.config import settings
@@ -28,11 +30,14 @@ async def create_item_to_buy(
 ):
     result = await item_category_crud_instance.create(db, data)
     await db.commit()
+    await FastAPICache.clear(namespace="item_categories:list")
+    await FastAPICache.clear(namespace="item_categories:ingredient")
     return result
 
 
 @router.get("", response_model=list[ItemCategoryBase])
 @limiter.limit("20/minute")
+@cache(expire=60 * 60, namespace="item_categories:list", key_builder=household_aware_key_builder)
 # @handle_endpoint_errors()
 async def select_search_category(
     request: Request,
@@ -45,6 +50,7 @@ async def select_search_category(
 
 @router.get("/ingredient", response_model=ItemCategoryRead)
 @limiter.limit("20/minute")
+@cache(expire=60 * 60, namespace="item_categories:ingredient", key_builder=household_aware_key_builder)
 # @handle_endpoint_errors()
 async def select_search_category(
     request: Request,

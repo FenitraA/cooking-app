@@ -1,10 +1,12 @@
 from datetime import date
 
 from fastapi import APIRouter, Depends, Query, Request
+from fastapi_cache import FastAPICache
+from fastapi_cache.decorator import cache
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.decorators import handle_endpoint_errors
+from app.api.v1.cache_utils import household_aware_key_builder
 from app.core.security import require_roles
 from app.core.security import limiter
 from app.crud.recipe_crud import recipe_crud_instance
@@ -37,6 +39,8 @@ async def create_recipe(
     data.ref_household_id  = current_user["ref_household_id"]
     result = await recipe_crud_instance.create(db, data)
     await db.commit()
+    await FastAPICache.clear(namespace="recipes:list")
+    await FastAPICache.clear(namespace="recipes:select")
     return result
 
 @router.patch("/image", response_model=RecipeRead)
@@ -52,10 +56,13 @@ async def set_recipe_image(
     household_id  = current_user["ref_household_id"]
     result = await recipe_crud_instance.set_image(db,household_id, data)
     await db.commit()
+    await FastAPICache.clear(namespace="recipes:list")
+    await FastAPICache.clear(namespace="recipes:detail")
     return result
 
 @router.get("", response_model=RecipeSearchResult)
 @limiter.limit("10/minute")
+@cache(expire=60 * 15, namespace="recipes:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def search_recipes(
     request : Request,
@@ -74,6 +81,7 @@ async def search_recipes(
 
 @router.get("/select", response_model=list[RecipeBase])
 @limiter.limit("20/minute")
+@cache(expire=60 * 15, namespace="recipes:select", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def autocomplete_recipes(
     request: Request,
@@ -87,6 +95,7 @@ async def autocomplete_recipes(
 
 @router.get("/one", response_model=RecipeRead)
 @limiter.limit("10/minute")
+@cache(expire=60 * 15, namespace="recipes:detail", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def get_recipe(
     request : Request,
@@ -110,6 +119,10 @@ async def update_recipe(
     household_id  = current_user["ref_household_id"]
     result = await recipe_crud_instance.update(db,household_id, data)
     await db.commit()
+    await FastAPICache.clear(namespace="recipes:list")
+    await FastAPICache.clear(namespace="recipes:select")
+    await FastAPICache.clear(namespace="recipes:detail")
+    await FastAPICache.clear(namespace="meals:setup")
     return result
 
 
@@ -124,10 +137,12 @@ async def create_meal(
 ):
     result = await meal_crud_instance.create(db, data)
     await db.commit()
+    await FastAPICache.clear(namespace="meals:list")
     return result
 
 @router.get("/meals", response_model=MealSearchResult)
 @limiter.limit("10/minute")
+@cache(expire=60 * 5, namespace="meals:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def search_meals(
     request : Request,
@@ -145,6 +160,7 @@ async def search_meals(
     
 @router.get("/meals/initial-setup", response_model=list[MealIngredientRead])
 @limiter.limit("10/minute")
+@cache(expire=60 * 5, namespace="meals:setup", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def search_meals(
     request : Request,
@@ -167,4 +183,5 @@ async def delete_meal(
 ):
     result = await meal_crud_instance.soft_delete(db, delete_data.meal_id)
     await db.commit()
+    await FastAPICache.clear(namespace="meals:list")
     return result

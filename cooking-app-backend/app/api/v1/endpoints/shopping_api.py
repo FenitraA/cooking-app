@@ -1,9 +1,11 @@
 from datetime import date
 
 from fastapi import APIRouter, Depends, Request
+from fastapi_cache import FastAPICache
+from fastapi_cache.decorator import cache
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.decorators import handle_endpoint_errors
+from app.api.v1.cache_utils import household_aware_key_builder
 from app.core.security import require_roles
 from app.core.security import limiter
 from app.core.config import settings
@@ -33,6 +35,7 @@ async def create_shopping(
     data.ref_household_id = current_user["ref_household_id"]
     result = await shopping_crud_instance.create(db, data)
     await db.commit()
+    await FastAPICache.clear(namespace="shoppings:list")
     return result
 
 
@@ -48,11 +51,14 @@ async def create_shopping_from_items_to_buy(
     data.ref_household_id = current_user["ref_household_id"]
     result = await shopping_crud_instance.create_from_items_to_buy(db, data)
     await db.commit()
+    await FastAPICache.clear(namespace="shoppings:list")
+    await FastAPICache.clear(namespace="items_to_buy:list")
     return result
 
 
 @router.get("", response_model=ShoppingSearchResult)
 @limiter.limit("10/minute")
+@cache(expire=60 * 5, namespace="shoppings:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def search_shoppings(
     request: Request,
@@ -86,4 +92,5 @@ async def delete_shopping(
         db, household_id, delete_data.shopping_id
     )
     await db.commit()
+    await FastAPICache.clear(namespace="shoppings:list")
     return result

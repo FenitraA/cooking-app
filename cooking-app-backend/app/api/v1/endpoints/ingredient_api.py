@@ -3,10 +3,11 @@ import cloudinary.uploader
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 import asyncio
 
-from fastapi_cache.decorator import cache
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.decorators import handle_endpoint_errors
+from fastapi_cache import FastAPICache
+from fastapi_cache.decorator import cache
+from app.api.v1.cache_utils import household_aware_key_builder
 from app.core.security import require_roles
 from app.core.security import limiter
 from app.crud.seller_crud import seller_crud_instance
@@ -31,10 +32,9 @@ from app.schemas.ingredient_type import IngredientTypeRead
 from app.schemas.ingredient_unit import IngredientUnitRead
 from app.schemas.seller import SellerRead
 from app.core.config import settings
-from app.services.general_service import get_cloudinary_config
+
 
 router = APIRouter(tags=["Ingredients"])
-
 
 @router.post("", response_model=IngredientBase)
 @limiter.limit("5/minute")
@@ -47,6 +47,10 @@ async def create_ingredient(
 ):
     result = await ingredient_crud_instance.create(db, data)
     await db.commit()
+
+    await FastAPICache.clear(namespace="ingredients:list")
+    await FastAPICache.clear(namespace="ingredients:select")
+
     return result
 
 
@@ -77,13 +81,16 @@ async def set_ingredient_image(
         res = await asyncio.to_thread(
             cloudinary.uploader.destroy, old_storage_key, invalidate=True
         )
-    # Change image
+
+    await FastAPICache.clear(namespace="ingredients:list")
+    await FastAPICache.clear(namespace="ingredients:detail")
+
     return result
 
 
 @router.get("", response_model=IngredientSearchResult)
-@cache(expire=60 * 60)
 @limiter.limit("20/minute")
+@cache(expire=60 * 60, namespace="ingredients:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def list_ingredients(
     request: Request,
@@ -103,8 +110,8 @@ async def list_ingredients(
 
 
 @router.get("/types", response_model=list[IngredientTypeRead])
-@cache(expire=60 * 60 * 24)
 @limiter.limit("20/minute")
+@cache(expire=60 * 60 * 24, namespace="ingredient_types:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def list_types(
     request: Request,
@@ -116,8 +123,8 @@ async def list_types(
 
 
 @router.get("/units", response_model=list[IngredientUnitRead])
-@cache(expire=60 * 60 * 24)
 @limiter.limit("20/minute")
+@cache(expire=60 * 60 * 24, namespace="ingredient_units:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def list_units(
     request: Request,
@@ -129,8 +136,8 @@ async def list_units(
 
 
 @router.get("/one", response_model=IngredientRead)
-@cache(expire=60 * 60 * 24)
 @limiter.limit("10/minute")
+@cache(expire=60 * 60 * 24, namespace="ingredients:detail", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def get_ingredient(
     request: Request,
@@ -152,6 +159,9 @@ async def update_ingredient(
 ):
     result = await ingredient_crud_instance.update(db, data)
     await db.commit()
+    await FastAPICache.clear(namespace="ingredients:list")
+    await FastAPICache.clear(namespace="ingredients:select")
+    await FastAPICache.clear(namespace="ingredients:detail")
     return result
 
 
@@ -159,8 +169,8 @@ async def update_ingredient(
 
 
 @router.get("/stocks", response_model=list[IngredientStockRead])
-@cache(expire=60)
 @limiter.limit("10/minute")
+@cache(expire=60, namespace="ingredient_stocks:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def get_stock(
     request: Request,
@@ -186,6 +196,7 @@ async def create_stock(
     data.ref_household_id = current_user["ref_household_id"]
     result = await ingredient_stock_crud_instance.create(db, data)
     await db.commit()
+    await FastAPICache.clear(namespace="ingredient_stocks:list")
     return result
 
 
@@ -203,6 +214,7 @@ async def delete_stock(
         db, household_id, delete_data.ingredient_stock_id
     )
     await db.commit()
+    await FastAPICache.clear(namespace="ingredient_stocks:list")
     return result
 
 
@@ -210,8 +222,8 @@ async def delete_stock(
 
 
 @router.get("/sellers", response_model=list[SellerRead])
-@cache(expire=60 * 60 * 24)
 @limiter.limit("20/minute")
+@cache(expire=60 * 60 * 24, namespace="sellers:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def list_sellers(
     request: Request,
@@ -223,8 +235,8 @@ async def list_sellers(
 
 
 @router.get("/select", response_model=list[IngredientBase])
-@cache(expire=60 * 5)
 @limiter.limit("20/minute")
+@cache(expire=60 * 5, namespace="ingredients:select", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def autocomplete_ingredients(
     request: Request,

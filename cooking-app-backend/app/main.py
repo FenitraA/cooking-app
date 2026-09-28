@@ -5,9 +5,8 @@ from starlette.requests import Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.api import api_router
+from app.api.v1.cache_utils import lifespan
 
-
-from app.core.cache import lifespan
 from app.core.exceptiond import sqlalchemy_exception_handler, unexpected_exception_handler
 from app.core.security import DelayMiddleware
 from app.core.security import limiter

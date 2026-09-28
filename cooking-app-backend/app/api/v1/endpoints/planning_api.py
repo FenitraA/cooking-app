@@ -2,9 +2,11 @@ from datetime import date, timedelta
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
+from fastapi_cache import FastAPICache
+from fastapi_cache.decorator import cache
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.decorators import handle_endpoint_errors
+from app.api.v1.cache_utils import household_aware_key_builder
 from app.core.security import require_roles
 from app.core.security import limiter
 from app.crud.planning_crud import planning_crud_instance
@@ -13,10 +15,8 @@ from app.schemas.planning_recipe import (
     DeletePlanningData,
     PlanningRecipeBase,
     PlanningRecipeCreate,
-    PlanningRecipeData,
     PlanningRecipeRead,
     PlanningRecipeUpdateData,
-    PlanningRepartition,
     PlanningResult,
 )
 from app.services.planning_service import (
@@ -41,11 +41,13 @@ async def create_planning_recipe(
     data.ref_household_id = current_user["ref_household_id"]
     result = await planning_crud_instance.create_many(db, data)
     await db.commit()
+    await FastAPICache.clear(namespace="plannings:list")
     return result
 
 
 @router.get("/weekly", response_model=PlanningResult)
 @limiter.limit("30/minute")
+@cache(expire=60 * 5, namespace="plannings:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def get_planning_weekly(
     request: Request,
@@ -73,6 +75,7 @@ async def get_planning_weekly(
     
 @router.get("/by-dates", response_model=PlanningResult)
 @limiter.limit("30/minute")
+@cache(expire=60 * 5, namespace="plannings:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def get_planning_from_dates(
     request: Request,
@@ -100,6 +103,7 @@ async def get_planning_from_dates(
 
 @router.get("", response_model=PlanningResult)
 @limiter.limit("30/minute")
+@cache(expire=60 * 5, namespace="plannings:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def get_planning(
     request: Request,
@@ -133,6 +137,7 @@ async def get_planning(
 
 @router.get("/one", response_model=PlanningRecipeRead)
 @limiter.limit("10/minute")
+@cache(expire=60 * 5, namespace="plannings:detail", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def get_planning_recipe(
     request: Request,
@@ -158,6 +163,8 @@ async def delete_stock(
         db, household_id, delete_data.planning_recipe_id
     )
     await db.commit()
+    await FastAPICache.clear(namespace="plannings:list")
+    await FastAPICache.clear(namespace="plannings:detail")
     return result
 
 
@@ -173,6 +180,8 @@ async def update_planning_recipe(
     household_id = current_user["ref_household_id"]
     result = await planning_crud_instance.update(db, household_id, data)
     await db.commit()
+    await FastAPICache.clear(namespace="plannings:list")
+    await FastAPICache.clear(namespace="plannings:detail")
     return result
 
 

@@ -57,7 +57,7 @@ async def create_shopping_from_items_to_buy(
 
 
 @router.get("", response_model=ShoppingSearchResult)
-@limiter.limit("10/minute")
+@limiter.limit("30/minute")
 @cache(expire=60 * 5, namespace="shoppings:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def search_shoppings(

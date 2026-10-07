@@ -89,7 +89,7 @@ async def set_ingredient_image(
 
 
 @router.get("", response_model=IngredientSearchResult)
-@limiter.limit("20/minute")
+@limiter.limit("30/minute")
 @cache(expire=60 * 60, namespace="ingredients:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def list_ingredients(
@@ -110,7 +110,7 @@ async def list_ingredients(
 
 
 @router.get("/types", response_model=list[IngredientTypeRead])
-@limiter.limit("20/minute")
+@limiter.limit("30/minute")
 @cache(expire=60 * 60 * 24, namespace="ingredient_types:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def list_types(
@@ -123,7 +123,7 @@ async def list_types(
 
 
 @router.get("/units", response_model=list[IngredientUnitRead])
-@limiter.limit("20/minute")
+@limiter.limit("30/minute")
 @cache(expire=60 * 60 * 24, namespace="ingredient_units:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def list_units(
@@ -136,7 +136,7 @@ async def list_units(
 
 
 @router.get("/one", response_model=IngredientRead)
-@limiter.limit("10/minute")
+@limiter.limit("30/minute")
 @cache(expire=60 * 60 * 24, namespace="ingredients:detail", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def get_ingredient(
@@ -169,7 +169,7 @@ async def update_ingredient(
 
 
 @router.get("/stocks", response_model=list[IngredientStockRead])
-@limiter.limit("10/minute")
+@limiter.limit("30/minute")
 @cache(expire=60, namespace="ingredient_stocks:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def get_stock(
@@ -222,7 +222,7 @@ async def delete_stock(
 
 
 @router.get("/sellers", response_model=list[SellerRead])
-@limiter.limit("20/minute")
+@limiter.limit("30/minute")
 @cache(expire=60 * 60 * 24, namespace="sellers:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def list_sellers(
@@ -235,7 +235,7 @@ async def list_sellers(
 
 
 @router.get("/select", response_model=list[IngredientBase])
-@limiter.limit("20/minute")
+@limiter.limit("30/minute")
 @cache(expire=60 * 5, namespace="ingredients:select", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def autocomplete_ingredients(

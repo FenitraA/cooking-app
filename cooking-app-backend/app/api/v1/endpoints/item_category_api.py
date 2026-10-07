@@ -36,7 +36,7 @@ async def create_item_to_buy(
 
 
 @router.get("", response_model=list[ItemCategoryBase])
-@limiter.limit("20/minute")
+@limiter.limit("30/minute")
 @cache(expire=60 * 60, namespace="item_categories:list", key_builder=household_aware_key_builder)
 # @handle_endpoint_errors()
 async def select_search_category(
@@ -49,7 +49,7 @@ async def select_search_category(
 
 
 @router.get("/ingredient", response_model=ItemCategoryRead)
-@limiter.limit("20/minute")
+@limiter.limit("30/minute")
 @cache(expire=60 * 60, namespace="item_categories:ingredient", key_builder=household_aware_key_builder)
 # @handle_endpoint_errors()
 async def select_search_category(

@@ -19,7 +19,7 @@ from app.schemas.shopping_item import DeleteShoppingItemData, ShoppingItemBase, 
 router = APIRouter(tags=["ShoppingItems"])
 
 @router.get("", response_model=ShoppingItemSearchResult)
-@limiter.limit("10/minute")
+@limiter.limit("30/minute")
 @cache(expire=60 * 5, namespace="shopping_items:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def search_shopping_items(

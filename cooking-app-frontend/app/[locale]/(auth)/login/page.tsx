@@ -118,21 +118,6 @@ export default function LoginPage() {
                 </p>
               )}
             </form>
-
-            {/* <div className="relative h-5 w-full p-4 mt-8">
-              <span className="absolute -top-3 left-1/2 px-4 transform -translate-x-1/2 text-md font-semibold font-sans text-custom-selective-yellow pointer-events-none">
-                Or
-              </span>
-              <div className="absolute top-0 right-0 w-2/5 border-t border-custom-gray-blue pointer-events-none transform translate-z-0" />
-              <div className="absolute top-0 left-0 w-2/5 border-t border-custom-gray-blue pointer-events-none transform translate-z-0" />
-            </div>
-
-            <button
-              onClick={() => router.push("/auth/register")}
-              className="w-full bg-custom-gray-blue text-white p-2 rounded-xl hover:bg-blue-700 cursor-pointer"
-            >
-              Register
-            </button> */}
           </div>
         </div>
       </div>

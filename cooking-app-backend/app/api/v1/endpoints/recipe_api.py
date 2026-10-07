@@ -44,7 +44,7 @@ async def create_recipe(
     return result
 
 @router.patch("/image", response_model=RecipeRead)
-@limiter.limit("5/minute")
+@limiter.limit("30/minute")
 #@handle_endpoint_errors()
 async def set_recipe_image(
     request: Request,
@@ -61,7 +61,7 @@ async def set_recipe_image(
     return result
 
 @router.get("", response_model=RecipeSearchResult)
-@limiter.limit("10/minute")
+@limiter.limit("30/minute")
 @cache(expire=60 * 15, namespace="recipes:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def search_recipes(
@@ -80,7 +80,7 @@ async def search_recipes(
     )
 
 @router.get("/select", response_model=list[RecipeBase])
-@limiter.limit("20/minute")
+@limiter.limit("30/minute")
 @cache(expire=60 * 15, namespace="recipes:select", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def autocomplete_recipes(
@@ -94,7 +94,7 @@ async def autocomplete_recipes(
 
 
 @router.get("/one", response_model=RecipeRead)
-@limiter.limit("10/minute")
+@limiter.limit("30/minute")
 @cache(expire=60 * 15, namespace="recipes:detail", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def get_recipe(
@@ -141,7 +141,7 @@ async def create_meal(
     return result
 
 @router.get("/meals", response_model=MealSearchResult)
-@limiter.limit("10/minute")
+@limiter.limit("30/minute")
 @cache(expire=60 * 5, namespace="meals:list", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def search_meals(
@@ -159,7 +159,7 @@ async def search_meals(
     )
     
 @router.get("/meals/initial-setup", response_model=list[MealIngredientRead])
-@limiter.limit("10/minute")
+@limiter.limit("30/minute")
 @cache(expire=60 * 5, namespace="meals:setup", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def search_meals(

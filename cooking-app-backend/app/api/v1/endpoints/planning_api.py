@@ -136,7 +136,7 @@ async def get_planning(
 
 
 @router.get("/one", response_model=PlanningRecipeRead)
-@limiter.limit("10/minute")
+@limiter.limit("30/minute")
 @cache(expire=60 * 5, namespace="plannings:detail", key_builder=household_aware_key_builder)
 #@handle_endpoint_errors()
 async def get_planning_recipe(

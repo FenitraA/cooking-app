@@ -29,12 +29,12 @@ export default function IngredientChoice({
   const [error, setError] = useState<string | null>(null);
   const [selectedIngredient, setSelectedIngredient] =
     useState<IngredientBase | null>(null);
-  const [quantity, setQuantityPerServing] = useState(0);
+  const [quantity, setQuantityPerServing] = useState("0");
 
   function addItem() {
     if (!selectedIngredient) return;
 
-    if (!quantity || quantity <= 0)
+    if (!quantity ||  Number(quantity) <=0)
       return setError(translations("errors.required_quantity"));
     const exists = values.some(
       (item) => item.ref_ingredient_id === selectedIngredient.id,
@@ -58,7 +58,7 @@ export default function IngredientChoice({
     onChange([...values, listItem]);
 
     setSelectedIngredient(null);
-    setQuantityPerServing(0);
+    setQuantityPerServing("0");
   }
 
   function removeItem(itemToRemove: RecipeIngredientBase) {
@@ -96,9 +96,10 @@ export default function IngredientChoice({
           <Field
             type="decimal"
             value={String(quantity ?? "")}
-            onChange={(v) => setQuantityPerServing(Number(v))}
+            onChange={(v) => setQuantityPerServing(v)}
             placeholder={translations("fields.quantity_per_serving")}
           />
+          
           <div className="bg-white/10 border border-white/20 rounded-lg h-10 w-10 flex items-center justify-center text-gray-300 text-sm">
             {selectedIngredient?.unit}
           </div>

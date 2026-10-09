@@ -72,7 +72,7 @@ export default function MealCreatePage({
         if (!idRecipeParam) return;
 
         const recipe = await fetchRecipeById(idRecipeParam);
-        
+
         if (nbServingParam) {
           const value = Number(nbServingParam);
 
@@ -208,6 +208,7 @@ export default function MealCreatePage({
         />
         <div className="flex flex-row gap-6 items-end">
           <Field
+            id="nb_serving"
             label={translations("fields.nb_serving")}
             type="decimal"
             className="w-full sm:min-w-40"
@@ -242,8 +243,8 @@ export default function MealCreatePage({
         className="border-b border-white/20 pb-4 mx-4"
       />
       <div className="text-sm text-gray-300 mx-4">
-        <span className="underline">{general_translations("total_cost")}</span> :{" "}
-        {formatNumberToCurrency(totalPrice)}
+        <span className="underline">{general_translations("total_cost")}</span>{" "}
+        : {formatNumberToCurrency(totalPrice)}
       </div>
       <div className="flex flex-col space-y-3 pb-4 mx-4">
         <Button

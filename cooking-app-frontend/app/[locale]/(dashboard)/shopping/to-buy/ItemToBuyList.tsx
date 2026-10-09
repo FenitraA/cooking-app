@@ -438,6 +438,7 @@ export default function ItemToBuyListPage({
                         {editingId === item.item_to_buy.id ? (
                           <div className="w-20 sm:w-24">
                             <Field
+                              id="estimatedUnitPrice"
                               type="decimal"
                               value={editData.estimated_unit_price}
                               onChange={(v) =>
@@ -461,6 +462,7 @@ export default function ItemToBuyListPage({
                         {editingId === item.item_to_buy.id ? (
                           <div className="w-16 sm:w-20">
                             <Field
+                              id=""
                               type="decimal"
                               value={editData.units_to_buy}
                               onChange={(v) =>
@@ -548,6 +550,7 @@ export default function ItemToBuyListPage({
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto flex-1">
               <div className="w-full flex-1">
                 <Field
+                  id="description"
                   className="w-full"
                   value={shopping.description}
                   onChange={(v) =>
@@ -558,6 +561,7 @@ export default function ItemToBuyListPage({
               </div>
               <div className="w-full sm:w-40 shrink-0">
                 <Field
+                  id="shoppingDate"
                   className="w-full"
                   type="date"
                   value={shopping.shopping_date}

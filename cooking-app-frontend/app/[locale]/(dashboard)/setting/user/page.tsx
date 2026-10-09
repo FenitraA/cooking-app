@@ -144,6 +144,7 @@ export default function AccountSettingsForm() {
 
       <form onSubmit={submitUsername} className="space-y-4">
         <Field
+          id="new_username"
           label={translations("fields.new_username")}
           value={newUsername}
           onChange={setNewUsername}
@@ -166,9 +167,9 @@ export default function AccountSettingsForm() {
       <div className="border-t" />
 
       <form onSubmit={submitPassword} className="space-y-4">
-
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <Field
+            id="oldPassword"
             label={translations("fields.old_password")}
             value={oldPassword}
             onChange={setOldPassword}
@@ -176,6 +177,7 @@ export default function AccountSettingsForm() {
             type="password"
           />
           <Field
+            id="newPassword"
             label={translations("fields.new_password")}
             value={newPassword}
             onChange={setNewPassword}
@@ -183,6 +185,7 @@ export default function AccountSettingsForm() {
             type="password"
           />
           <Field
+            id="confirmNewPassword"
             label={translations("fields.confirm_new_password")}
             value={confirmNewPassword}
             onChange={setConfirmNewPassword}

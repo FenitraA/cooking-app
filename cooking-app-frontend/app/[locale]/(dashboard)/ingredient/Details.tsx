@@ -252,6 +252,7 @@ export default function IngredientDetailsPage({
       >
         <div className="flex flex-row gap-6 p-3 sm:p-6 items-end flex-wrap">
           <Field
+            id="name"
             className="w-full"
             label={translations("fields.name")}
             value={ingredient.name}
@@ -278,6 +279,7 @@ export default function IngredientDetailsPage({
           />
 
           <Field
+            id="estimated_price"
             className="w-full"
             label={translations("fields.estimated_price")}
             value={String(ingredient.estimated_price || "")}
@@ -304,6 +306,7 @@ export default function IngredientDetailsPage({
             fetchOptions={fetchIngredientTypes}
           />
           <Field
+            id="quantity_left"
             className="w-full"
             label={translations("fields.quantity_left")}
             value={String(quantityLeft || "")}

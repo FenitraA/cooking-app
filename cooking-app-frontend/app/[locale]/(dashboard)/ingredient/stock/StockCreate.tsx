@@ -109,6 +109,7 @@ export default function IngredientStockCreatePage({
           fetchOptions={fetchSellers}
         />
         <Field
+          id="quantity"
           label={translations("fields.quantity")}
           type="decimal"
           value={String(newIngredientStock?.quantity || "")}
@@ -121,6 +122,7 @@ export default function IngredientStockCreatePage({
           placeholder={translations("fields.quantity")}
         />
         <Field
+          id="unit_cost"
           label={translations("fields.unit_cost")}
           type="decimal"
           value={String(newIngredientStock?.unit_cost || "")}

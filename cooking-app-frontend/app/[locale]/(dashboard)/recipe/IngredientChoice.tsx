@@ -94,6 +94,7 @@ export default function IngredientChoice({
 
         <div className="flex flex-row items-end justify-start gap-2">
           <Field
+            id="quantity"
             type="decimal"
             value={String(quantity ?? "")}
             onChange={(v) => setQuantityPerServing(v)}

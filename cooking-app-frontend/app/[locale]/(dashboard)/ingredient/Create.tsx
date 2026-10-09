@@ -159,6 +159,7 @@ export default function IngredientCreatePage({
       >
         <div className="flex flex-row justify-left gap-6 items-end flex-wrap">
           <Field
+            id="name"
             className="w-full"
             label={translations("fields.name")}
             value={ingredient.name}
@@ -183,6 +184,7 @@ export default function IngredientCreatePage({
             fetchOptions={fetchIngredientUnits}
           />
           <Field
+            id="estimated_price"
             className="w-full"
             type="decimal"
             label={translations("fields.estimated_price")}

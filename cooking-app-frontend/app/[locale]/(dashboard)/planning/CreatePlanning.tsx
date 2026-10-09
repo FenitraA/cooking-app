@@ -119,6 +119,7 @@ export default function CreatePlanning({
               fetchOptions={fetchRecipeByName}
             />
             <Field
+              id="nb_serving"
               label={translations("fields.nb_serving")}
               type="decimal"
               className="w-full lg:min-w-50"

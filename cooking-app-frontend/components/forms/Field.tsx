@@ -1,16 +1,20 @@
 export default function Field({
+  id,
   type = "text",
   label,
   value,
   onChange,
+  error,
   placeholder,
   className,
   isDisabled = false,
 }: {
+  id: string;
   type?: string;
   label?: string;
   value: string;
   onChange: (v: string) => void;
+  error?: string;
   placeholder?: string;
   className?: string;
   isDisabled?: boolean;
@@ -39,14 +43,28 @@ export default function Field({
       )}
 
       <input
+        id={id}
         type={type === "decimal" ? "text" : type}
         inputMode={type === "decimal" ? "decimal" : undefined}
-        className="mt-1 h-10 w-full rounded-lg border bg-white/10 text-sm text-white border-white/20 outline-none px-3 focus:ring-2 focus:ring-black/10"
+        className={`
+          w-full text-white bg-white/5 border rounded-xl px-4 py-2.5 
+          transition-all duration-200 outline-none
+          placeholder:text-gray-500 disabled:opacity-50
+          ${error 
+            ? "border-red-500 focus:ring-2 focus:ring-red-500/50" 
+            : "border-white/20 focus:border-custom-sand-dune focus:ring-2 focus:ring-custom-sand-dune/30 hover:bg-white/10"
+          }
+        `}
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
         disabled={isDisabled}
       />
+      {error && (
+        <p className="text-red-400 text-xs mt-1.5 font-medium animate-pulse">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

@@ -95,7 +95,7 @@ export default function PlanningDetails({
         setInitialValues(item.planning_recipe);
         setSelectedRecipe(item.recipe);
         setPlanningRecipe((p) => ({ ...p, ...item.planning_recipe }));
-        setTotalPrice(item.estimated_cost_price)
+        setTotalPrice(item.estimated_cost_price);
         setIngredients(item.recipe_ingredients);
       } catch (e: unknown) {
         if (cancelled) return;
@@ -198,6 +198,7 @@ export default function PlanningDetails({
             fetchOptions={fetchRecipeByName}
           />
           <Field
+            id="nb_serving"
             label={translations("fields.nb_serving")}
             type="decimal"
             className="w-full min-w-50"
@@ -210,6 +211,7 @@ export default function PlanningDetails({
             }
           />
           <Field
+            id="planning_date"
             label={translations("fields.planning_date")}
             type="date"
             className="w-full min-w-50"

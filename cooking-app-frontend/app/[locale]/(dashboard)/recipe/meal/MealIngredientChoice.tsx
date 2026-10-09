@@ -41,15 +41,15 @@ export default function MealIngredientChoice({
     useState<IngredientBase | null>(null);
   const [selectedIngredientStock, setSelectedIngredientStock] =
     useState<IngredientStockRead | null>(null);
-  const [quantityUsed, setQuantityUsed] = useState(0);
+  const [quantityPerService, setQuantityPerServing] = useState(0);
 
   function addItem() {
     setError(null);
     if (!selectedIngredientStock) return;
 
-    if (!quantityUsed || quantityUsed <= 0)
+    if (!quantityPerService || quantityPerService <= 0)
       return setError(translations("errors.required_quantity"));
-    if (quantityUsed > selectedIngredientStock.quantity_left)
+    if (quantityPerService > selectedIngredientStock.quantity_left)
       return setError(translations("errors.not_enough_stock"));
     const exists = values.some(
       (item) =>
@@ -70,15 +70,15 @@ export default function MealIngredientChoice({
       ingredient_name: selectedIngredientStock.ingredient_name,
       ingredient_unit: selectedIngredientStock.ingredient_unit,
       total_price:
-        String(quantityUsed * Number(selectedIngredientStock.ingredient_stock.unit_cost)),
+        String(quantityPerService * Number(selectedIngredientStock.ingredient_stock.unit_cost)),
       stock_description: getIngredientStockNameSimple(selectedIngredientStock), // optional, only for reads
-      quantity: String(quantityUsed),
+      quantity: String(quantityPerService),
     };
 
     onChange([...values, listItem]);
 
     setSelectedIngredientStock(null);
-    setQuantityUsed(0);
+    setQuantityPerServing(0);
   }
 
   function removeItem(itemToRemove: MealIngredientBase) {
@@ -130,10 +130,11 @@ export default function MealIngredientChoice({
         />
         <div className="flex flex-row items-end gap-2">
           <Field
+            id="quantity_per_serving"
             type="decimal"
             className="w-20"
-            value={String(quantityUsed ?? "")}
-            onChange={(v) => setQuantityUsed(Number(v) || 0)}
+            value={String(quantityPerService ?? "")}
+            onChange={(v) => setQuantityPerServing(Number(v) || 0)}
             placeholder={translations("fields.quantity_per_serving")}
           />
           <div className="bg-white/10 border border-white/20 rounded-lg h-10 w-10 flex items-center justify-center text-gray-300 text-sm">

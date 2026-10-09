@@ -37,6 +37,7 @@ export default function ItemToBuyCreatePage({
     ref_household_id: "",
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -67,14 +68,19 @@ export default function ItemToBuyCreatePage({
     setError(null);
     setSuccess(null);
 
+    const newErrors: Record<string, string> = {};
+    
     if (!itemToBuy.name.trim())
-      return setError(translations("errors.required_name"));
+      newErrors.name = translations("errors.required_name");
     if (!itemToBuy.estimated_unit_price || Number(itemToBuy.estimated_unit_price) <= 0)
-      return setError(translations("errors.required_estimated_unit_price"));
+      newErrors.estimatedUnitPrice = translations("errors.required_estimated_unit_price");
     if (!itemToBuy.units_to_buy || Number(itemToBuy.units_to_buy) <= 0)
-      return setError(translations("errors.required_units_to_buy"));
+      newErrors.unitsToBuy = translations("errors.required_units_to_buy");
     if (!itemToBuy.ref_item_category_id.trim())
-      return setError(translations("errors.required_item_category"));
+      newErrors.refItemCategoryId = translations("errors.required_item_category");
+    
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
 
     setSubmitting(true);
 
@@ -151,20 +157,25 @@ export default function ItemToBuyCreatePage({
             fetchOptions={fetchIngredientByName}
           />
           <Field
+            id="name"
             className="w-full"
             label={translations("fields.name")}
             value={itemToBuy.name}
             onChange={(v) => setItemToBuy((p) => ({ ...p, name: v }))}
+            error={errors.name}
             placeholder={translations("fields.name")}
           />
           <Field
+            id="description"
             className="w-full"
             label={translations("fields.description")}
             value={itemToBuy.description}
             onChange={(v) => setItemToBuy((p) => ({ ...p, description: v }))}
+            error={errors.description}
             placeholder={translations("fields.description")}
           />
           <Field
+            id="unitsToBuy"
             className="w-full"
             type="decimal"
             label={translations("fields.units_to_buy")}
@@ -172,9 +183,11 @@ export default function ItemToBuyCreatePage({
             onChange={(v) =>
               setItemToBuy((p) => ({ ...p, units_to_buy: v }))
             }
+            error={errors.unitsToBuy}
             placeholder={translations("fields.units_to_buy")}
           />
           <Field
+            id="estimatedUnitPrice"
             className="w-full"
             type="decimal"
             label={translations("fields.estimated_unit_price")}
@@ -182,6 +195,7 @@ export default function ItemToBuyCreatePage({
             onChange={(v) =>
               setItemToBuy((p) => ({ ...p, estimated_unit_price: v }))
             }
+            error={errors.estimatedUnitPrice}
             placeholder={translations("fields.estimated_unit_price")}
           />
           <GeneralAutocomplete<ItemCategoryBase>

@@ -182,6 +182,7 @@ export default function RecipeCreatePage({
             </header>
             <div className="flex flex-row justify-left gap-6 sm:p-6 py-2 items-end flex-wrap">
               <Field
+                id="name"
                 className="w-full"
                 label={translations("fields.name")}
                 value={recipe.name}
@@ -189,6 +190,7 @@ export default function RecipeCreatePage({
                 placeholder={translations("fields.name")}
               />
               <Field
+                id="estimated_time"
                 className="w-full"
                 type="decimal"
                 label={translations("fields.estimated_time")}
@@ -199,6 +201,7 @@ export default function RecipeCreatePage({
                 placeholder={translations("fields.estimated_time")}
               />
               <Field
+                id="parallel_cooking"
                 className="w-full"
                 type="decimal"
                 label={translations("fields.parallel_cooking")}

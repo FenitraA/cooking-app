@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import FormInput from "@/components/forms/FormInput";
 import { useRouter } from "next/navigation";
 import { safeReadError } from "@/lib/utils";
 import { useTranslations } from "next-intl";

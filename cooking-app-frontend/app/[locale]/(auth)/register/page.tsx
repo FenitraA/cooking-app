@@ -1,8 +1,7 @@
 "use client";
 
+import Field from "@/components/forms/Field";
 import { useState } from "react";
-import FormInput from "@/components/forms/FormInput";
-// import { useRouter } from "next/navigation";
 
 interface RegisterForm {
   username: string;
@@ -59,7 +58,9 @@ export default function RegisterPage() {
   };
 
   const fakeRegisterApi = async (data: RegisterForm) => {
-    return new Promise<RegisterForm>((resolve) => setTimeout(() => resolve(data), 1000));
+    return new Promise<RegisterForm>((resolve) =>
+      setTimeout(() => resolve(data), 1000),
+    );
   };
 
   return (
@@ -73,27 +74,27 @@ export default function RegisterPage() {
               Please enter the credentials
             </h2>
             <form onSubmit={handleSubmit}>
-              <FormInput
+              <Field
                 id="username"
                 label="Username"
                 value={form.username}
-                onChange={handleChange}
+                onChange={(v) => setForm((p) => ({ ...p, username: v }))}
                 error={errors.username}
               />
-              <FormInput
+              <Field
                 id="password"
                 label="Password"
                 type="password"
                 value={form.password}
-                onChange={handleChange}
+                onChange={(v) => setForm((p) => ({ ...p, password: v }))}
                 error={errors.password}
               />
-              <FormInput
+              <Field
                 id="confirmPassword"
                 label="Confirm Password"
                 type="password"
                 value={form.confirmPassword}
-                onChange={handleChange}
+                onChange={(v) => setForm((p) => ({ ...p, confirmPassword: v }))}
                 error={errors.confirmPassword}
                 className="mb-12"
               />
@@ -107,7 +108,9 @@ export default function RegisterPage() {
               </button>
 
               {errors.general && (
-                <p className="text-red-500 text-sm text-center mt-4">{errors.general}</p>
+                <p className="text-red-500 text-sm text-center mt-4">
+                  {errors.general}
+                </p>
               )}
             </form>
 

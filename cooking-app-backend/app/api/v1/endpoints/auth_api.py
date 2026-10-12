@@ -71,7 +71,8 @@ async def login(
         token_hash=RefreshToken.hash_refresh(refresh_token),
         user_id=user.id,
         created_at=now,
-        expire_at=now + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS),
+        # changed to minutes for testing purposes
+        expire_at=now + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_DAYS),
     )
 
     await db.commit()

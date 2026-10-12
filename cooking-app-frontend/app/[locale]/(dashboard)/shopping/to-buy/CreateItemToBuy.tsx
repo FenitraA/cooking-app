@@ -214,6 +214,7 @@ export default function ItemToBuyCreatePage({
             }}
             getName={getItemCategoryName}
             fetchOptions={fetchItemCategories}
+            error={errors.refItemCategoryId}
           />
         </div>
 

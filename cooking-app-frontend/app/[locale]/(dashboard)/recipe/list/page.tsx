@@ -7,7 +7,6 @@ import { useDebounce } from "@/lib/hooks/useDebounce";
 import { getErrorMessage, UnauthorizedError } from "@/lib/errors";
 import { Modal, ModalBody } from "flowbite-react";
 import { Clock, Funnel, Soup, X } from "lucide-react";
-import FilterField from "@/components/forms/FilterField";
 import { IngredientBase } from "@/lib/ingredient/types";
 import CustomPagination from "@/components/forms/CustomPagination";
 import {
@@ -21,6 +20,7 @@ import { fetchIngredientByName } from "@/lib/ingredient/api";
 import RecipeCard from "../RecipeCard";
 import RecipeDetailsPage from "../Details";
 import SafeImage from "@/components/forms/SafeImage";
+import Field from "@/components/forms/Field";
 
 export default function RecipeListPage() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -144,14 +144,14 @@ export default function RecipeListPage() {
           {general_translations("search_filters")}
         </h2>
       </header>
-      <FilterField
+      <Field
         icon={Soup}
         value={recipeSearchParams.name ?? ""}
         onChange={setName}
         placeholder={translations("filters.name")}
       />
 
-      <FilterField
+      <Field
         icon={Clock}
         value={String(recipeSearchParams.max_making_time ?? "")}
         onChange={setMaxMakingTime}

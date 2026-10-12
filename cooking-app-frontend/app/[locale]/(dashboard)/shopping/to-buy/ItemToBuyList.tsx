@@ -17,7 +17,6 @@ import {
   Undo2,
   Funnel,
 } from "lucide-react";
-import FilterField from "@/components/forms/FilterField";
 import CustomPagination from "@/components/forms/CustomPagination";
 import {
   ItemToBuyRead,
@@ -304,7 +303,7 @@ export default function ItemToBuyListPage({
   const Filters = (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 items-end mb-3">
       <div className="col-span-1">
-        <FilterField
+        <Field
           icon={PackagePlus}
           value={String(itemToBuySearchParams.name ?? "")}
           onChange={setName}

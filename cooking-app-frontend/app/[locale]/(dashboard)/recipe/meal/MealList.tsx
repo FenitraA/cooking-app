@@ -13,7 +13,7 @@ import {
   RefreshCcw,
   X,
 } from "lucide-react";
-import FilterField from "@/components/forms/FilterField";
+import Field from "@/components/forms/Field";
 import CustomPagination from "@/components/forms/CustomPagination";
 import {
   MealIngredientRead,
@@ -153,7 +153,7 @@ export default function MealListPage({
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end mb-3">
           <div className="col-span-1">
-            <FilterField
+            <Field
               icon={Notebook}
               value={mealSearchParams.recipe_name ?? ""}
               onChange={setRecipeName}
@@ -162,7 +162,7 @@ export default function MealListPage({
           </div>
 
           <div className="col-span-1">
-            <FilterField
+            <Field
               type="date"
               icon={CalendarArrowDown}
               value={String(mealSearchParams.start_date ?? "")}
@@ -172,7 +172,7 @@ export default function MealListPage({
           </div>
 
           <div className="col-span-1">
-            <FilterField
+            <Field
               type="date"
               icon={CalendarArrowUp}
               value={String(mealSearchParams.end_date ?? "")}

@@ -11,7 +11,7 @@ import {
   ChevronsLeftRightEllipsis,
   Funnel,
 } from "lucide-react";
-import FilterField from "@/components/forms/FilterField";
+import Field from "@/components/forms/Field";
 import CustomPagination from "@/components/forms/CustomPagination";
 import {
   ShoppingItemRead,
@@ -135,7 +135,7 @@ export default function ShoppingItemListPage() {
   }
   const Filters = (
     <div className="flex sm:flex-row flex-col justify-center just gap-4 items-center mb-3 border-b border-custom-sand-dune pb-3">
-      <FilterField
+      <Field
         className="w-full sm:max-w-100"
         icon={CalendarArrowDown}
         value={String(shoppingItemSearchParams.name ?? "")}
@@ -164,7 +164,7 @@ export default function ShoppingItemListPage() {
         getName={getIngredientName}
         fetchOptions={fetchIngredientByName}
       />
-      <FilterField
+      <Field
         className="w-full sm:w-auto"
         type="date"
         icon={CalendarArrowDown}
@@ -175,7 +175,7 @@ export default function ShoppingItemListPage() {
         size={24}
         className="text-custom-sand-dune hidden sm:inline"
       />
-      <FilterField
+      <Field
         className="w-full sm:w-auto"
         type="date"
         icon={CalendarArrowUp}

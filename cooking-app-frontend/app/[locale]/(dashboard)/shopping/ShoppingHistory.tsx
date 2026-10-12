@@ -13,7 +13,7 @@ import {
   RefreshCcw,
   X,
 } from "lucide-react";
-import FilterField from "@/components/forms/FilterField";
+import Field from "@/components/forms/Field";
 import CustomPagination from "@/components/forms/CustomPagination";
 import { fetchMealSearch } from "@/lib/recipe/api";
 import { formatDateFR, formatNumberToCurrency } from "@/lib/utils";
@@ -119,7 +119,7 @@ export default function ShoppingHistoryPage() {
   }
   const Filters = (
     <div className="flex sm:flex-row flex-col justify-center items-center sm:grid-cols-3 gap-4 mb-3 px-2">
-      <FilterField
+      <Field
         className="w-full sm:w-auto"
         type="date"
         icon={CalendarArrowDown}
@@ -131,7 +131,7 @@ export default function ShoppingHistoryPage() {
         size={24}
         className="text-custom-sand-dune hidden sm:inline"
       />
-      <FilterField
+      <Field
         className="w-full sm:w-auto"
         type="date"
         icon={CalendarArrowUp}

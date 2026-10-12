@@ -16,7 +16,6 @@ import {
   SwitchCamera,
   X,
 } from "lucide-react";
-import FilterField from "@/components/forms/FilterField";
 import {
   IngredientRead,
   IngredientSearchParams,
@@ -38,6 +37,7 @@ import {
 } from "@/lib/utils";
 import FilterSelect from "@/components/forms/FilterSelect";
 import SafeImage from "@/components/forms/SafeImage";
+import Field from "@/components/forms/Field";
 
 export default function IngredientListPage({
   refreshKey,
@@ -199,14 +199,14 @@ export default function IngredientListPage({
 
   const Filters = (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 items-end">
-      <FilterField
+      <Field
         icon={Apple}
         value={ingredientSearchParams.name ?? ""}
         onChange={setName}
         placeholder={translations("filters.name")}
       />
 
-      <FilterField
+      <Field
         icon={SquareMinus}
         value={String(ingredientSearchParams.min_stock ?? "")}
         onChange={setMinStock}

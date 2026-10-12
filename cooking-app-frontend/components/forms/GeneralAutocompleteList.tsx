@@ -24,6 +24,7 @@ type Props<T> = {
   fetchOptions: (query: string, signal?: AbortSignal) => Promise<T[]>;
 
   className?: string;
+  error?: string;
 };
 
 export default function GeneralAutocompleteList<T>({
@@ -41,6 +42,7 @@ export default function GeneralAutocompleteList<T>({
   fetchOptions,
 
   className,
+  error,
 }: Props<T>) {
   const router = useRouter();
   const t = useTranslations(translationsKey);
@@ -127,7 +129,7 @@ export default function GeneralAutocompleteList<T>({
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [query,loadOptions]);
+  }, [query, loadOptions]);
 
   function addItem() {
     if (!selectedItem) return;
@@ -162,10 +164,13 @@ export default function GeneralAutocompleteList<T>({
         <div className="relative flex-1">
           <input
             className={[
-              "h-10 w-full rounded-lg border bg-white/10 text-sm text-white border-white/20",
-              "pl-3 pr-10 text-xs outline-none",
+              "mt-1 w-full rounded-xl border bg-white/5 text-sm text-white",
+              "px-3 py-2.5 pr-10 outline-none",
               "focus:ring-2 focus:ring-black/10",
               showShadow ? "shadow-hard-br" : "",
+              error
+                ? "border-red-500 focus:ring-2 focus:ring-red-500/50"
+                : "border-white/20 focus:border-custom-sand-dune focus:ring-2 focus:ring-custom-sand-dune/30 hover:bg-white/10",
             ].join(" ")}
             value={query}
             onChange={(e) => {
@@ -250,6 +255,11 @@ export default function GeneralAutocompleteList<T>({
             </div>
           ))}
         </div>
+      )}
+      {error && (
+        <p className="text-red-400 text-xs mt-1.5 font-medium animate-pulse">
+          {error}
+        </p>
       )}
     </div>
   );

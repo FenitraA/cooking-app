@@ -23,7 +23,6 @@ import {
   setRecipeImage,
   updateRecipe,
 } from "@/lib/recipe/api";
-import TextAreaField from "@/components/forms/TextAreaField";
 import IngredientChoice from "./IngredientChoice";
 
 export default function RecipeDetailsPage({
@@ -271,9 +270,7 @@ export default function RecipeDetailsPage({
               type="decimal"
               label={translations("fields.estimated_time")}
               value={String(recipe.estimated_time ?? "")}
-              onChange={(v) =>
-                setRecipe((p) => ({ ...p, estimated_time: v }))
-              }
+              onChange={(v) => setRecipe((p) => ({ ...p, estimated_time: v }))}
               placeholder={translations("fields.estimated_time")}
             />
             <Field
@@ -407,7 +404,8 @@ export default function RecipeDetailsPage({
               {translations("fields.description")}
             </h2>
           </header>
-          <TextAreaField
+          <Field
+            type="textarea"
             value={recipe.description}
             onChange={(v) => setRecipe((p) => ({ ...p, description: v }))}
             className="h-130 sm:mx-4 py-3"

@@ -7,7 +7,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import Field from "@/components/forms/Field";
 import { useTranslations } from "next-intl";
 import { Button } from "flowbite-react";
-import TextAreaField from "@/components/forms/TextAreaField";
 import { isPlanningRecipeDirty } from "@/lib/planning/services";
 import {
   PlanningRecipeBase,
@@ -254,7 +253,8 @@ export default function PlanningDetails({
               {translations("fields.description")}
             </h2>
           </header>
-          <TextAreaField
+          <Field
+            type="textarea"
             value={planningRecipe.description || ""}
             onChange={(v) =>
               setPlanningRecipe((p) => ({ ...p, description: v }))

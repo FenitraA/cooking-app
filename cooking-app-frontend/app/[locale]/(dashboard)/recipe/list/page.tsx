@@ -190,7 +190,7 @@ export default function RecipeListPage() {
       </header>
 
       <div className="flex flex-col lg:flex-row h-full">
-        <div className="hidden lg:block mb-3">{Filters}</div>
+        <div className="hidden lg:block mb-3 mr-4">{Filters}</div>
         <div
           className={`
             lg:hidden

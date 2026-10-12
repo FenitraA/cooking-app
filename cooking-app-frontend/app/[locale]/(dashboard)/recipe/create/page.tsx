@@ -10,7 +10,6 @@ import { uploadImagesToCloudinary } from "@/lib/utils";
 import SafeImage from "@/components/forms/SafeImage";
 import { RecipeCreate, RecipeImageData } from "@/lib/recipe/types";
 import { createRecipe, setRecipeImage } from "@/lib/recipe/api";
-import TextAreaField from "@/components/forms/TextAreaField";
 import IngredientChoice from "../IngredientChoice";
 
 export default function RecipeCreatePage({
@@ -167,7 +166,8 @@ export default function RecipeCreatePage({
               {translations("fields.description")}
             </h2>
           </header>
-          <TextAreaField
+          <Field
+            type="textarea"
             value={recipe.description}
             onChange={(v) => setRecipe((p) => ({ ...p, description: v }))}
             className="h-60 md:h-90 xl:h-130 sm:mx-4 py-3"

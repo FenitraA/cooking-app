@@ -137,8 +137,8 @@ export default function ItemToBuyListPage({
 
     setEditData({
       id: item.item_to_buy.id,
-      estimated_unit_price: String(item.item_to_buy.estimated_unit_price),
-      units_to_buy: String(item.item_to_buy.units_to_buy),
+      estimated_unit_price: String(Number(item.item_to_buy.estimated_unit_price)),
+      units_to_buy: String(Number(item.item_to_buy.units_to_buy)),
     });
   }
   async function saveEdit() {
@@ -409,12 +409,13 @@ export default function ItemToBuyListPage({
             return (
               <div
                 key={item.item_to_buy.id}
-                className={`relative flex flex-row items-start sm:items-center w-full px-3 py-2 sm:py-1 lg:min-h-12 bg-white/10 border text-gray-300 transition-colors ${
+                /* Changed items-start to items-center to keep everything vertically stable */
+                className={`relative flex flex-row items-center w-full px-3 py-3 sm:py-2.5 min-h-14 bg-white/10 border text-gray-300 transition-colors shrink-0 ${
                   isSelected ? "border-custom-sand-dune" : "border-white/20"
                 }`}
               >
                 <div
-                  className="mr-3 mt-0.5 sm:mt-0 flex items-center cursor-pointer"
+                  className="mr-3 flex items-center cursor-pointer shrink-0"
                   onClick={() => toggleSelectItem(item.item_to_buy.id)}
                 >
                   {isSelected ? (
@@ -424,15 +425,16 @@ export default function ItemToBuyListPage({
                   )}
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4 flex-1 w-full">
-                  <span className="font-semibold text-base sm:text-sm mt-0.5 sm:mt-0 wrap-break-word">
+                {/* Added items-center here as well for larger screens */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 flex-1 w-full">
+                  <span className="font-semibold text-base sm:text-sm wrap-break-word">
                     {item.item_to_buy.name}
                   </span>
 
                   {/* Math & Actions Container */}
-                  <div className="flex flex-row flex-wrap items-center gap-2 sm:gap-4 font-medium text-sm w-full sm:w-auto">
+                  <div className="flex flex-row flex-wrap items-center justify-between sm:justify-end gap-3 sm:gap-6 font-medium text-sm w-full sm:w-auto">
                     {/* Price & Quantity Group */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 shrink-0">
                       <span className="text-custom-money-green">
                         {editingId === item.item_to_buy.id ? (
                           <div className="w-20 sm:w-24">
@@ -481,7 +483,7 @@ export default function ItemToBuyListPage({
                     </div>
 
                     {/* Total & Action Buttons Group */}
-                    <div className="flex items-center justify-between flex-1 sm:flex-initial gap-4">
+                    <div className="flex items-center gap-4 shrink-0">
                       <span className="text-custom-money-green font-semibold flex items-center gap-1.5">
                         <span>=</span>
                         <span>

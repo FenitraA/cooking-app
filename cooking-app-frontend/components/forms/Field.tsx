@@ -40,6 +40,7 @@ const INPUT_CLASSES = `
 const TEXTAREA_CLASSES = `
   ${BASE_FIELD_CLASSES}
   p-3
+  h-full
 `;
 
 const DISPLAY_CLASSES = `

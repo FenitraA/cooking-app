@@ -9,7 +9,6 @@ import {
 } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export type RecipeCardProps = {
   data: ShoppingRead;
@@ -20,9 +19,6 @@ export default function RecipeCard({ data }: RecipeCardProps) {
 
   const translations = useTranslations("Shopping");
 
-  useEffect(() => {
-    console.log("RecipeCard data:", data);
-  }, [data]);
   return (
     <CustomAccordion
       title={

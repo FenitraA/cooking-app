@@ -23,7 +23,7 @@ from app.services.shopping_service import get_total_estimated_price_from_items
 
 class ShoppingCRUD:
     async def create(
-        self, db: AsyncSession, data: ShoppingCreate
+            self, db: AsyncSession, data: ShoppingCreate
     ) -> ShoppingCreateResponse:
         shopping = Shopping(**data.model_dump(exclude={"shopping_items"}))
         db.add(shopping)
@@ -38,13 +38,13 @@ class ShoppingCRUD:
         )
 
         return ShoppingCreateResponse(
-            shopping=shopping, shopping_items=new_shopping_items
+            shopping=ShoppingBase.model_validate(shopping), shopping_items=new_shopping_items
         )
 
     async def create_from_items_to_buy(
-        self,
-        db: AsyncSession,
-        data: ShoppingCreateFromItemsToBuy,
+            self,
+            db: AsyncSession,
+            data: ShoppingCreateFromItemsToBuy,
     ) -> ShoppingCreateResponse:
         shopping = Shopping(**data.model_dump(exclude={"item_to_buy_ids"}))
 
@@ -77,17 +77,17 @@ class ShoppingCRUD:
             shopping_items_data,
             shopping.id,
         )
-        
-        await item_to_buy_crud_instance.change_state_to_bought(db,items_to_buy,new_shopping_items)
+
+        await item_to_buy_crud_instance.change_state_to_bought(db, items_to_buy, new_shopping_items)
 
         return ShoppingCreateResponse(
-            shopping=shopping,
+            shopping=ShoppingBase.model_validate(shopping),
             shopping_items=new_shopping_items,
         )
 
     async def soft_delete(
-        self, db: AsyncSession, household_id: str, shopping_id: str
-    ) -> ShoppingBase:
+            self, db: AsyncSession, household_id: str, shopping_id: str
+    ) -> Shopping | None:
 
         now = datetime.now(timezone.utc)
 
@@ -118,13 +118,13 @@ class ShoppingCRUD:
         return shopping
 
     async def search_with_pagination(
-        self,
-        db: AsyncSession,
-        household_id: str,
-        start_date: date | None = None,
-        end_date: date | None = None,
-        offset: int = 0,
-        limit: int = 20,
+            self,
+            db: AsyncSession,
+            household_id: str,
+            start_date: date | None = None,
+            end_date: date | None = None,
+            offset: int = 0,
+            limit: int = 20,
     ) -> ShoppingSearchResult:
         query = select(
             Shopping,
@@ -154,7 +154,7 @@ class ShoppingCRUD:
         result = await db.execute(query)
         rows = result.all()
 
-        total = await db.scalar(count_query)
+        total: int = int(await db.scalar(count_query) or 0)
 
         # Get shopping items
         shopping_ids = [row[0].id for row in rows]
@@ -165,7 +165,6 @@ class ShoppingCRUD:
         # group them in dict
         items_by_shopping = defaultdict(list)
         for shopping_item in shopping_items_batch:
-
             items_by_shopping[shopping_item.shopping_item.ref_shopping_id].append(
                 shopping_item
             )
@@ -181,12 +180,7 @@ class ShoppingCRUD:
             for row in rows
         ]
 
-        return {
-            "items": items,
-            "total": total,
-            "offset": offset,
-            "limit": limit,
-        }
+        return ShoppingSearchResult(items=items, total=total, offset=offset, limit=limit)
 
 
 shopping_crud_instance = ShoppingCRUD()

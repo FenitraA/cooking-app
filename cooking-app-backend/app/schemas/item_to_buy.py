@@ -37,6 +37,7 @@ class ItemToBuyRead(BaseModel):
     item_to_buy: ItemToBuyBase
     item_category: ItemCategoryBase
     ingredient_infos: IngredientBase | None
+    ingredient_unit : str | None = None
 
 
 class ItemToBuySearchResult(BaseModel):

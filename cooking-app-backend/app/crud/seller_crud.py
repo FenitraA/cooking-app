@@ -7,12 +7,12 @@ from app.schemas.seller import SellerRead
 
 class SellerCRUD:
     async def select_search(
-        self,
-        db: AsyncSession,
-        name: str | None = None,
-        offset: int = 0,
-        limit: int = 10,
-    ) -> list[SellerRead]:
+            self,
+            db: AsyncSession,
+            name: str | None = None,
+            offset: int = 0,
+            limit: int = 10,
+    ) -> list[Seller]:
         query = select(Seller).where(Seller.state > 0)
 
         # Filters
@@ -28,9 +28,8 @@ class SellerCRUD:
 
         # Execute
         result = await db.execute(query)
-        items = result.scalars().all()
 
-        return items
+        return list(result.scalars().all())
 
 
 seller_crud_instance = SellerCRUD()

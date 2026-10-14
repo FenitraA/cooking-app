@@ -2,15 +2,12 @@ from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import and_, case, exists, func, select
+from sqlalchemy import select
 
-from app.models.meal import Meal
 from app.models.planning_recipe import PlanningRecipe
 from app.models.recipe import Recipe
 from app.schemas.planning_recipe import (
-    PlanningRecipeBase,
     PlanningRecipeCreate,
-    PlanningRecipeData,
     PlanningRecipeRead,
     PlanningRecipeUpdateData,
 )
@@ -19,13 +16,13 @@ from app.crud.recipe_crud import recipe_cost_price_subquery, recipe_crud_instanc
 
 class PlanningCRUD:
     async def create_many(
-        self,
-        db: AsyncSession,
-        data: PlanningRecipeCreate,
+            self,
+            db: AsyncSession,
+            data: PlanningRecipeCreate,
     ) -> list[PlanningRecipe]:
         planning_recipes = [
             PlanningRecipe(
-                **data.model_dump(exclude={"planning_dates","planning_date"}),
+                **data.model_dump(exclude={"planning_dates", "planning_date"}),
                 planning_date=planning_date,
             )
             for planning_date in data.planning_dates
@@ -37,7 +34,7 @@ class PlanningCRUD:
         return planning_recipes
 
     async def get_one(
-        self, db: AsyncSession, household_id: str, planning_recipe_id: str
+            self, db: AsyncSession, household_id: str, planning_recipe_id: str
     ) -> PlanningRecipeRead | None:
         result = await db.execute(
             select(
@@ -76,11 +73,11 @@ class PlanningCRUD:
         )
 
     async def get_by_date(
-        self,
-        db: AsyncSession,
-        household_id: str,
-        start_of_week: date,
-        end_of_week: date,
+            self,
+            db: AsyncSession,
+            household_id: str,
+            start_of_week: date,
+            end_of_week: date,
     ) -> list[PlanningRecipeRead]:
 
         query = (
@@ -118,7 +115,6 @@ class PlanningCRUD:
         # group them in dict
         ingredients_by_recipe = defaultdict(list)
         for recipe_ingredient in recipe_ingredients_batch:
-
             ingredients_by_recipe[
                 recipe_ingredient.recipe_ingredient_base.ref_recipe_id
             ].append(recipe_ingredient)
@@ -135,8 +131,8 @@ class PlanningCRUD:
         ]
 
     async def soft_delete(
-        self, db: AsyncSession, household_id: str, planning_recipe_id: str
-    ) -> PlanningRecipeBase:
+            self, db: AsyncSession, household_id: str, planning_recipe_id: str
+    ) -> PlanningRecipe | None:
         planning_recipe = await db.scalar(
             select(PlanningRecipe).where(
                 PlanningRecipe.ref_household_id == household_id,
@@ -153,7 +149,7 @@ class PlanningCRUD:
         return planning_recipe
 
     async def update(
-        self, db: AsyncSession, household_id: str, data: PlanningRecipeUpdateData
+            self, db: AsyncSession, household_id: str, data: PlanningRecipeUpdateData
     ) -> PlanningRecipeRead | None:
         """
         Update planning recipe core fields
@@ -178,10 +174,10 @@ class PlanningCRUD:
         await db.flush()
         await db.refresh(planning_recipe)
 
-        return await planning_crud_instance.get_one(db, planning_recipe.id)
+        return await planning_crud_instance.get_one(db, household_id, planning_recipe.id)
 
     async def generate_pdf(
-        self, db: AsyncSession, household_id: str, start_date: date, end_date: date
+            self, db: AsyncSession, household_id: str, start_date: date, end_date: date
     ):
         return
 

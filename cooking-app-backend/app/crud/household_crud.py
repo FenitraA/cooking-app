@@ -2,11 +2,11 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.household import Household
-from app.schemas.household import HouseholdBase, HouseholdData
+from app.schemas.household import HouseholdData
 
 
 class HouseholdCRUD:
-    async def create(self, db: AsyncSession, data: HouseholdData) -> HouseholdBase:
+    async def create(self, db: AsyncSession, data: HouseholdData) -> Household:
         new_household = Household(**data.model_dump())
         db.add(new_household)
 
@@ -15,10 +15,10 @@ class HouseholdCRUD:
         return new_household
 
     async def select_search(
-        self,
-        db: AsyncSession,
-        name: str | None = None,
-    ) -> list[HouseholdBase]:
+            self,
+            db: AsyncSession,
+            name: str | None = None,
+    ) -> list[Household]:
         query = select(Household).where(Household.state > 0)
 
         # Filters
@@ -31,9 +31,8 @@ class HouseholdCRUD:
 
         # Execute
         result = await db.execute(query)
-        items = result.scalars().all()
 
-        return items
+        return list(result.scalars().all())
 
 
 household_crud_instance = HouseholdCRUD()

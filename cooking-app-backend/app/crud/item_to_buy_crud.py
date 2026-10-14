@@ -3,10 +3,10 @@ from datetime import datetime, timezone
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models import IngredientUnit
 from app.models.ingredient import Ingredient
 from app.models.item_category import ItemCategory
 from app.models.item_to_buy import ItemToBuy
-from app.models.shopping_item import ShoppingItem
 from app.schemas.item_to_buy import (
     ChangeStateToBoughtData,
     ItemToBuyBase,
@@ -19,7 +19,7 @@ from app.schemas.shopping_item import ShoppingItemBase
 
 
 class ItemToBuyCRUD:
-    async def create(self, db: AsyncSession, data: ItemToBuyData) -> ItemToBuyBase:
+    async def create(self, db: AsyncSession, data: ItemToBuyData) -> ItemToBuy:
         item_to_buy = ItemToBuy(**data.model_dump())
         db.add(item_to_buy)
 
@@ -28,13 +28,14 @@ class ItemToBuyCRUD:
         return item_to_buy
 
     async def get_one(
-        self, db: AsyncSession, item_to_buy_id: str
+            self, db: AsyncSession, item_to_buy_id: str
     ) -> ItemToBuyRead | None:
 
         result = await db.execute(
-            select(ItemToBuy, ItemCategory, Ingredient)
+            select(ItemToBuy, ItemCategory, Ingredient, IngredientUnit.symbol)
             .join(ItemCategory, ItemCategory.id == ItemToBuy.ref_item_category_id)
             .outerjoin(Ingredient, Ingredient.id == ItemToBuy.ref_ingredient_id)
+            .outerjoin(IngredientUnit, IngredientUnit.id == Ingredient.ref_ingredient_unit_id)
             .where(
                 ItemToBuy.id == item_to_buy_id,
                 ItemToBuy.state > 0,
@@ -50,11 +51,12 @@ class ItemToBuyCRUD:
             item_to_buy=row[0],
             item_category=row[1],
             ingredient_infos=row[2],
+            ingredient_unit=row[3]
         )
 
     async def soft_delete(
-        self, db: AsyncSession, household_id: str, item_to_buy_id: str
-    ) -> ItemToBuyBase:
+            self, db: AsyncSession, household_id: str, item_to_buy_id: str
+    ) -> ItemToBuy | None:
         item_to_buy = await db.scalar(
             select(ItemToBuy).where(
                 ItemToBuy.ref_household_id == household_id,
@@ -71,9 +73,9 @@ class ItemToBuyCRUD:
         return item_to_buy
 
     async def mark_as_bought(
-        self,
-        db: AsyncSession,
-        updates: list[ChangeStateToBoughtData],
+            self,
+            db: AsyncSession,
+            updates: list[ChangeStateToBoughtData],
     ) -> None:
         now = datetime.now(timezone.utc)
 
@@ -92,24 +94,24 @@ class ItemToBuyCRUD:
         await db.flush()
 
     async def get_by_ids(
-        self,
-        db: AsyncSession,
-        ids: list[str],
-        household_id: str,
-    ) -> list[ItemToBuyBase]:
+            self,
+            db: AsyncSession,
+            ids: list[str],
+            household_id: str,
+    ) -> list[ItemToBuy]:
         result = await db.execute(
             select(ItemToBuy).where(
                 ItemToBuy.id.in_(ids), ItemToBuy.ref_household_id == household_id
             )
         )
 
-        return result.scalars().all()
+        return list(result.scalars().all())
 
     async def change_state_to_bought(
-        self,
-        db: AsyncSession,
-        items_to_buy: list[ItemToBuyBase],
-        shopping_items: list[ShoppingItemBase],
+            self,
+            db: AsyncSession,
+            items_to_buy: list[ItemToBuyBase],
+            shopping_items: list[ShoppingItemBase],
     ) -> None:
         now = datetime.now(timezone.utc)
 
@@ -123,15 +125,15 @@ class ItemToBuyCRUD:
                     "updated_at": now,
                 }
                 for item_to_buy, shopping_item in zip(
-                    items_to_buy,
-                    shopping_items,
-                    strict=True,
-                )
+                items_to_buy,
+                shopping_items,
+                strict=True,
+            )
             ],
         )
 
     async def update(
-        self, db: AsyncSession, data: ItemToBuyUpdateData
+            self, db: AsyncSession, data: ItemToBuyUpdateData
     ) -> ItemToBuyRead | None:
         """
         Update item to buy core fields
@@ -155,25 +157,27 @@ class ItemToBuyCRUD:
         return await item_to_buy_crud_instance.get_one(db, item.id)
 
     async def search_with_pagination(
-        self,
-        db: AsyncSession,
-        household_id: str,
-        name: str | None = None,
-        ingredient_id: str | None = None,
-        offset: int = 0,
-        limit: int = 20,
+            self,
+            db: AsyncSession,
+            household_id: str,
+            name: str | None = None,
+            ingredient_id: str | None = None,
+            offset: int = 0,
+            limit: int = 20,
     ) -> ItemToBuySearchResult:
 
         query = (
-            select(ItemToBuy, ItemCategory, Ingredient)
+            select(ItemToBuy, ItemCategory, Ingredient, IngredientUnit.symbol)
             .join(ItemCategory, ItemCategory.id == ItemToBuy.ref_item_category_id)
             .outerjoin(Ingredient, Ingredient.id == ItemToBuy.ref_ingredient_id)
+            .outerjoin(IngredientUnit, IngredientUnit.id == Ingredient.ref_ingredient_unit_id)
             .where(ItemToBuy.state > 0, ItemToBuy.state < 10)
         )
         count_query = (
             select(func.count(ItemToBuy.id))
             .join(ItemCategory, ItemCategory.id == ItemToBuy.ref_item_category_id)
             .outerjoin(Ingredient, Ingredient.id == ItemToBuy.ref_ingredient_id)
+            .outerjoin(IngredientUnit, IngredientUnit.id == Ingredient.ref_ingredient_unit_id)
             .where(ItemToBuy.state > 0, ItemToBuy.state < 10)
         )
 
@@ -198,23 +202,19 @@ class ItemToBuyCRUD:
         result = await db.execute(query)
         rows = result.all()
 
-        total = await db.scalar(count_query)
+        total: int = int(await db.scalar(count_query) or 0)
 
         items = [
             ItemToBuyRead(
                 item_to_buy=row[0],
                 item_category=row[1],
                 ingredient_infos=row[2],
+                ingredient_unit=row[3],
             )
             for row in rows
         ]
 
-        return {
-            "items": items,
-            "total": total,
-            "offset": offset,
-            "limit": limit,
-        }
+        return ItemToBuySearchResult(items=items, total=total, offset=offset, limit=limit)
 
 
 item_to_buy_crud_instance = ItemToBuyCRUD()

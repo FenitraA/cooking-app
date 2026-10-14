@@ -36,6 +36,7 @@ class ShoppingItemRead(BaseModel):
     shopping_item : ShoppingItemBase
     item_category : ItemCategoryBase
     ingredient_infos : IngredientBase | None
+    ingredient_unit : str | None = None
     shopping_date: datetime
 
 class ShoppingItemSearchResult(BaseModel):

@@ -70,7 +70,7 @@ class RefreshTokenCRUD:
             .where(RefreshToken.token_hash == token_hash)
         )
         result = await db.execute(stmt)
-        row: tuple[RefreshToken, AppUser] | None = result.one_or_none()
+        row: tuple[RefreshToken, AppUser] | None = result.tuples().one_or_none()
         if row is None:
             return None
 
@@ -109,7 +109,7 @@ class RefreshTokenCRUD:
         )
 
         result = await db.execute(stmt)
-        return result.rowcount
+        return result.rowcount # type: ignore[attr-defined]
 
 
 refresh_token_crud_instance = RefreshTokenCRUD()

@@ -137,7 +137,9 @@ export default function ItemToBuyListPage({
 
     setEditData({
       id: item.item_to_buy.id,
-      estimated_unit_price: String(Number(item.item_to_buy.estimated_unit_price)),
+      estimated_unit_price: String(
+        Number(item.item_to_buy.estimated_unit_price),
+      ),
       units_to_buy: String(Number(item.item_to_buy.units_to_buy)),
     });
   }
@@ -461,7 +463,7 @@ export default function ItemToBuyListPage({
                       <span className="text-custom-sand-dune">x</span>
                       <span className="text-custom-sand-dune">
                         {editingId === item.item_to_buy.id ? (
-                          <div className="w-16 sm:w-20">
+                          <div className="flex flex-row items-center gap-2 w-16 sm:w-20">
                             <Field
                               id=""
                               type="decimal"
@@ -473,10 +475,12 @@ export default function ItemToBuyListPage({
                                 }))
                               }
                             />
+                            {item.ingredient_unit}
                           </div>
                         ) : (
                           <span>
-                            {formatNumber(item.item_to_buy.units_to_buy)}
+                            {formatNumber(item.item_to_buy.units_to_buy)}{" "}
+                            {item.ingredient_unit}
                           </span>
                         )}
                       </span>

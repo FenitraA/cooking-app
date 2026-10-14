@@ -29,6 +29,7 @@ export interface ItemToBuyRead {
   item_to_buy: ItemToBuyBase;
   item_category: ItemCategoryBase;
   ingredient_infos: IngredientBase;
+  ingredient_unit: string;
 }
 export interface ItemToBuySearchResult {
   items: ItemToBuyRead[];
@@ -73,6 +74,7 @@ export interface ShoppingItemRead {
   shopping_item: ShoppingItemBase;
   item_category: ItemCategoryBase;
   ingredient_infos: IngredientBase;
+  ingredient_unit: string;
   shopping_date: string;
 }
 export interface ShoppingItemSearchResult {

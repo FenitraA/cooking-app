@@ -256,7 +256,7 @@ export default function ShoppingItemListPage() {
                     <span className="text-custom-sand-dune">x</span>
                     <span className="text-custom-sand-dune">
                       <span>
-                        {formatNumber(item.shopping_item.units_bought)}
+                        {formatNumber(item.shopping_item.units_bought)}  {item.ingredient_unit}
                       </span>
                     </span>
                   </div>

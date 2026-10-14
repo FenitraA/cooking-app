@@ -233,7 +233,7 @@ export default function ShoppingItemListPage() {
           {shoppingItems.map((item) => (
             <div
               key={item.shopping_item.id}
-              className={`relative flex flex-row items-center w-full min-h-12 px-3 py-1 bg-white/10 border border-white/20 text-gray-300 cursor-pointer`}
+              className={`relative flex flex-row items-center w-full min-h-12 px-3 py-1 bg-white/10 border border-white/20 shrink-0 text-gray-300 cursor-pointer`}
             >
               <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4 flex-1 w-full">
                 <span className="font-semibold text-base sm:text-sm mt-0.5 sm:mt-0 wrap-break-word">

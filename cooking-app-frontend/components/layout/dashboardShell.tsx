@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Banner from "@/components/layout/Banner";
 import Sidebar from "@/components/layout/Sidebar";
 import { UnauthorizedError } from "@/lib/errors";
-import { fetchConnectedUser } from "@/lib/users/api"; // your function
+import { fetchConnectedUser } from "@/lib/users/api";
 
 type User = { id: string; username: string };
 

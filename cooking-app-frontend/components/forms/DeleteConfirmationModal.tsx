@@ -21,7 +21,7 @@ export default function DeleteConfirmModal({
   loading = false,
 }: DeleteModalProps) {
 
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
 
   if (!open) return null;
 
@@ -33,11 +33,11 @@ export default function DeleteConfirmModal({
     >
       <ModalBody className="bg-custom-dark-blue border border-custom-sand-dune">
         <div className="flex text-xl text-custom-sand-dune flex-row justify-between w-full mb-3 pb-3 border-b border-custom-sand-dune">
-          <h2>{general_translations("delete_confirmation_title")}</h2>
+          <h2>{generalTranslations("deleteConfirmationTitle")}</h2>
           <button
             className="flex justify-center items-center cursor-pointer h-6 w-6 border border-custom-sand-dune rounded-full text-custom-sand-dune hover:bg-custom-sand-dune/20"
             onClick={onCancel}
-            aria-label={general_translations("actions.select")}
+            aria-label={generalTranslations("actions.select")}
           >
             <X size={16} />
           </button>

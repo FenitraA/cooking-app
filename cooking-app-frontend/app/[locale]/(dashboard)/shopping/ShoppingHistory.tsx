@@ -10,13 +10,9 @@ import {
   CalendarArrowUp,
   ChevronsLeftRightEllipsis,
   Funnel,
-  RefreshCcw,
-  X,
 } from "lucide-react";
 import Field from "@/components/forms/Field";
 import CustomPagination from "@/components/forms/CustomPagination";
-import { fetchMealSearch } from "@/lib/recipe/api";
-import { formatDateFR, formatNumberToCurrency } from "@/lib/utils";
 import {
   ShoppingRead,
   ShoppingSearchParams,
@@ -28,14 +24,14 @@ import ShoppingCard from "./ShoppingCard";
 export default function ShoppingHistoryPage() {
   const router = useRouter();
   const translations = useTranslations("Shopping");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
 
   const [shoppingSearchParams, setShoppingSearchParams] =
     useState<ShoppingSearchParams>({
       limit: 50,
       offset: 0,
-      start_date: undefined,
-      end_date: undefined,
+      startDate: undefined,
+      endDate: undefined,
     });
 
   const debouncedSearchParams = useDebounce(shoppingSearchParams, 400);
@@ -64,14 +60,14 @@ export default function ShoppingHistoryPage() {
   function setStartDate(v: string) {
     setShoppingSearchParams((p) => ({
       ...p,
-      start_date: v || undefined,
+      startDate: v || undefined,
       offset: 0,
     }));
   }
   function setEndDate(v: string) {
     setShoppingSearchParams((p) => ({
       ...p,
-      end_date: v || undefined,
+      endDate: v || undefined,
       offset: 0,
     }));
   }
@@ -123,9 +119,9 @@ export default function ShoppingHistoryPage() {
         className="w-full sm:w-auto"
         type="date"
         icon={CalendarArrowDown}
-        value={String(shoppingSearchParams.start_date ?? "")}
+        value={String(shoppingSearchParams.startDate ?? "")}
         onChange={setStartDate}
-        placeholder={translations("filters.start_date")}
+        placeholder={translations("filters.startDate")}
       />
       <ChevronsLeftRightEllipsis
         size={24}
@@ -135,9 +131,9 @@ export default function ShoppingHistoryPage() {
         className="w-full sm:w-auto"
         type="date"
         icon={CalendarArrowUp}
-        value={String(shoppingSearchParams.end_date ?? "")}
+        value={String(shoppingSearchParams.endDate ?? "")}
         onChange={setEndDate}
-        placeholder={translations("filters.end_date")}
+        placeholder={translations("filters.endDate")}
       />
     </div>
   );
@@ -147,7 +143,7 @@ export default function ShoppingHistoryPage() {
       <header className="relative mb-4 mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
-            {translations("list_title")}
+            {translations("listTitle")}
           </h1>
         </div>
 
@@ -204,8 +200,8 @@ export default function ShoppingHistoryPage() {
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
               onPageChange={onPageChange}
-              previousLabel={general_translations("actions.previous")}
-              nextLabel={general_translations("actions.next")}
+              previousLabel={generalTranslations("actions.previous")}
+              nextLabel={generalTranslations("actions.next")}
               showIcons
             />
           </div>

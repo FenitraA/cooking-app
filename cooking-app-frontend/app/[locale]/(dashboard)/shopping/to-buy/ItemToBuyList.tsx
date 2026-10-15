@@ -43,7 +43,7 @@ import {
 } from "@/lib/utils";
 import { fetchIngredientByName } from "@/lib/ingredient/api";
 import Field from "@/components/forms/Field";
-import { item_to_buy_to_shopping_item } from "@/lib/shopping/services";
+import { itemToBuyToShoppingItem } from "@/lib/shopping/services";
 import DeleteConfirmModal from "@/components/forms/DeleteConfirmationModal";
 
 export default function ItemToBuyListPage({
@@ -55,14 +55,14 @@ export default function ItemToBuyListPage({
 }) {
   const router = useRouter();
   const translations = useTranslations("ItemToBuy");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
 
   const [itemToBuySearchParams, setItemToBuySearchParams] =
     useState<ItemToBuySearchParams>({
       limit: 50,
       offset: 0,
       name: undefined,
-      ingredient_id: undefined,
+      ingredientId: undefined,
     });
 
   const debouncedSearchParams = useDebounce(itemToBuySearchParams, 400);
@@ -80,9 +80,9 @@ export default function ItemToBuyListPage({
 
   const [shopping, setShopping] = useState<ShoppingBase>({
     id: "",
-    shopping_date: "",
+    shoppingDate: "",
     description: "",
-    ref_household_id: "",
+    refHouseholdId: "",
   });
   const [selectedIngredient, setSelectedIngredient] =
     useState<IngredientBase | null>(null);
@@ -91,8 +91,8 @@ export default function ItemToBuyListPage({
 
   const [editData, setEditData] = useState<ItemToBuyUpdateData>({
     id: "",
-    estimated_unit_price: "0",
-    units_to_buy: "0",
+    estimatedUnitPrice: "0",
+    unitsToBuy: "0",
   });
 
   //  Selection & Gathering States
@@ -126,21 +126,21 @@ export default function ItemToBuyListPage({
   function setIngredientId(v: string | null) {
     setItemToBuySearchParams((p) => ({
       ...p,
-      ingredient_id: v || undefined,
+      ingredientId: v || undefined,
       offset: 0,
     }));
   }
 
   // Edit tracking function
   function startEdit(item: ItemToBuyRead) {
-    setEditingId(item.item_to_buy.id);
+    setEditingId(item.itemToBuy.id);
 
     setEditData({
-      id: item.item_to_buy.id,
-      estimated_unit_price: String(
-        Number(item.item_to_buy.estimated_unit_price),
+      id: item.itemToBuy.id,
+      estimatedUnitPrice: String(
+        Number(item.itemToBuy.estimatedUnitPrice),
       ),
-      units_to_buy: String(Number(item.item_to_buy.units_to_buy)),
+      unitsToBuy: String(Number(item.itemToBuy.unitsToBuy)),
     });
   }
   async function saveEdit() {
@@ -148,13 +148,13 @@ export default function ItemToBuyListPage({
 
     setItemsToBuy((prev) =>
       prev.map((item) =>
-        item.item_to_buy.id === editData.id
+        item.itemToBuy.id === editData.id
           ? {
               ...item,
-              item_to_buy: {
-                ...item.item_to_buy,
-                units_to_buy: editData.units_to_buy,
-                estimated_unit_price: editData.estimated_unit_price,
+              itemToBuy: {
+                ...item.itemToBuy,
+                unitsToBuy: editData.unitsToBuy,
+                estimatedUnitPrice: editData.estimatedUnitPrice,
               },
             }
           : item,
@@ -166,7 +166,7 @@ export default function ItemToBuyListPage({
   async function handleDeleteItemToBuy() {
     setDeleteLoading(true);
     try {
-      await deleteItemToBuy({ item_to_buy_id: itemToBuyIDToDelete });
+      await deleteItemToBuy({ itemToBuyId: itemToBuyIDToDelete });
       onRefresh?.();
     } finally {
       setDeleteLoading(false);
@@ -188,7 +188,7 @@ export default function ItemToBuyListPage({
 
   const isAllSelected = useMemo(() => {
     if (itemsToBuy.length === 0) return false;
-    return itemsToBuy.every((item) => selectedIds.has(item.item_to_buy.id));
+    return itemsToBuy.every((item) => selectedIds.has(item.itemToBuy.id));
   }, [itemsToBuy, selectedIds]);
 
   const toggleSelectAll = () => {
@@ -196,14 +196,14 @@ export default function ItemToBuyListPage({
       // Unselect current page items
       setSelectedIds((prev) => {
         const next = new Set(prev);
-        itemsToBuy.forEach((item) => next.delete(item.item_to_buy.id));
+        itemsToBuy.forEach((item) => next.delete(item.itemToBuy.id));
         return next;
       });
     } else {
       // Select current page items
       setSelectedIds((prev) => {
         const next = new Set(prev);
-        itemsToBuy.forEach((item) => next.add(item.item_to_buy.id));
+        itemsToBuy.forEach((item) => next.add(item.itemToBuy.id));
         return next;
       });
     }
@@ -212,13 +212,13 @@ export default function ItemToBuyListPage({
   // Calculate Selected Totals
   const selectedSummary = useMemo(() => {
     const selectedItems = itemsToBuy.filter((item) =>
-      selectedIds.has(item.item_to_buy.id),
+      selectedIds.has(item.itemToBuy.id),
     );
     const totalCost = selectedItems.reduce(
       (acc, item) =>
         acc +
-        Number(item.item_to_buy.units_to_buy) *
-          Number(item.item_to_buy.estimated_unit_price),
+        Number(item.itemToBuy.unitsToBuy) *
+          Number(item.itemToBuy.estimatedUnitPrice),
       0,
     );
     return { count: selectedIds.size, totalCost };
@@ -261,26 +261,26 @@ export default function ItemToBuyListPage({
 
   async function handleSubmit() {
     setError(null);
-    if (!shopping.shopping_date.trim())
-      return setError(translations("errors.required_shopping_date"));
+    if (!shopping.shoppingDate.trim())
+      return setError(translations("errors.requiredShoppingDate"));
     if (!selectedIds || selectedIds.size == 0)
-      return setError(translations("errors.required_item_selection"));
+      return setError(translations("errors.requiredItemSelection"));
 
     setIsGathering(true);
 
     try {
       let body: ShoppingCreateFromItemsToBuy = {
         ...shopping,
-        item_to_buy_ids: [...selectedIds],
+        itemToBuyIds: [...selectedIds],
       };
       await createShoppingFromItemsToBuy(body);
 
       setShopping((v) => ({
         ...v,
         id: "",
-        shopping_date: "",
+        shoppingDate: "",
         description: "",
-        ref_household_id: "",
+        refHouseholdId: "",
       }));
       setSelectedIds(new Set());
       onRefresh?.();
@@ -291,7 +291,7 @@ export default function ItemToBuyListPage({
       }
 
       const msg = getErrorMessage(e);
-      setError(translations("errors.create_failed", { message: msg }));
+      setError(translations("errors.createFailed", { message: msg }));
     } finally {
       setIsGathering(false);
     }
@@ -339,7 +339,7 @@ export default function ItemToBuyListPage({
       <header className="relative mb-4 mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
-            {translations("list_title")}
+            {translations("listTitle")}
           </h1>
         </div>
 
@@ -386,15 +386,15 @@ export default function ItemToBuyListPage({
             )}
             <span>
               {isAllSelected
-                ? (general_translations("actions.deselect_all") ??
+                ? (generalTranslations("actions.deselectAll") ??
                   "Deselect All")
-                : (general_translations("actions.select_all") ?? "Select All")}
+                : (generalTranslations("actions.selectAll") ?? "Select All")}
             </span>
           </div>
 
           {selectedIds.size > 0 && (
             <span className="text-xs text-custom-sand-dune font-medium">
-              {selectedIds.size} {general_translations("items_selected")}
+              {selectedIds.size} {generalTranslations("itemsSelected")}
             </span>
           )}
         </div>
@@ -407,10 +407,10 @@ export default function ItemToBuyListPage({
             </div>
           )}
           {itemsToBuy.map((item) => {
-            const isSelected = selectedIds.has(item.item_to_buy.id);
+            const isSelected = selectedIds.has(item.itemToBuy.id);
             return (
               <div
-                key={item.item_to_buy.id}
+                key={item.itemToBuy.id}
                 /* Changed items-start to items-center to keep everything vertically stable */
                 className={`relative flex flex-row items-center w-full px-3 py-3 sm:py-2.5 min-h-14 bg-white/10 border text-gray-300 transition-colors shrink-0 ${
                   isSelected ? "border-custom-sand-dune" : "border-white/20"
@@ -418,7 +418,7 @@ export default function ItemToBuyListPage({
               >
                 <div
                   className="mr-3 flex items-center cursor-pointer shrink-0"
-                  onClick={() => toggleSelectItem(item.item_to_buy.id)}
+                  onClick={() => toggleSelectItem(item.itemToBuy.id)}
                 >
                   {isSelected ? (
                     <CheckSquare className="w-5 h-5 text-custom-sand-dune shrink-0" />
@@ -430,7 +430,7 @@ export default function ItemToBuyListPage({
                 {/* Added items-center here as well for larger screens */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 flex-1 w-full">
                   <span className="font-semibold text-base sm:text-sm wrap-break-word">
-                    {item.item_to_buy.name}
+                    {item.itemToBuy.name}
                   </span>
 
                   {/* Math & Actions Container */}
@@ -438,16 +438,16 @@ export default function ItemToBuyListPage({
                     {/* Price & Quantity Group */}
                     <div className="flex items-center gap-2 shrink-0">
                       <span className="text-custom-money-green">
-                        {editingId === item.item_to_buy.id ? (
+                        {editingId === item.itemToBuy.id ? (
                           <div className="w-20 sm:w-24">
                             <Field
                               id="estimatedUnitPrice"
                               type="decimal"
-                              value={editData.estimated_unit_price}
+                              value={editData.estimatedUnitPrice}
                               onChange={(v) =>
                                 setEditData((p) => ({
                                   ...p,
-                                  estimated_unit_price: v,
+                                  estimatedUnitPrice: v,
                                 }))
                               }
                             />
@@ -455,32 +455,32 @@ export default function ItemToBuyListPage({
                         ) : (
                           <span>
                             {formatNumberToCurrency(
-                              item.item_to_buy.estimated_unit_price,
+                              item.itemToBuy.estimatedUnitPrice,
                             )}
                           </span>
                         )}
                       </span>
                       <span className="text-custom-sand-dune">x</span>
                       <span className="text-custom-sand-dune">
-                        {editingId === item.item_to_buy.id ? (
+                        {editingId === item.itemToBuy.id ? (
                           <div className="flex flex-row items-center gap-2 w-16 sm:w-20">
                             <Field
                               id=""
                               type="decimal"
-                              value={editData.units_to_buy}
+                              value={editData.unitsToBuy}
                               onChange={(v) =>
                                 setEditData((p) => ({
                                   ...p,
-                                  units_to_buy: v,
+                                  unitsToBuy: v,
                                 }))
                               }
                             />
-                            {item.ingredient_unit}
+                            {item.ingredientUnit}
                           </div>
                         ) : (
                           <span>
-                            {formatNumber(item.item_to_buy.units_to_buy)}{" "}
-                            {item.ingredient_unit}
+                            {formatNumber(item.itemToBuy.unitsToBuy)}{" "}
+                            {item.ingredientUnit}
                           </span>
                         )}
                       </span>
@@ -492,14 +492,14 @@ export default function ItemToBuyListPage({
                         <span>=</span>
                         <span>
                           {formatNumberToCurrency(
-                            Number(item.item_to_buy.units_to_buy) *
-                              Number(item.item_to_buy.estimated_unit_price),
+                            Number(item.itemToBuy.unitsToBuy) *
+                              Number(item.itemToBuy.estimatedUnitPrice),
                           )}
                         </span>
                       </span>
 
                       <div className="flex gap-2 items-center">
-                        {editingId === item.item_to_buy.id ? (
+                        {editingId === item.itemToBuy.id ? (
                           <div className="flex gap-2">
                             <button
                               className="text-custom-sand-dune cursor-pointer p-1 -m-1"
@@ -526,7 +526,7 @@ export default function ItemToBuyListPage({
                           className="text-custom-button-red cursor-pointer p-1 -m-1"
                           onClick={() => {
                             setOpenDeleteModal(true);
-                            setItemToBuyIDToDelete(item.item_to_buy.id);
+                            setItemToBuyIDToDelete(item.itemToBuy.id);
                           }}
                         >
                           <SquareX size={20} />
@@ -545,7 +545,7 @@ export default function ItemToBuyListPage({
           <div className="flex flex-col lg:flex-row lg:items-center justify-between p-3 sm:p-4 bg-white/10 border border-custom-sand-dune rounded-xl text-gray-200 gap-4 lg:gap-8 mt-2 shadow-lg">
             <div className="flex flex-row lg:flex-col justify-between lg:justify-start items-center lg:items-start text-sm">
               <span className="text-white">
-                {selectedSummary.count} {general_translations("items_selected")}
+                {selectedSummary.count} {generalTranslations("itemsSelected")}
               </span>
               <span className="text-custom-money-green font-semibold text-lg lg:text-base">
                 {formatNumberToCurrency(selectedSummary.totalCost)}
@@ -569,9 +569,9 @@ export default function ItemToBuyListPage({
                   id="shoppingDate"
                   className="w-full"
                   type="date"
-                  value={shopping.shopping_date}
+                  value={shopping.shoppingDate}
                   onChange={(v) =>
-                    setShopping((p) => ({ ...p, shopping_date: v }))
+                    setShopping((p) => ({ ...p, shoppingDate: v }))
                   }
                 />
               </div>
@@ -588,7 +588,7 @@ export default function ItemToBuyListPage({
                   <ShoppingCart className="w-4 h-4" />
                 )}
                 <span className="ml-2">
-                  {translations("actions.register_shopping")}
+                  {translations("actions.registerShopping")}
                 </span>
               </button>
             </div>
@@ -601,8 +601,8 @@ export default function ItemToBuyListPage({
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
               onPageChange={onPageChange}
-              previousLabel={general_translations("actions.previous")}
-              nextLabel={general_translations("actions.next")}
+              previousLabel={generalTranslations("actions.previous")}
+              nextLabel={generalTranslations("actions.next")}
               showIcons
             />
           </div>

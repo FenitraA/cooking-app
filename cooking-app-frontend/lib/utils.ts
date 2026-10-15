@@ -22,11 +22,11 @@ export const getSellerName = (s: SellerBase) => s.name.toLocaleString();
 export const getIngredientName = (i: IngredientBase) => i.name.toLocaleString();
 export const getRecipeName = (i: RecipeBase) => i.name.toLocaleString();
 export const getIngredientStockName = (i: IngredientStockRead) =>
-  `${i.seller_name} - ${formatNumberToCurrency(i.ingredient_stock.unit_cost)} / ${formatNumber(i.quantity_left)}${i.ingredient_unit} `;
+  `${i.sellerName} - ${formatNumberToCurrency(i.ingredientStock.unitCost)} / ${formatNumber(i.quantityLeft)}${i.ingredientUnit} `;
 export const getIngredientStockNameSimple = (i: IngredientStockRead) =>
-  `${i.seller_name} - ${formatNumberToCurrency(i.ingredient_stock.unit_cost)}/${i.ingredient_unit} `;
+  `${i.sellerName} - ${formatNumberToCurrency(i.ingredientStock.unitCost)}/${i.ingredientUnit} `;
 export const getMealIngredientStockDescription = (i: MealIngredientRead) =>
-  `${i.seller_name} - ${formatNumberToCurrency(i.unit_cost)}/${i.ingredient_unit}`;
+  `${i.sellerName} - ${formatNumberToCurrency(i.unitCost)}/${i.ingredientUnit}`;
 
 export function uid() {
   return Math.random().toString(36).slice(2, 10);
@@ -172,8 +172,8 @@ export async function uploadImagesToCloudinary(
 
     const data = (await res.json()) as CloudinaryUploadResult;
     return {
-      public_id: data.public_id,
-      secure_url: data.secure_url,
+      publicId: data.publicId,
+      secureUrl: data.secureUrl,
       width: data.width,
       height: data.height,
       bytes: data.bytes,
@@ -191,21 +191,21 @@ export async function uploadImagesToCloudinary(
   const failures = results.filter((r) => r.status === "rejected");
 
   if (failures.length > 0) {
-    await deleteCloudinaryImages(successes.map((s) => s.public_id));
+    await deleteCloudinaryImages(successes.map((s) => s.publicId));
     throw new Error("Upload failed. Rolled back.");
   }
 
   return successes;
 }
 
-export async function deleteCloudinaryImages(image_ids: string[]) {
-  if (image_ids.length === 0) return;
+export async function deleteCloudinaryImages(imageIds: string[]) {
+  if (imageIds.length === 0) return;
 
   const res = await fetch(`${BASE_URL}/proxy/lots/images/delete-many`, {
     method: "POST",
     credentials: "include",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ image_ids: image_ids }),
+    body: JSON.stringify({ image_ids: imageIds }),
   });
 
   if (res.status === 401) throw new UnauthorizedError("Unauthorized");
@@ -251,3 +251,4 @@ export function getWeekRange(date: Date) {
 
   return { start, end };
 }
+

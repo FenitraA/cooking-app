@@ -1,24 +1,28 @@
 {
   "General": {
-    "app_title": "Cuisine maison",
-    "delete_confirmation_title": "Confirmer la suppression",
-    "search_filters": "Filtres de recherche",
+    "filters": "Filtres",
+    "appTitle": "Cuisine maison",
+    "deleteConfirmationTitle": "Confirmer la suppression",
+    "searchFilters": "Filtres de recherche",
     "price": "Prix",
     "stock": "Stock",
-    "total_cost": "Coût total",
+    "totalCost": "Coût total",
+    "itemsSelected": "article(s) sélectionné(s)",
     "actions": {
+      "selectAll": "Tout sélectionner",
+      "deselectAll": "Tout désélectionner",
       "save": "Enregistrer",
-      "save_changes": "Enregistrer les modifications",
-      "save_image_changes": "Enregistrer les modifications de l'image",
+      "saveChanges": "Enregistrer les modifications",
+      "saveImageChanges": "Enregistrer les modifications de l’image",
       "saving": "Enregistrement...",
       "next": "Suivant",
       "previous": "Précédent",
       "select": "Sélectionner",
-      "today": "Aujourd'hui",
-      "this_week": "Cette semaine",
-      "all": "Tous",
-      "change_view": "Changer la vue",
-      "logout": "Déconnexion"
+      "today": "Aujourd’hui",
+      "thisWeek": "Cette semaine",
+      "all": "Tout",
+      "changeView": "Changer de vue",
+      "logout": "Se déconnecter"
     },
     "labels": {
       "number": "N°"
@@ -35,147 +39,150 @@
   "Sidebar": {
     "menu": "Menu",
     "ingredients": "Ingrédients",
-    "recipes_list": "Liste des recettes",
-    "recipes_create": "Créer une recette",
-    "meals": "Productions",
-    "planning": "Planification"
+    "recipesList": "Liste des recettes",
+    "recipesCreate": "Créer une recette",
+    "meals": "Repas",
+    "planning": "Planification",
+    "shopping": "Achats",
+    "shoppingItem": "Articles achetés",
+    "itemToBuy": "Articles à acheter"
   },
   "User": {
-    "welcome_back_title": "Bon retour",
-    "enter_credentials": "Saisissez vos identifiants pour continuer",
-    "logging": "Connexion",
-    "logging_in": "Connexion en cours...",
-    "setting_title": "Paramètres",
-    "description": "Modifiez votre nom d'utilisateur ou votre mot de passe.",
+    "welcomeBackTitle": "Bon retour",
+    "enterCredentials": "Saisissez vos identifiants pour continuer",
+    "logging": "Se connecter",
+    "loggingIn": "Connexion en cours...",
+    "settingTitle": "Paramètres",
+    "description": "Modifiez votre nom d’utilisateur ou votre mot de passe.",
     "sections": {
-      "change_username": "Modifier le nom d'utilisateur",
-      "change_password": "Modifier le mot de passe"
+      "changeUsername": "Modifier le nom d’utilisateur",
+      "changePassword": "Modifier le mot de passe"
     },
     "fields": {
-      "username": "Nom d'utilisateur",
+      "username": "Nom d’utilisateur",
       "password": "Mot de passe",
-      "new_username": "Nouveau nom d'utilisateur",
-      "old_password": "Ancien mot de passe",
-      "new_password": "Nouveau mot de passe",
-      "confirm_new_password": "Confirmer le nouveau mot de passe"
+      "newUsername": "Nouveau nom d’utilisateur",
+      "oldPassword": "Ancien mot de passe",
+      "newPassword": "Nouveau mot de passe",
+      "confirmNewPassword": "Confirmer le nouveau mot de passe"
     },
     "placeholders": {
       "username": "ex. jean_dupont",
       "password": "••••••••"
     },
     "actions": {
-      "update_username": "Mettre à jour le nom d'utilisateur",
-      "update_password": "Mettre à jour le mot de passe"
+      "updateUsername": "Mettre à jour le nom d’utilisateur",
+      "updatePassword": "Mettre à jour le mot de passe"
     },
     "success": {
-      "username_updated": "Nom d'utilisateur mis à jour",
-      "password_updated": "Mot de passe mis à jour"
+      "usernameUpdated": "Nom d’utilisateur mis à jour",
+      "passwordUpdated": "Mot de passe mis à jour"
     },
     "errors": {
-      "username_required": "Le nom d'utilisateur est requis.",
-      "password_required": "Le mot de passe est requis.",
-      "login_failed": "Échec de la connexion. Veuillez réessayer.",
-      "no_user": "Aucun utilisateur connecté",
-      "old_password_required": "L'ancien mot de passe est requis",
-      "new_password_required": "Le nouveau mot de passe est requis",
-      "password_min_length": "Le nouveau mot de passe doit contenir au moins 6 caractères",
-      "passwords_not_match": "Les mots de passe ne correspondent pas"
+      "usernameRequired": "Le nom d’utilisateur est obligatoire.",
+      "passwordRequired": "Le mot de passe est obligatoire.",
+      "loginFailed": "Échec de la connexion. Veuillez réessayer.",
+      "noUser": "Aucun utilisateur connecté",
+      "oldPasswordRequired": "L’ancien mot de passe est obligatoire",
+      "newPasswordRequired": "Le nouveau mot de passe est obligatoire",
+      "passwordMinLength": "Le nouveau mot de passe doit contenir au moins 6 caractères",
+      "passwordsNotMatch": "Les mots de passe ne correspondent pas"
     }
   },
   "IngredientType": {
-    "type_to_search": "Choisissez un type"
+    "typeToSearch": "Choisir un type"
   },
   "Ingredient": {
     "title": "Ingrédients",
-    "list_title": "Liste des ingrédients",
-    "create_title": "Créer un ingrédient",
-    "description": "Gérez votre stock d'ingrédients.",
-    "count_label": "Total",
-    "edit_title": "Détails de l'ingrédient",
-    "type_to_search": "Nom de l'ingrédient",
+    "listTitle": "Liste des ingrédients",
+    "createTitle": "Créer un ingrédient",
+    "description": "Gérez votre stock d’ingrédients.",
+    "countLabel": "Total",
+    "editTitle": "Détails de l’ingrédient",
+    "typeToSearch": "Nom de l’ingrédient",
     "images": {
       "choose": "Choisir une image",
-      "choose_new": "Choisir une nouvelle image"
+      "chooseNew": "Choisir une nouvelle image"
     },
     "fields": {
       "name": "Nom",
-      "ingredient_type": "Type d'ingrédient",
-      "estimated_price": "Prix estimé",
-      "quantity_left": "Quantité restante",
+      "ingredientType": "Type d’ingrédient",
+      "estimatedPrice": "Prix estimé",
+      "quantityLeft": "Quantité restante",
       "quantity": "Quantité",
       "unit": "Unité",
-      "seller": "Fournisseur",
-      "unit_cost": "Coût unitaire",
+      "seller": "Vendeur",
+      "unitCost": "Coût unitaire",
       "ingredient": "Ingrédient",
-      "quantity_per_serving": "Quantité par portion"
+      "quantityPerServing": "Quantité par portion"
     },
     "filters": {
       "name": "Nom",
       "type": "Type",
-      "min_stock": "Stock minimum",
+      "minStock": "Stock minimum",
       "unit": "Unité"
     },
     "table": {
       "name": "Nom",
-      "ingredient_type": "Type",
-      "estimated_price": "Prix estimé",
-      "quantity_left": "Quantité restante",
+      "ingredientType": "Type",
+      "estimatedPrice": "Prix estimé",
+      "quantityLeft": "Quantité restante",
       "unit": "Unité",
-      "unit_cost": "Coût unitaire",
-      "seller": "Fournisseur"
+      "unitCost": "Coût unitaire",
+      "seller": "Vendeur"
     },
     "actions": {
-      "save": "Ajouter l'ingrédient",
-      "save_stock": "Enregistrer le stock",
-      "edit_ingredient": "Modifier l'ingrédient",
-      "delete_ingredient": "Supprimer l'ingrédient"
+      "save": "Ajouter un ingrédient",
+      "saveStock": "Enregistrer le stock",
+      "editIngredient": "Modifier l’ingrédient",
+      "deleteIngredient": "Supprimer l’ingrédient"
     },
     "errors": {
-      "required_name": "Le nom est requis.",
-      "required_unit": "L'unité est requise.",
-      "required_ingredient_type_id": "Le type d'ingrédient est requis.",
-      "required_ingredient_id": "L'ingrédient est requis.",
-      "required_estimated_price": "Le prix estimé doit être supérieur à 0.",
-      "required_unit_cost": "Le coût unitaire est requis.",
-      "required_seller": "Le fournisseur est requis.",
-      "required_quantity": "La quantité est requise.",
-      "not_enough_stock": "Stock insuffisant.",
-      "upload_error": "Une erreur est survenue lors du téléchargement de l'image.",
-      "no_results": "Aucun résultat trouvé",
-      "update_failed": "Échec de la mise à jour de l'ingrédient : {message}",
-      "create_failed": "Échec de la création de l'ingrédient : {message}",
-      "create_stock_failed": "Échec de la création du stock d'ingrédient : {message}"
+      "requiredName": "Le nom est obligatoire.",
+      "requiredUnit": "L’unité est obligatoire.",
+      "requiredIngredientTypeId": "Le type d’ingrédient est obligatoire.",
+      "requiredIngredientId": "L’ingrédient est obligatoire.",
+      "requiredEstimatedPrice": "Le prix estimé doit être supérieur à 0.",
+      "requiredUnitCost": "Le coût unitaire est obligatoire.",
+      "requiredSeller": "Le vendeur est obligatoire.",
+      "requiredQuantity": "La quantité est obligatoire.",
+      "notEnoughStock": "Stock insuffisant.",
+      "uploadError": "Une erreur s’est produite lors du téléversement de l’image.",
+      "noResults": "Aucun résultat trouvé",
+      "updateFailed": "Échec de la mise à jour de l’ingrédient : {message}",
+      "createFailed": "Échec de la création de l’ingrédient : {message}",
+      "createStockFailed": "Échec de la création du stock d’ingrédients : {message}"
     },
     "success": {
       "created": "Ingrédient créé avec succès.",
       "updated": "Ingrédient mis à jour avec succès.",
-      "image_change_success": "Image de l'ingrédient mise à jour avec succès."
+      "imageChangeSuccess": "Image de l’ingrédient mise à jour avec succès."
     }
   },
   "Recipe": {
     "title": "Recettes",
-    "list_title": "Liste des recettes",
-    "edit_title": "Modifier la recette",
-    "create_title": "Créer une recette",
+    "listTitle": "Liste des recettes",
+    "editTitle": "Modifier la recette",
+    "createTitle": "Créer une recette",
     "description": "Gérez vos recettes.",
-    "basic_infos": "Informations générales",
-    "type_to_search": "Saisissez le nom d'une recette",
+    "basicInfos": "Informations générales",
+    "typeToSearch": "Saisissez le nom d’une recette",
     "filters": {
       "name": "Nom",
-      "max_making_time": "Temps de préparation max.",
+      "maxMakingTime": "Temps de préparation maximal",
       "ingredients": "Ingrédients"
     },
     "fields": {
       "name": "Nom",
       "description": "Description",
-      "no_description": "Aucune description disponible",
-      "estimated_time": "Temps estimé (minutes)",
-      "parallel_cooking": "Cuisson parallèle",
+      "noDescription": "Aucune description disponible",
+      "estimatedTime": "Temps estimé (minutes)",
+      "parallelCooking": "Cuisson en parallèle",
       "ingredients": "Ingrédients"
     },
     "images": {
       "choose": "Choisir une image",
-      "choose_new": "Choisir une nouvelle image"
+      "chooseNew": "Choisir une nouvelle image"
     },
     "actions": {
       "save": "Enregistrer la recette"
@@ -185,79 +192,132 @@
       "updated": "Recette mise à jour avec succès."
     },
     "errors": {
-      "required_name": "Le nom de la recette est requis.",
-      "required_description": "La description de la recette est requise.",
-      "required_estimated_time": "Le temps de cuisson estimé doit être supérieur à 0.",
-      "required_parallel_cooking": "La valeur de cuisson parallèle doit être supérieure à 0.",
-      "required_ingredients": "Au moins un ingrédient est requis.",
-      "update_failed": "Échec de la mise à jour de la recette : {message}",
-      "create_failed": "Échec de la création de la recette : {message}"
+      "requiredName": "Le nom de la recette est obligatoire.",
+      "requiredDescription": "La description de la recette est obligatoire.",
+      "requiredEstimatedTime": "Le temps de cuisson estimé doit être supérieur à 0.",
+      "requiredParallelCooking": "La valeur de cuisson en parallèle doit être supérieure à 0.",
+      "requiredIngredients": "Au moins un ingrédient est obligatoire.",
+      "updateFailed": "Échec de la mise à jour de la recette : {message}",
+      "createFailed": "Échec de la création de la recette : {message}"
     }
   },
   "Meal": {
-    "list_title": "Liste des productions",
-    "choose_recipe": "Choisir une recette",
-    "meal_ingredients": "Choisir les ingrédients à utiliser",
-    "create_title": "Production",
-    "ingredients_list": "Liste des ingrédients",
+    "listTitle": "Liste des repas",
+    "chooseRecipe": "Choisir une recette",
+    "mealIngredients": "Choisir les ingrédients à utiliser",
+    "createTitle": "Préparation",
+    "ingredientsList": "Liste des ingrédients",
     "filters": {
-      "end_date": "Date de fin",
-      "start_date": "Date de début",
-      "recipe_name": "Nom de la recette"
+      "endDate": "Date de fin",
+      "startDate": "Date de début",
+      "recipeName": "Nom de la recette"
     },
     "table": {
-      "recipe_name": "Nom de la recette",
-      "nb_serving": "Nb portions",
-      "total_cost": "Coût total",
+      "recipeName": "Nom de la recette",
+      "nbServing": "Nombre de portions",
+      "totalCost": "Coût total",
       "date": "Date"
     },
     "actions": {
-      "save": "Produire un plat"
+      "save": "Préparer un repas"
     },
     "fields": {
-      "nb_serving": "Nombre de portions"
+      "nbServing": "Nombre de portions"
     },
     "errors": {
-      "required_nb_serving": "Le nombre de portions est requis.",
-      "setup_failed": "Échec de la préparation du plat à partir de la recette : {message}",
-      "create_failed": "Échec de la production du plat : {message}",
-      "required_recipe_id": "Aucune recette sélectionnée"
+      "requiredNbServing": "Le nombre de portions est obligatoire.",
+      "setupFailed": "Échec de la préparation du repas à partir de la recette : {message}",
+      "createFailed": "Échec de la préparation du repas : {message}",
+      "requiredRecipeId": "Aucune recette sélectionnée"
     },
     "success": {
-      "created": "Production créée avec succès."
+      "created": "Repas créé avec succès."
     }
   },
   "IngredientStock": {
-    "type_to_search": "Sélectionner un stock...",
+    "typeToSearch": "Sélectionner un stock...",
     "errors": {
-      "no_results": "Aucun stock trouvé"
+      "noResults": "Aucun stock trouvé"
     }
   },
   "Planning": {
     "title": "Planification hebdomadaire des recettes",
-    "create_title": "Planifier une recette",
-    "edit_title": "Détails de la planification",
-    "no_recipe_planned": "Aucune recette planifiée",
+    "createTitle": "Planifier une recette",
+    "editTitle": "Détails de la planification",
+    "noRecipePlanned": "Aucune recette planifiée",
     "servings": "portions",
-    "ingredients_list" : "Ingredients de la semaine",
+    "ingredientsList": "Ingrédients de la semaine",
     "fields": {
       "ingredients": "Ingrédients",
       "description": "Description",
-      "choose_recipe": "Choisir une recette",
-      "planning_date": "Date de planification",
-      "nb_serving": "Nombre de portions"
+      "chooseRecipe": "Choisir une recette",
+      "planningDate": "Date de planification",
+      "nbServing": "Nombre de portions"
     },
     "actions": {
-      "save": "Enregistrer la planification"
+      "save": "Enregistrer le planning"
     },
     "success": {
       "updated": "Planification mise à jour avec succès."
     },
     "errors": {
-      "required_nb_serving": "Le nombre de portions est requis.",
-      "required_recipe": "Aucune recette sélectionnée",
-      "required_planning_date": "Aucune date de planification",
-      "create_failed": "Échec de la production du plat : {message}"
+      "requiredNbServing": "Le nombre de portions est obligatoire.",
+      "requiredRecipe": "Aucune recette sélectionnée",
+      "requiredPlanningDate": "Aucune date de planification",
+      "createFailed": "Échec de la préparation du repas : {message}"
+    }
+  },
+  "Shopping": {
+    "items": "Article(s)",
+    "listTitle": "Historique des achats",
+    "filters": {
+      "endDate": "Date de fin",
+      "startDate": "Date de début"
+    },
+    "tabs": {
+      "shoppingHistory": "Historique des achats",
+      "shoppingItemList": "Liste des articles achetés"
+    }
+  },
+  "ItemToBuy": {
+    "listTitle": "Articles à acheter",
+    "createTitle": "Enregistrer un article à acheter",
+    "estimatedTotal": "Total estimé",
+    "actions": {
+      "registerShopping": "Enregistrer les articles"
+    },
+    "filters": {
+      "name": "Nom de l’article",
+      "ingredient": "Nom de l’ingrédient"
+    },
+    "fields": {
+      "name": "Nom",
+      "description": "Description",
+      "unitsToBuy": "Unités à acheter",
+      "ingredient": "Ingrédient",
+      "estimatedUnitPrice": "Prix unitaire estimé (Ar)",
+      "itemCategory": "Catégorie d’article"
+    },
+    "errors": {
+      "requiredShoppingDate": "La date d’achat est obligatoire",
+      "requiredName": "Le nom est obligatoire",
+      "requiredItemSelection": "Veuillez sélectionner des articles",
+      "requiredEstimatedUnitPrice": "Le prix unitaire estimé doit être supérieur à 0",
+      "requiredUnitsToBuy": "Le nombre d’unités à acheter doit être supérieur à 0",
+      "requiredItemCategory": "La catégorie d’article est obligatoire",
+      "createFailed": "Échec de la création de l’article à acheter : {message}"
+    },
+    "success": {
+      "created": "Article à acheter créé avec succès"
+    }
+  },
+  "ItemCategory": {
+    "typeToSearch": "Saisissez une catégorie..."
+  },
+  "ShoppingItems": {
+    "listTitle": "Articles achetés",
+    "filters": {
+      "name": "Nom de l’article"
     }
   }
 }

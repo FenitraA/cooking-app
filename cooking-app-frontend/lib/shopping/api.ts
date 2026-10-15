@@ -76,8 +76,8 @@ export async function createItemToBuy(
     throw new Error(msg || "Failed to create item to buy.");
   }
 
-  const item_to_buy = (await res.json()) as ItemToBuyBase;
-  return item_to_buy;
+  const itemToBuy = (await res.json()) as ItemToBuyBase;
+  return itemToBuy;
 }
 
 export async function fetchItemToBuySearch(
@@ -88,8 +88,8 @@ export async function fetchItemToBuySearch(
   if (searchParams.name) {
     params.set("name", searchParams.name);
   }
-  if (searchParams.ingredient_id) {
-    params.set("ingredient_id", searchParams.ingredient_id);
+  if (searchParams.ingredientId) {
+    params.set("ingredientId", searchParams.ingredientId);
   }
   if (searchParams.offset !== undefined) {
     params.set("offset", String(searchParams.offset));
@@ -158,8 +158,8 @@ export async function fetchShoppingItemSearch(
   if (searchParams.name) {
     params.set("name", searchParams.name);
   }
-  if (searchParams.ingredient_id) {
-    params.set("ingredient_id", searchParams.ingredient_id);
+  if (searchParams.ingredientId) {
+    params.set("ingredientId", searchParams.ingredientId);
   }
   if (searchParams.offset !== undefined) {
     params.set("offset", String(searchParams.offset));
@@ -251,11 +251,11 @@ export async function fetchShoppingSearch(
 ): Promise<ShoppingSearchResult> {
   const params = new URLSearchParams();
 
-  if (searchParams.start_date) {
-    params.set("start_date", searchParams.start_date);
+  if (searchParams.startDate) {
+    params.set("start_date", searchParams.startDate);
   }
-  if (searchParams.end_date) {
-    params.set("end_date", searchParams.end_date);
+  if (searchParams.endDate) {
+    params.set("end_date", searchParams.endDate);
   }
   if (searchParams.offset !== undefined) {
     params.set("offset", String(searchParams.offset));

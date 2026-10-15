@@ -33,7 +33,7 @@ export default function RecipeDetailsPage({
   recipeId: string;
 }) {
   const translations = useTranslations("Recipe");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
@@ -44,9 +44,9 @@ export default function RecipeDetailsPage({
     id: "",
     name: "",
     description: "",
-    estimated_time: "0",
-    parallel_cooking: "0",
-    recipe_ingredients: [],
+    estimatedTime: "0",
+    parallelCooking: "0",
+    recipeIngredients: [],
   });
 
   const [initialValues, setInitialValues] = useState<RecipeBase | null>(null);
@@ -67,16 +67,16 @@ export default function RecipeDetailsPage({
       {
         name: initialValues?.name ?? "",
         description: initialValues?.description ?? "",
-        estimated_time: initialValues?.estimated_time ?? "0",
-        parallel_cooking: initialValues?.parallel_cooking ?? "0",
-        recipe_ingredients: initialRecipeIngredients,
+        estimatedTime: initialValues?.estimatedTime ?? "0",
+        parallelCooking: initialValues?.parallelCooking ?? "0",
+        recipeIngredients: initialRecipeIngredients,
       },
       {
         name: recipe.name,
         description: recipe.description,
-        estimated_time: recipe.estimated_time,
-        parallel_cooking: recipe.parallel_cooking,
-        recipe_ingredients: recipe.recipe_ingredients,
+        estimatedTime: recipe.estimatedTime,
+        parallelCooking: recipe.parallelCooking,
+        recipeIngredients: recipe.recipeIngredients,
       },
     );
   }, [
@@ -84,9 +84,9 @@ export default function RecipeDetailsPage({
     initialRecipeIngredients,
     recipe.name,
     recipe.description,
-    recipe.estimated_time,
-    recipe.parallel_cooking,
-    recipe.recipe_ingredients,
+    recipe.estimatedTime,
+    recipe.parallelCooking,
+    recipe.recipeIngredients,
   ]);
 
   useEffect(() => {
@@ -111,19 +111,19 @@ export default function RecipeDetailsPage({
 
         setInitialValues(item.recipe);
 
-        const recipe_ingredients_bases = item.recipe_ingredients.map(
-          (recipe_ingredient) => ({
-            ...recipe_ingredient.recipe_ingredient_base,
-            ingredient_name: recipe_ingredient.ingredient_name,
-            ingredient_unit: recipe_ingredient.ingredient_unit,
+        const recipeIngredientsBases = item.recipeIngredients.map(
+          (recipeIngredient) => ({
+            ...recipeIngredient.recipeIngredientBase,
+            ingredientName: recipeIngredient.ingredientName,
+            ingredientUnit: recipeIngredient.ingredientUnit,
           }),
         );
 
-        setInitialRecipeIngredients(recipe_ingredients_bases);
+        setInitialRecipeIngredients(recipeIngredientsBases);
         setRecipe((p) => ({ ...p, ...item.recipe }));
         setRecipe((p) => ({
           ...p,
-          recipe_ingredients: recipe_ingredients_bases,
+          recipeIngredients: recipeIngredientsBases,
         }));
       } catch (e: unknown) {
         if (cancelled) return;
@@ -152,15 +152,15 @@ export default function RecipeDetailsPage({
     setSuccess(null);
 
     if (!recipe.name.trim())
-      return setError(translations("errors.required_name"));
+      return setError(translations("errors.requiredName"));
     if (!recipe.description.trim())
-      return setError(translations("errors.required_description"));
-    if (!recipe.estimated_time || Number(recipe.estimated_time) <= 0)
-      return setError(translations("errors.required_estimated_time"));
-    if (!recipe.parallel_cooking || Number(recipe.parallel_cooking) <= 0)
-      return setError(translations("errors.required_parallel_cooking"));
-    if (!recipe.recipe_ingredients || recipe.recipe_ingredients.length <= 0)
-      return setError(translations("errors.required_ingredients"));
+      return setError(translations("errors.requiredDescription"));
+    if (!recipe.estimatedTime || Number(recipe.estimatedTime) <= 0)
+      return setError(translations("errors.requiredEstimatedTime"));
+    if (!recipe.parallelCooking || Number(recipe.parallelCooking) <= 0)
+      return setError(translations("errors.requiredParallelCooking"));
+    if (!recipe.recipeIngredients || recipe.recipeIngredients.length <= 0)
+      return setError(translations("errors.requiredIngredients"));
 
     if (!isDirty) return;
 
@@ -169,19 +169,19 @@ export default function RecipeDetailsPage({
       const updatedIngredient = await updateRecipe(recipe);
       setInitialValues(updatedIngredient.recipe);
 
-      const recipe_ingredients_bases = updatedIngredient.recipe_ingredients.map(
-        (recipe_ingredient) => ({
-          ...recipe_ingredient.recipe_ingredient_base,
-          ingredient_name: recipe_ingredient.ingredient_name,
-          ingredient_unit: recipe_ingredient.ingredient_unit,
+      const recipeIngredientsBases = updatedIngredient.recipeIngredients.map(
+        (recipeIngredient) => ({
+          ...recipeIngredient.recipeIngredientBase,
+          ingredientName: recipeIngredient.ingredientName,
+          ingredientUnit: recipeIngredient.ingredientUnit,
         }),
       );
 
-      setInitialRecipeIngredients(recipe_ingredients_bases);
+      setInitialRecipeIngredients(recipeIngredientsBases);
       setRecipe((p) => ({ ...p, ...updatedIngredient.recipe }));
       setRecipe((p) => ({
         ...p,
-        recipe_ingredients: recipe_ingredients_bases,
+        recipeIngredients: recipeIngredientsBases,
       }));
 
       setSuccess(translations("success.updated"));
@@ -193,7 +193,7 @@ export default function RecipeDetailsPage({
       }
 
       const msg = getErrorMessage(e);
-      setError(translations("errors.update_failed", { message: msg }));
+      setError(translations("errors.updateFailed", { message: msg }));
     } finally {
       setSubmitting(false);
     }
@@ -212,25 +212,25 @@ export default function RecipeDetailsPage({
           `recipes/${recipe.id}`,
         );
         if (uploaded.length === 0) {
-          throw new Error(general_translations("errors.upload_error"));
+          throw new Error(generalTranslations("errors.uploadError"));
         }
-        const uploaded_image = uploaded[0];
+        const uploadedImage = uploaded[0];
 
         const imageBody: RecipeImageData = {
           id: recipe.id,
-          image_url: uploaded_image.secure_url,
-          storage_key: uploaded_image.public_id,
+          imageUrl: uploadedImage.secureUrl,
+          storageKey: uploadedImage.publicId,
         };
 
         await setRecipeImage(imageBody);
-        setImageSuccess(translations("success.image_change_success"));
+        setImageSuccess(translations("success.imageChangeSuccess"));
       } catch (e: unknown) {
         if (e instanceof UnauthorizedError) {
           router.replace("/login");
           return;
         }
         const msg = getErrorMessage(e);
-        setImageError(translations("errors.update_failed", { message: msg }));
+        setImageError(translations("errors.updateFailed", { message: msg }));
       } finally {
         setSubmittingImage(false);
       }
@@ -265,24 +265,24 @@ export default function RecipeDetailsPage({
               placeholder={translations("fields.name")}
             />
             <Field
-              id="estimated_time"
+              id="estimatedTime"
               className="w-full"
               type="decimal"
-              label={translations("fields.estimated_time")}
-              value={String(recipe.estimated_time ?? "")}
-              onChange={(v) => setRecipe((p) => ({ ...p, estimated_time: v }))}
-              placeholder={translations("fields.estimated_time")}
+              label={translations("fields.estimatedTime")}
+              value={String(recipe.estimatedTime ?? "")}
+              onChange={(v) => setRecipe((p) => ({ ...p, estimatedTime: v }))}
+              placeholder={translations("fields.estimatedTime")}
             />
             <Field
-              id="parallel_cooking"
+              id="parallelCooking"
               className="w-full"
               type="decimal"
-              label={translations("fields.parallel_cooking")}
-              value={String(recipe.parallel_cooking ?? "")}
+              label={translations("fields.parallelCooking")}
+              value={String(recipe.parallelCooking ?? "")}
               onChange={(v) =>
-                setRecipe((p) => ({ ...p, parallel_cooking: v }))
+                setRecipe((p) => ({ ...p, parallelCooking: v }))
               }
-              placeholder={translations("fields.parallel_cooking")}
+              placeholder={translations("fields.parallelCooking")}
             />
 
             <div className="flex flex-col justify-center gap-2 py-4 w-full border-t border-white/20">
@@ -292,8 +292,8 @@ export default function RecipeDetailsPage({
                 className="h-10 rounded-lg bg-custom-validation-green px-5 text-sm text-white disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer hover:bg-custom-validation-green/90"
               >
                 {submitting
-                  ? general_translations("actions.saving")
-                  : general_translations("actions.save_changes")}
+                  ? generalTranslations("actions.saving")
+                  : generalTranslations("actions.saveChanges")}
               </Button>
 
               {success && (
@@ -312,7 +312,7 @@ export default function RecipeDetailsPage({
             <div className="border rounded-xl bg-white/10 p-4 border-white/20 flex-1">
               <div className="flex flex-wrap items-center gap-3">
                 <label className="inline-flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-sm shadow-sm cursor-pointer text-gray-300">
-                  <span>{translations("images.choose_new")}</span>
+                  <span>{translations("images.chooseNew")}</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -343,7 +343,7 @@ export default function RecipeDetailsPage({
                       type="button"
                       onClick={() => setImage(null)}
                       className="flex flex-row justify-center items-center absolute -right-3 -top-3 rounded-4xl w-7 h-7 bg-red-500 text-xs border shadow-sm hover:bg-red-800 cursor-pointer"
-                      aria-label={general_translations("actions.select")}
+                      aria-label={generalTranslations("actions.select")}
                     >
                       <X size={16} className="text-white" />
                     </button>
@@ -363,8 +363,8 @@ export default function RecipeDetailsPage({
                 className="h-10 rounded-lg bg-custom-validation-green px-5 text-sm text-white disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer hover:bg-custom-validation-green/90"
               >
                 {submittingImage
-                  ? general_translations("actions.saving")
-                  : general_translations("actions.save_image_changes")}
+                  ? generalTranslations("actions.saving")
+                  : generalTranslations("actions.saveImageChanges")}
               </Button>
 
               {imageSuccess && (
@@ -388,11 +388,11 @@ export default function RecipeDetailsPage({
             </h2>
           </header>
           <IngredientChoice
-            values={recipe.recipe_ingredients}
-            onChange={(recipe_ingredients) =>
+            values={recipe.recipeIngredients}
+            onChange={(recipeIngredients) =>
               setRecipe((p) => ({
                 ...p,
-                recipe_ingredients: recipe_ingredients,
+                recipeIngredients: recipeIngredients,
               }))
             }
             className="sm:px-6"

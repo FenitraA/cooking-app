@@ -3,9 +3,9 @@ import { normStr } from "../utils";
 export function isIngredientDirty(
   initial: {
     name: string;
-    ingredient_unit_id: string;
-    ingredient_type_id: string;
-    estimated_price: string;
+    ingredientUnitId: string;
+    ingredientTypeId: string;
+    estimatedPrice: string;
   },
   current: typeof initial,
 ): boolean {

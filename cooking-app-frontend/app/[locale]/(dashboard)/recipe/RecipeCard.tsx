@@ -33,12 +33,12 @@ export default function RecipeCard({
             onClick={(e) => {
               e.stopPropagation();
               onImageClick?.(
-                data.recipe.image_url ?? "/images/recipe_placeholder.jpg",
+                data.recipe.imageUrl ?? "/images/recipe_placeholder.jpg",
               );
             }}
           >
             <SafeImage
-              src={data.recipe.image_url ?? "/images/recipe_placeholder.jpg"}
+              src={data.recipe.imageUrl ?? "/images/recipe_placeholder.jpg"}
               alt={data.recipe.name}
               fill
               sizes="80px"
@@ -78,18 +78,18 @@ export default function RecipeCard({
             </div>
 
             <span className="text-sm text-white/70">
-              {data.recipe_ingredients.length} ingredients
+              {data.recipeIngredients.length} ingredients
             </span>
 
             <div className="mt-2 flex flex-wrap gap-3 text-sm">
-              <span>⏱ {data.recipe.estimated_time} min</span>
+              <span>⏱ {data.recipe.estimatedTime} min</span>
 
               <span className="text-custom-money-green font-semibold">
-                💰 {formatNumberToCurrency(data.estimated_cost_price)}
+                💰 {formatNumberToCurrency(data.estimatedCostPrice)}
               </span>
 
-              {Number(data.recipe.parallel_cooking) > 0 && (
-                <span>🍳 {data.recipe.parallel_cooking} stations</span>
+              {Number(data.recipe.parallelCooking) > 0 && (
+                <span>🍳 {data.recipe.parallelCooking} stations</span>
               )}
             </div>
           </div>
@@ -106,9 +106,9 @@ export default function RecipeCard({
           </header>
 
           <div className="space-y-2">
-            {data.recipe_ingredients.map((ingredient) => (
+            {data.recipeIngredients.map((ingredient) => (
               <div
-                key={ingredient.ingredient_name}
+                key={ingredient.ingredientName}
                 className="
                   flex
                   bg-white/10
@@ -121,22 +121,22 @@ export default function RecipeCard({
                 "
               >
                 <span className="font-semibold">
-                  {ingredient.ingredient_name}
+                  {ingredient.ingredientName}
                 </span>
 
                 <span className="font-medium text-sm">
                   <span className="text-custom-sand-dune">
                     {formatNumber(
-                      ingredient.recipe_ingredient_base.quantity,
+                      ingredient.recipeIngredientBase.quantity,
                     )}
                   </span>{" "}
                   <span className="text-custom-sand-dune">
-                    {ingredient.ingredient_unit}
+                    {ingredient.ingredientUnit}
                   </span>
                   <span className="ml-2 text-custom-money-green font-semibold">
                     {formatNumberToCurrency(
-                      ingredient.estimated_cost_per_unit *
-                        Number(ingredient.recipe_ingredient_base.quantity),
+                      ingredient.estimatedCostPerUnit *
+                        Number(ingredient.recipeIngredientBase.quantity),
                     )}
                   </span>
                 </span>
@@ -163,7 +163,7 @@ export default function RecipeCard({
           >
             {data.recipe.description || (
               <span className="text-gray-500">
-                {translations("fields.no_description")}
+                {translations("fields.noDescription")}
               </span>
             )}
           </div>

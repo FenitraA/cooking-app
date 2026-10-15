@@ -28,15 +28,15 @@ export async function createPlanningRecipe(
     throw new Error(msg || "Failed to create planning recipe.");
   }
 
-  const planning_recipes = (await res.json()) as PlanningRecipeBase[];
-  return planning_recipes;
+  const planningRecipes = (await res.json()) as PlanningRecipeBase[];
+  return planningRecipes;
 }
 
 export async function fetchWeeklyPlanning(
-  planning_date: string,
+  planningDate: string,
 ): Promise<PlanningResult> {
   const res = await fetch(
-    `${BASE_URL}/proxy/planning/weekly?planning_date=${encodeURIComponent(planning_date)}`,
+    `${BASE_URL}/proxy/planning/weekly?planning_date=${encodeURIComponent(planningDate)}`,
   );
 
   if (res.status === 401) {
@@ -53,11 +53,11 @@ export async function fetchWeeklyPlanning(
 }
 
 export async function fetchPlanningByDate(
-  start_date: string,
-  end_date: string,
+  startDate: string,
+  endDate: string,
 ): Promise<PlanningResult> {
   const res = await fetch(
-    `${BASE_URL}/proxy/planning/by-dates?start_date=${encodeURIComponent(start_date)}&end_date=${encodeURIComponent(end_date)}`,
+    `${BASE_URL}/proxy/planning/by-dates?start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`,
   );
 
   if (res.status === 401) {
@@ -74,10 +74,10 @@ export async function fetchPlanningByDate(
 }
 
 export async function fetchPlanning(
-  today_date: string,
+  todayDate: string,
 ): Promise<PlanningResult> {
   const res = await fetch(
-    `${BASE_URL}/proxy/planning?today_date=${encodeURIComponent(today_date)}`,
+    `${BASE_URL}/proxy/planning?today_date=${encodeURIComponent(todayDate)}`,
   );
 
   if (res.status === 401) {
@@ -93,9 +93,9 @@ export async function fetchPlanning(
   return planning;
 }
 
-export async function fetchRecipeById(planning_recipe_id: string): Promise<PlanningRecipeRead> {
+export async function fetchRecipeById(planningRecipeId: string): Promise<PlanningRecipeRead> {
   const res = await fetch(
-    `${BASE_URL}/proxy/planning/one?planning_recipe_id=${encodeURIComponent(planning_recipe_id)}`,
+    `${BASE_URL}/proxy/planning/one?planning_recipe_id=${encodeURIComponent(planningRecipeId)}`,
   );
 
   if (res.status === 401) {
@@ -107,8 +107,8 @@ export async function fetchRecipeById(planning_recipe_id: string): Promise<Plann
     throw new Error(msg || "Failed to fetch planning_recipe");
   }
 
-  const planning_recipe = (await res.json()) as PlanningRecipeRead;
-  return planning_recipe;
+  const planningRecipe = (await res.json()) as PlanningRecipeRead;
+  return planningRecipe;
 }
 
 export async function deletePlanningRecipe(
@@ -124,8 +124,8 @@ export async function deletePlanningRecipe(
   if (res.status === 401) throw new UnauthorizedError("Unauthorized");
   if (!res.ok) throw new Error(await res.text().catch(() => "Request failed"));
 
-  const planning_recipe = (await res.json()) as PlanningRecipeBase;
-  return planning_recipe;
+  const planningRecipe = (await res.json()) as PlanningRecipeBase;
+  return planningRecipe;
 }
 
 export async function updatePlanningRecipe(
@@ -141,6 +141,6 @@ export async function updatePlanningRecipe(
   if (res.status === 401) throw new UnauthorizedError("Unauthorized");
   if (!res.ok) throw new Error(await res.text().catch(() => "Request failed"));
 
-  const planning_recipe = (await res.json()) as PlanningRecipeRead;
-  return planning_recipe;
+  const planningRecipe = (await res.json()) as PlanningRecipeRead;
+  return planningRecipe;
 }

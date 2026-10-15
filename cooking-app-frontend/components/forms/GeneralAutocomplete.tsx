@@ -160,7 +160,7 @@ export default function GeneralAutocomplete<T>({
               void loadOptions(""); // default results
             }
           }}
-          placeholder={t("type_to_search")}
+          placeholder={t("typeToSearch")}
         />
 
         {open && (
@@ -168,7 +168,7 @@ export default function GeneralAutocomplete<T>({
             <div className="max-h-60 overflow-auto">
               {!loading && options.length === 0 ? (
                 <div className="px-3 py-3 text-sm text-gray-500">
-                  {t("errors.no_results")}
+                  {t("errors.noResults")}
                 </div>
               ) : (
                 options.map((item, i) => (

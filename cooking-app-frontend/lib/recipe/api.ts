@@ -49,11 +49,11 @@ export async function fetchRecipesSearch(
   if (searchParams.name) {
     params.set("name", searchParams.name);
   }
-  if (searchParams.max_making_time) {
-    params.set("max_making_time", String(searchParams.max_making_time));
+  if (searchParams.maxMakingTime) {
+    params.set("max_making_time", String(searchParams.maxMakingTime));
   }
-  if (searchParams.ingredient_ids) {
-    for (const id of searchParams.ingredient_ids) {
+  if (searchParams.ingredientIds) {
+    for (const id of searchParams.ingredientIds) {
       params.append("ingredient_ids", id);
     }
   }
@@ -97,9 +97,9 @@ export async function fetchRecipeByName(name: string): Promise<RecipeBase[]> {
   return recipes;
 }
 
-export async function fetchRecipeById(recipe_id: string): Promise<RecipeRead> {
+export async function fetchRecipeById(recipeId: string): Promise<RecipeRead> {
   const res = await fetch(
-    `${BASE_URL}/proxy/recipes/one?recipe_id=${encodeURIComponent(recipe_id)}`,
+    `${BASE_URL}/proxy/recipes/one?recipe_id=${encodeURIComponent(recipeId)}`,
   );
 
   if (res.status === 401) {
@@ -187,11 +187,11 @@ export async function deleteMeal(body: DeleteMealData): Promise<MealBase> {
 }
 
 export async function getMealSetupFromRecipe(
-  recipe_id: string,
-  nb_serving: number,
+  recipeId: string,
+  nbServing: number,
 ): Promise<MealIngredientRead[]> {
   const res = await fetch(
-    `${BASE_URL}/proxy/recipes/meals/initial-setup?recipe_id=${encodeURIComponent(recipe_id)}&nb_serving=${encodeURIComponent(nb_serving)}`,
+    `${BASE_URL}/proxy/recipes/meals/initial-setup?recipe_id=${encodeURIComponent(recipeId)}&nb_serving=${encodeURIComponent(nbServing)}`,
   );
 
   if (res.status === 401) {
@@ -212,14 +212,14 @@ export async function fetchMealSearch(
 ): Promise<MealSearchResult> {
   const params = new URLSearchParams();
 
-  if (searchParams.recipe_name) {
-    params.set("recipe_name", searchParams.recipe_name);
+  if (searchParams.recipeName) {
+    params.set("recipe_name", searchParams.recipeName);
   }
-  if (searchParams.start_date) {
-    params.set("start_date", String(searchParams.start_date));
+  if (searchParams.startDate) {
+    params.set("start_date", String(searchParams.startDate));
   }
-  if (searchParams.end_date) {
-    params.set("end_date", String(searchParams.end_date));
+  if (searchParams.endDate) {
+    params.set("end_date", String(searchParams.endDate));
   }
   if (searchParams.offset !== undefined) {
     params.set("offset", String(searchParams.offset));

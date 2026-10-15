@@ -1,85 +1,133 @@
-//Recipe ingredients
-export interface RecipeIngredientBase {
-  id: string; // local-only id for table rows
+
+import { CamelCasedPropertiesDeep } from "../case-types";
+
+// Recipe ingredients
+
+export interface RecipeIngredientApiResponse {
+  id: string; // Local-only ID for table rows
   insertion_id: string;
   ref_ingredient_id: string;
-  ingredient_name?: string; // optional, only for reads
-  ingredient_unit?: string; // optional, only for reads
+  ingredient_name?: string; // Optional, only for reads
+  ingredient_unit?: string; // Optional, only for reads
   ref_recipe_id: string;
   quantity: string;
 }
-export interface RecipeIngredientRead {
-  recipe_ingredient_base: RecipeIngredientBase;
+
+export type RecipeIngredientBase =
+  CamelCasedPropertiesDeep<RecipeIngredientApiResponse>;
+
+export interface RecipeIngredientReadApiResponse {
+  recipe_ingredient_base: RecipeIngredientApiResponse;
   recipe_name: string;
   ingredient_name: string;
   ingredient_unit: string;
   estimated_cost_per_unit: number;
 }
 
-//Recipes
-export interface RecipeSearchParams {
+export type RecipeIngredientRead =
+  CamelCasedPropertiesDeep<RecipeIngredientReadApiResponse>;
+
+// Recipes
+
+export interface RecipeSearchParamsApi {
   name?: string;
   max_making_time?: string;
   ingredient_ids?: string[];
   offset?: number;
   limit?: number;
 }
-export interface RecipeBase {
+
+export type RecipeSearchParams =
+  CamelCasedPropertiesDeep<RecipeSearchParamsApi>;
+
+export interface RecipeBaseApiResponse {
   id: string;
   name: string;
   ref_household_id: string;
   description: string;
   estimated_time: string;
   parallel_cooking: string;
-  image_url : string | null;
-  storage_key : string | null;
+  image_url: string | null;
+  storage_key: string | null;
 }
-export interface RecipeImageData {
-  id:string;
+
+export type RecipeBase =
+  CamelCasedPropertiesDeep<RecipeBaseApiResponse>;
+
+export interface RecipeImageDataApiResponse {
+  id: string;
   image_url: string;
   storage_key: string;
 }
-export interface RecipeCreate extends RecipeBase {
-  recipe_ingredients: RecipeIngredientBase[];
+
+export type RecipeImageData =
+  CamelCasedPropertiesDeep<RecipeImageDataApiResponse>;
+
+export interface RecipeCreateApiRequest extends RecipeBaseApiResponse {
+  recipe_ingredients: RecipeIngredientApiResponse[];
 }
-export interface RecipeCreateResponse {
-  recipe: RecipeBase;
-  recipe_ingredients: RecipeIngredientBase[];
+
+export type RecipeCreate =
+  CamelCasedPropertiesDeep<RecipeCreateApiRequest>;
+
+export interface RecipeCreateResponseApiResponse {
+  recipe: RecipeBaseApiResponse;
+  recipe_ingredients: RecipeIngredientApiResponse[];
 }
-export interface RecipeRead {
-  recipe: RecipeBase;
+
+export type RecipeCreateResponse =
+  CamelCasedPropertiesDeep<RecipeCreateResponseApiResponse>;
+
+export interface RecipeReadApiResponse {
+  recipe: RecipeBaseApiResponse;
   estimated_cost_price: number;
-  recipe_ingredients: RecipeIngredientRead[];
+  recipe_ingredients: RecipeIngredientReadApiResponse[];
 }
-export interface RecipeSearchResult {
-  items: RecipeRead[];
+
+export type RecipeRead =
+  CamelCasedPropertiesDeep<RecipeReadApiResponse>;
+
+export interface RecipeSearchResultApiResponse {
+  items: RecipeReadApiResponse[];
   total: number;
   offset: number;
   limit: number;
 }
-export interface RecipeUpdateData {
+
+export type RecipeSearchResult =
+  CamelCasedPropertiesDeep<RecipeSearchResultApiResponse>;
+
+export interface RecipeUpdateDataApiRequest {
   id: string;
   name: string;
   description: string;
   estimated_time: string;
   parallel_cooking: string;
-  recipe_ingredients: RecipeIngredientBase[];
+  recipe_ingredients: RecipeIngredientApiResponse[];
 }
 
-//Meal ingredients
-export interface MealIngredientBase {
-  id: string; // local-only id for table rows
+export type RecipeUpdateData =
+  CamelCasedPropertiesDeep<RecipeUpdateDataApiRequest>;
+
+// Meal ingredients
+
+export interface MealIngredientApiResponse {
+  id: string; // Local-only ID for table rows
   ref_meal_id: string;
   ref_ingredient_unit_id: string;
   ref_ingredient_stock_id: string;
-  ingredient_name?: string; // optional, only for reads
-  ingredient_unit?: string; // optional, only for reads
-  stock_description?: string; // optional, only for reads
-  total_price?: string; // optional, only for reads
+  ingredient_name?: string; // Optional, only for reads
+  ingredient_unit?: string; // Optional, only for reads
+  stock_description?: string; // Optional, only for reads
+  total_price?: string; // Optional, only for reads
   quantity: string;
 }
-export interface MealIngredientRead {
-  meal_ingredient_base: MealIngredientBase;
+
+export type MealIngredientBase =
+  CamelCasedPropertiesDeep<MealIngredientApiResponse>;
+
+export interface MealIngredientReadApiResponse {
+  meal_ingredient_base: MealIngredientApiResponse;
   seller_name: string;
   ingredient_name: string;
   ingredient_unit: string;
@@ -87,40 +135,71 @@ export interface MealIngredientRead {
   total_price: number;
 }
 
-//Meal
-export interface MealSearchParams {
+export type MealIngredientRead =
+  CamelCasedPropertiesDeep<MealIngredientReadApiResponse>;
+
+// Meals
+
+export interface MealSearchParamsApi {
   recipe_name?: string;
   start_date?: string;
   end_date?: string;
   offset?: number;
   limit?: number;
 }
-export interface MealBase {
+
+export type MealSearchParams =
+  CamelCasedPropertiesDeep<MealSearchParamsApi>;
+
+export interface MealBaseApiResponse {
   id: string;
   ref_recipe_id: string;
   nb_serving: string;
   created_at?: Date;
 }
-export interface MealCreate extends MealBase {
-  meal_ingredients: MealIngredientBase[];
+
+export type MealBase =
+  CamelCasedPropertiesDeep<MealBaseApiResponse>;
+
+export interface MealCreateApiRequest extends MealBaseApiResponse {
+  meal_ingredients: MealIngredientApiResponse[];
 }
-export interface MealCreateResponse {
-  meal: MealBase;
-  meal_ingredients: MealIngredientBase[];
+
+export type MealCreate =
+  CamelCasedPropertiesDeep<MealCreateApiRequest>;
+
+export interface MealCreateResponseApiResponse {
+  meal: MealBaseApiResponse;
+  meal_ingredients: MealIngredientApiResponse[];
 }
-export interface MealRead {
-  meal: MealBase;
+
+export type MealCreateResponse =
+  CamelCasedPropertiesDeep<MealCreateResponseApiResponse>;
+
+export interface MealReadApiResponse {
+  meal: MealBaseApiResponse;
   recipe_name: string;
   total_cost_price: number;
   total_estimated_time: number;
-  meal_ingredients: MealIngredientRead[];
+  meal_ingredients: MealIngredientReadApiResponse[];
 }
-export interface MealSearchResult {
-  items: MealRead[];
+
+export type MealRead =
+  CamelCasedPropertiesDeep<MealReadApiResponse>;
+
+export interface MealSearchResultApiResponse {
+  items: MealReadApiResponse[];
   total: number;
   offset: number;
   limit: number;
 }
-export interface DeleteMealData {
+
+export type MealSearchResult =
+  CamelCasedPropertiesDeep<MealSearchResultApiResponse>;
+
+export interface DeleteMealApiRequest {
   meal_id: string;
 }
+
+export type DeleteMealData =
+  CamelCasedPropertiesDeep<DeleteMealApiRequest>;

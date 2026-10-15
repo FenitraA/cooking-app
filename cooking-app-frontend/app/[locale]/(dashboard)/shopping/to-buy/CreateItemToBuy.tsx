@@ -5,7 +5,6 @@ import { Button } from "flowbite-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
 import GeneralAutocomplete from "@/components/forms/GeneralAutocomplete";
 import { ItemCategoryBase, ItemToBuyBase } from "@/lib/shopping/types";
 import { IngredientBase } from "@/lib/ingredient/types";
@@ -24,17 +23,17 @@ export default function ItemToBuyCreatePage({
 }) {
   const router = useRouter();
   const translations = useTranslations("ItemToBuy");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
   const [itemToBuy, setItemToBuy] = useState<ItemToBuyBase>({
     id: "",
     name: "",
     description: "",
-    estimated_unit_price: "0",
-    units_to_buy: "0",
-    ref_ingredient_id: null,
-    ref_shopping_item_id: null,
-    ref_item_category_id: "",
-    ref_household_id: "",
+    estimatedUnitPrice: "0",
+    unitsToBuy: "0",
+    refIngredientId: null,
+    refShoppingItemId: null,
+    refItemCategoryId: "",
+    refHouseholdId: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -71,13 +70,13 @@ export default function ItemToBuyCreatePage({
     const newErrors: Record<string, string> = {};
     
     if (!itemToBuy.name.trim())
-      newErrors.name = translations("errors.required_name");
-    if (!itemToBuy.estimated_unit_price || Number(itemToBuy.estimated_unit_price) <= 0)
-      newErrors.estimatedUnitPrice = translations("errors.required_estimated_unit_price");
-    if (!itemToBuy.units_to_buy || Number(itemToBuy.units_to_buy) <= 0)
-      newErrors.unitsToBuy = translations("errors.required_units_to_buy");
-    if (!itemToBuy.ref_item_category_id.trim())
-      newErrors.refItemCategoryId = translations("errors.required_item_category");
+      newErrors.name = translations("errors.requiredName");
+    if (!itemToBuy.estimatedUnitPrice || Number(itemToBuy.estimatedUnitPrice) <= 0)
+      newErrors.estimatedUnitPrice = translations("errors.requiredEstimatedUnitPrice");
+    if (!itemToBuy.unitsToBuy || Number(itemToBuy.unitsToBuy) <= 0)
+      newErrors.unitsToBuy = translations("errors.requiredUnitsToBuy");
+    if (!itemToBuy.refItemCategoryId.trim())
+      newErrors.refItemCategoryId = translations("errors.requiredItemCategory");
     
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
@@ -93,12 +92,12 @@ export default function ItemToBuyCreatePage({
         id: "",
         name: "",
         description: "",
-        estimated_unit_price: "0",
-        units_to_buy: "0",
-        ref_ingredient_id: null,
-        ref_shopping_item_id: null,
-        ref_item_category_id: "",
-        ref_household_id: "",
+        estimatedUnitPrice: "0",
+        unitsToBuy: "0",
+        refIngredientId: null,
+        refShoppingItemId: null,
+        refItemCategoryId: "",
+        refHouseholdId: "",
       }));
       setSelectedIngredient(null);
       setSelectedItemCategory(null);
@@ -110,7 +109,7 @@ export default function ItemToBuyCreatePage({
       }
 
       const msg = getErrorMessage(e);
-      setError(translations("errors.create_failed", { message: msg }));
+      setError(translations("errors.createFailed", { message: msg }));
     } finally {
       setSubmitting(false);
     }
@@ -120,7 +119,7 @@ export default function ItemToBuyCreatePage({
       <header className="relative mb-4 mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
-            {translations("create_title")}
+            {translations("createTitle")}
           </h1>
         </div>
       </header>
@@ -142,16 +141,16 @@ export default function ItemToBuyCreatePage({
               setItemToBuy((p) => ({
                 ...p,
                 name: d.name,
-                estimated_unit_price: d.estimated_price,
-                ref_ingredient_id: d.id,
-                ref_item_category_id: ingredientCategory?.id ?? "",
+                estimatedUnitPrice: d.estimatedPrice,
+                refIngredientId: d.id,
+                refItemCategoryId: ingredientCategory?.id ?? "",
               }));
 
               setSelectedItemCategory(ingredientCategory);
             }}
             onClear={() => {
               setSelectedIngredient(null);
-              setItemToBuy((p) => ({ ...p, ref_ingredient_unit_id: "" }));
+              setItemToBuy((p) => ({ ...p, refIngredientUnitId: "" }));
             }}
             getName={getIngredientName}
             fetchOptions={fetchIngredientByName}
@@ -178,39 +177,39 @@ export default function ItemToBuyCreatePage({
             id="unitsToBuy"
             className="w-full"
             type="decimal"
-            label={translations("fields.units_to_buy")}
-            value={String(itemToBuy.units_to_buy ?? "")}
+            label={translations("fields.unitsToBuy")}
+            value={String(itemToBuy.unitsToBuy ?? "")}
             onChange={(v) =>
-              setItemToBuy((p) => ({ ...p, units_to_buy: v }))
+              setItemToBuy((p) => ({ ...p, unitsToBuy: v }))
             }
             error={errors.unitsToBuy}
-            placeholder={translations("fields.units_to_buy")}
+            placeholder={translations("fields.unitsToBuy")}
           />
           <Field
             id="estimatedUnitPrice"
             className="w-full"
             type="decimal"
-            label={translations("fields.estimated_unit_price")}
-            value={String(itemToBuy.estimated_unit_price ?? "")}
+            label={translations("fields.estimatedUnitPrice")}
+            value={String(itemToBuy.estimatedUnitPrice ?? "")}
             onChange={(v) =>
-              setItemToBuy((p) => ({ ...p, estimated_unit_price: v }))
+              setItemToBuy((p) => ({ ...p, estimatedUnitPrice: v }))
             }
             error={errors.estimatedUnitPrice}
-            placeholder={translations("fields.estimated_unit_price")}
+            placeholder={translations("fields.estimatedUnitPrice")}
           />
           <GeneralAutocomplete<ItemCategoryBase>
-            label={translations("fields.item_category")}
+            label={translations("fields.itemCategory")}
             translationsKey="ItemCategory"
             showShadow={false}
             className="w-full"
             value={selectedItemCategory}
             onSelect={(d) => {
               setSelectedItemCategory(d);
-              setItemToBuy((p) => ({ ...p, ref_item_category_id: d.id }));
+              setItemToBuy((p) => ({ ...p, refItemCategoryId: d.id }));
             }}
             onClear={() => {
               setSelectedItemCategory(null);
-              setItemToBuy((p) => ({ ...p, ref_item_category_id: "" }));
+              setItemToBuy((p) => ({ ...p, refItemCategoryId: "" }));
             }}
             getName={getItemCategoryName}
             fetchOptions={fetchItemCategories}
@@ -225,8 +224,8 @@ export default function ItemToBuyCreatePage({
             className="h-10 w-full rounded-lg bg-custom-validation-green px-5 text-sm text-white disabled:bg-white/10 disabled:cursor-not-allowed cursor-pointer hover:bg-custom-validation-green/90"
           >
             {submitting
-              ? general_translations("actions.saving")
-              : general_translations("actions.save")}
+              ? generalTranslations("actions.saving")
+              : generalTranslations("actions.save")}
           </Button>
 
           {success && (

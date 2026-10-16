@@ -39,14 +39,14 @@ export default function MealListPage({
 }) {
   const router = useRouter();
   const translations = useTranslations("Meal");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
 
   const [mealSearchParams, setMealSearchParams] = useState<MealSearchParams>({
     limit: 50,
     offset: 0,
-    recipe_name: undefined,
-    start_date: undefined,
-    end_date: undefined,
+    recipeName: undefined,
+    startDate: undefined,
+    endDate: undefined,
   });
 
   const debouncedSearchParams = useDebounce(mealSearchParams, 400);
@@ -80,21 +80,21 @@ export default function MealListPage({
   function setRecipeName(v: string) {
     setMealSearchParams((p) => ({
       ...p,
-      recipe_name: v || undefined,
+      recipeName: v || undefined,
       offset: 0,
     }));
   }
   function setStartDate(v: string) {
     setMealSearchParams((p) => ({
       ...p,
-      start_date: v || undefined,
+      startDate: v || undefined,
       offset: 0,
     }));
   }
   function setEndDate(v: string) {
     setMealSearchParams((p) => ({
       ...p,
-      end_date: v || undefined,
+      endDate: v || undefined,
       offset: 0,
     }));
   }
@@ -139,7 +139,7 @@ export default function MealListPage({
       <header className="relative mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
-            {translations("list_title")}
+            {translations("listTitle")}
           </h1>
         </div>
       </header>
@@ -155,9 +155,9 @@ export default function MealListPage({
           <div className="col-span-1">
             <Field
               icon={Notebook}
-              value={mealSearchParams.recipe_name ?? ""}
+              value={mealSearchParams.recipeName ?? ""}
               onChange={setRecipeName}
-              placeholder={translations("filters.recipe_name")}
+              placeholder={translations("filters.recipeName")}
             />
           </div>
 
@@ -165,9 +165,9 @@ export default function MealListPage({
             <Field
               type="date"
               icon={CalendarArrowDown}
-              value={String(mealSearchParams.start_date ?? "")}
+              value={String(mealSearchParams.startDate ?? "")}
               onChange={setStartDate}
-              placeholder={translations("filters.start_date")}
+              placeholder={translations("filters.startDate")}
             />
           </div>
 
@@ -175,9 +175,9 @@ export default function MealListPage({
             <Field
               type="date"
               icon={CalendarArrowUp}
-              value={String(mealSearchParams.end_date ?? "")}
+              value={String(mealSearchParams.endDate ?? "")}
               onChange={setEndDate}
-              placeholder={translations("filters.end_date")}
+              placeholder={translations("filters.endDate")}
             />
           </div>
         </div>
@@ -190,7 +190,7 @@ export default function MealListPage({
           )}
 
           {/* <div className="text-xs text-gray-400 ml-2 mb-2">
-            {translations("count_label")} :{" "}
+            {translations("countLabel")} :{" "}
             <span className="text-gray-700 font-bold">{total}</span>
           </div> */}
 
@@ -199,13 +199,13 @@ export default function MealListPage({
               <thead className="sticky top-0 z-10 text-sm text-left text-white ">
                 <tr>
                   <th className="bg-gray-500 py-2 px-4  border-r border-white/20 rounded-tl-xl">
-                    {translations("table.recipe_name")}
+                    {translations("table.recipeName")}
                   </th>
                   <th className="bg-gray-500 py-2 px-4 border-r border-white/20">
-                    {translations("table.nb_serving")}
+                    {translations("table.nbServing")}
                   </th>
                   <th className="bg-gray-500 py-2 px-4 border-r border-white/20">
-                    {translations("table.total_cost")}
+                    {translations("table.totalCost")}
                   </th>
                   <th className="bg-gray-500 py-2 px-4 border-r border-white/20">
                     {translations("table.date")}
@@ -228,16 +228,16 @@ export default function MealListPage({
                     className="text-gray-300 text-sm border-b border-white/20"
                   >
                     <td className="py-2 px-4 border-x border-white/20">
-                      {item.recipe_name}
+                      {item.recipeName}
                     </td>
                     <td className="py-2 px-4 border-r border-white/20">
-                      {item.meal.nb_serving}
+                      {item.meal.nbServing}
                     </td>
                     <td className="py-2 px-4 border-r border-white/20">
-                      {formatNumberToCurrency(item.total_cost_price)}
+                      {formatNumberToCurrency(item.totalCostPrice)}
                     </td>
                     <td className="py-2 px-4 border-r border-white/20">
-                      {formatDateFR(item.meal.created_at || "")}
+                      {formatDateFR(item.meal.createdAt || "")}
                     </td>
                     <td className="py-2 px-4 border-r border-white/20">
                       <Beef
@@ -245,7 +245,7 @@ export default function MealListPage({
                         className="text-gray-300 hover:text-gray-100 cursor-pointer"
                         onClick={() => {
                           setOpenIngredientsModal(true);
-                          setActualMealIngredients(item.meal_ingredients);
+                          setActualMealIngredients(item.mealIngredients);
                         }}
                       />
                     </td>
@@ -262,8 +262,8 @@ export default function MealListPage({
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
               onPageChange={onPageChange}
-              previousLabel={general_translations("actions.previous")}
-              nextLabel={general_translations("actions.next")}
+              previousLabel={generalTranslations("actions.previous")}
+              nextLabel={generalTranslations("actions.next")}
               showIcons
             />
           </div>
@@ -277,11 +277,11 @@ export default function MealListPage({
       >
         <ModalBody className="bg-custom-dark-blue border border-custom-sand-dune">
           <div className="flex text-xl text-custom-sand-dune flex-row justify-between w-full mb-3 pb-3 border-b border-custom-sand-dune">
-            <h2>{translations("ingredients_list")}</h2>
+            <h2>{translations("ingredientsList")}</h2>
             <button
               className="flex justify-center items-center cursor-pointer h-6 w-6 border border-custom-sand-dune rounded-full text-custom-sand-dune hover:bg-custom-sand-dune/20"
               onClick={() => setOpenIngredientsModal(false)}
-              aria-label={general_translations("actions.select")}
+              aria-label={generalTranslations("actions.select")}
             >
               <X size={16} />
             </button>
@@ -291,7 +291,7 @@ export default function MealListPage({
             <div className="mt-3 space-y-2 pt-4 border-t border-white/20 pb-6 flex flex-col max-h-[40vh] overflow-auto">
               {actualMealIngredients.map((item) => (
                 <div
-                  key={item.meal_ingredient_base.ref_ingredient_stock_id}
+                  key={item.mealIngredientBase.refIngredientStockId}
                   className="
                     flex
                     items-center
@@ -313,13 +313,13 @@ export default function MealListPage({
                     "
                   >
                     <div className="font-semibold text-gray-300">
-                      {item.ingredient_name}
+                      {item.ingredientName}
                     </div>
 
                     <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
                       <span className="text-custom-sand-dune">
-                        {formatNumber(item.meal_ingredient_base.quantity)}{" "}
-                        {item.ingredient_unit}
+                        {formatNumber(item.mealIngredientBase.quantity)}{" "}
+                        {item.ingredientUnit}
                       </span>
 
                       <span className="text-gray-400">

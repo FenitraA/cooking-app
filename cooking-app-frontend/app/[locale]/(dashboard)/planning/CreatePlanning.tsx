@@ -21,16 +21,16 @@ export default function CreatePlanning({
 }) {
   const router = useRouter();
   const translations = useTranslations("Planning");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
 
   const [planningRecipe, setPlanningRecipe] = useState<PlanningRecipeCreate>({
     id: "",
-    ref_recipe_id: "",
-    ref_household_id: "",
-    planning_date: "2000-01-01",
+    refRecipeId: "",
+    refHouseholdId: "",
+    planningDate: "2000-01-01",
     description: "",
-    nb_serving: "0",
-    planning_dates: [],
+    nbServing: "0",
+    planningDates: [],
   });
 
   const [planningDates, setPlanningDates] = useState<Date[]>([]);
@@ -44,25 +44,25 @@ export default function CreatePlanning({
     e.preventDefault();
     setError(null);
 
-    if (!planningRecipe.ref_recipe_id.trim())
-      return setError(translations("errors.required_recipe"));
-    if (planningRecipe.planning_dates.length == 0)
-      return setError(translations("errors.required_planning_date"));
-    if (!planningRecipe.nb_serving || Number(planningRecipe.nb_serving) <= 0)
-      return setError(translations("errors.required_nb_serving"));
+    if (!planningRecipe.refRecipeId.trim())
+      return setError(translations("errors.requiredRecipe"));
+    if (planningRecipe.planningDates.length == 0)
+      return setError(translations("errors.requiredPlanningDate"));
+    if (!planningRecipe.nbServing || Number(planningRecipe.nbServing) <= 0)
+      return setError(translations("errors.requiredNbServing"));
     setSubmitting(true);
 
     try {
-      console.log(planningRecipe.planning_dates);
+      console.log(planningRecipe.planningDates);
       await createPlanningRecipe(planningRecipe);
 
       setPlanningRecipe((v) => ({
         ...v,
         id: "",
-        ref_recipe_id: "",
-        ref_household_id: "",
-        planning_date: "",
-        nb_serving: "0",
+        refRecipeId: "",
+        refHouseholdId: "",
+        planningDate: "",
+        nbServing: "0",
         state: 1,
       }));
       onCreated?.();
@@ -73,7 +73,7 @@ export default function CreatePlanning({
       }
 
       const msg = getErrorMessage(e);
-      setError(translations("errors.create_failed", { message: msg }));
+      setError(translations("errors.createFailed", { message: msg }));
     } finally {
       setSubmitting(false);
     }
@@ -84,7 +84,7 @@ export default function CreatePlanning({
       <header className="relative mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
-            {translations("create_title")}
+            {translations("createTitle")}
           </h1>
         </div>
       </header>
@@ -96,7 +96,7 @@ export default function CreatePlanning({
         <div className="flex items-end rounded-xl flex-wrap">
           <div className="flex flex-col justify-left gap-6 sm:px-6 py-6 items-end">
             <GeneralAutocomplete<RecipeBase>
-              label={translations("fields.choose_recipe")}
+              label={translations("fields.chooseRecipe")}
               translationsKey="Recipe"
               showShadow={false}
               className="w-full lg:min-w-50"
@@ -105,40 +105,40 @@ export default function CreatePlanning({
                 setSelectedRecipe(d);
                 setPlanningRecipe((p) => ({
                   ...p,
-                  ref_recipe_id: d.id,
+                  refRecipeId: d.id,
                 }));
               }}
               onClear={() => {
                 setSelectedRecipe(null);
                 setPlanningRecipe((p) => ({
                   ...p,
-                  ref_recipe_id: "",
+                  refRecipeId: "",
                 }));
               }}
               getName={getRecipeName}
               fetchOptions={fetchRecipeByName}
             />
             <Field
-              id="nb_serving"
-              label={translations("fields.nb_serving")}
+              id="nbServing"
+              label={translations("fields.nbServing")}
               type="decimal"
               className="w-full lg:min-w-50"
-              value={String(planningRecipe.nb_serving ?? "")}
+              value={String(planningRecipe.nbServing ?? "")}
               onChange={(v) =>
                 setPlanningRecipe((p) => ({
                   ...p,
-                  nb_serving: v,
+                  nbServing: v,
                 }))
               }
             />
             <MultipleDateField
-              label={translations("fields.planning_date")}
+              label={translations("fields.planningDate")}
               className="w-full lg:min-w-50"
               value={planningDates}
               onChange={(v) => {
                 setPlanningRecipe((p) => ({
                   ...p,
-                  planning_dates: toPythonCompatibleDate(v || []),
+                  planningDates: toPythonCompatibleDate(v || []),
                 }));
                 setPlanningDates(v || []);
               }}
@@ -153,7 +153,7 @@ export default function CreatePlanning({
             className="h-10 w-full rounded-lg bg-custom-validation-green px-5 text-sm text-white disabled:bg-white/10 disabled:cursor-not-allowed cursor-pointer hover:bg-custom-validation-green/90"
           >
             {submitting
-              ? general_translations("actions.saving")
+              ? generalTranslations("actions.saving")
               : translations("actions.save")}
           </Button>
 

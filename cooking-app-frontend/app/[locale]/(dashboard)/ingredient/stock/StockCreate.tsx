@@ -18,15 +18,15 @@ export default function IngredientStockCreatePage({
 }) {
   const router = useRouter();
   const translations = useTranslations("Ingredient");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
 
   const [newIngredientStock, setNewIngredientStock] =
     useState<IngredientStockBase>({
       id: "",
-      unit_cost: "0",
+      unitCost: "0",
       quantity: "0",
-      ref_seller_id: "",
-      ref_ingredient_id: "",
+      refSellerId: "",
+      refIngredientId: "",
     });
 
   const [submitting, setSubmitting] = useState(false);
@@ -36,7 +36,7 @@ export default function IngredientStockCreatePage({
   const [selectedSeller, setSelectedSeller] = useState<SellerBase | null>(null);
 
   useEffect(() => {
-    setNewIngredientStock((v) => ({ ...v, ref_ingredient_id: ingredientId }));
+    setNewIngredientStock((v) => ({ ...v, refIngredientId: ingredientId }));
   }, [ingredientId]);
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
@@ -45,20 +45,20 @@ export default function IngredientStockCreatePage({
     // setSuccess(null);
 
     // Verify values (match eng.json keys)
-    if (!newIngredientStock.ref_seller_id.trim())
-      return setError(translations("errors.required_seller"));
-    if (!newIngredientStock.ref_ingredient_id.trim())
-      return setError(translations("errors.required_ingredient_id"));
+    if (!newIngredientStock.refSellerId.trim())
+      return setError(translations("errors.requiredSeller"));
+    if (!newIngredientStock.refIngredientId.trim())
+      return setError(translations("errors.requiredIngredientId"));
     if (
       !newIngredientStock.quantity ||
       Number(newIngredientStock.quantity) <= 0
     )
-      return setError(translations("errors.required_quantity"));
+      return setError(translations("errors.requiredQuantity"));
     if (
-      !newIngredientStock.unit_cost ||
-      Number(newIngredientStock.unit_cost) <= 0
+      !newIngredientStock.unitCost ||
+      Number(newIngredientStock.unitCost) <= 0
     )
-      return setError(translations("errors.required_unit_cost"));
+      return setError(translations("errors.requiredUnitCost"));
 
     setSubmitting(true);
 
@@ -69,10 +69,10 @@ export default function IngredientStockCreatePage({
       setNewIngredientStock((v) => ({
         ...v,
         id: "",
-        unit_cost: "0",
+        unitCost: "0",
         quantity: "0",
-        ref_seller_id: "",
-        ref_ingredient_id: ingredientId,
+        refSellerId: "",
+        refIngredientId: ingredientId,
       }));
       onCreated?.();
     } catch (e: unknown) {
@@ -82,7 +82,7 @@ export default function IngredientStockCreatePage({
       }
 
       const msg = getErrorMessage(e);
-      setError(translations("errors.create_stock_failed", { message: msg }));
+      setError(translations("errors.createStockFailed", { message: msg }));
     } finally {
       setSubmitting(false);
     }
@@ -99,11 +99,11 @@ export default function IngredientStockCreatePage({
           value={selectedSeller}
           onSelect={(d) => {
             setSelectedSeller(d);
-            setNewIngredientStock((p) => ({ ...p, ref_seller_id: d.id }));
+            setNewIngredientStock((p) => ({ ...p, refSellerId: d.id }));
           }}
           onClear={() => {
             setSelectedSeller(null);
-            setNewIngredientStock((p) => ({ ...p, ref_seller_id: "" }));
+            setNewIngredientStock((p) => ({ ...p, refSellerId: "" }));
           }}
           getName={getSellerName}
           fetchOptions={fetchSellers}
@@ -122,17 +122,17 @@ export default function IngredientStockCreatePage({
           placeholder={translations("fields.quantity")}
         />
         <Field
-          id="unit_cost"
-          label={translations("fields.unit_cost")}
+          id="unitCost"
+          label={translations("fields.unitCost")}
           type="decimal"
-          value={String(newIngredientStock?.unit_cost || "")}
+          value={String(newIngredientStock?.unitCost || "")}
           onChange={(v) =>
             setNewIngredientStock({
               ...newIngredientStock,
-              unit_cost: v,
+              unitCost: v,
             })
           }
-          placeholder={translations("fields.unit_cost")}
+          placeholder={translations("fields.unitCost")}
         />
       </div>
       <div
@@ -151,8 +151,8 @@ export default function IngredientStockCreatePage({
           className="h-10 w-full rounded-lg bg-custom-validation-green px-5 text-sm text-white hover:bg-custom-validation-green/90 disabled:opacity-60 cursor-pointer"
         >
           {submitting
-            ? general_translations("actions.saving")
-            : translations("actions.save_stock")}
+            ? generalTranslations("actions.saving")
+            : translations("actions.saveStock")}
         </button>
         {/* {success && (
           <div className="rounded-lg bg-white/10 px-3 py-2 text-sm text-green-500">

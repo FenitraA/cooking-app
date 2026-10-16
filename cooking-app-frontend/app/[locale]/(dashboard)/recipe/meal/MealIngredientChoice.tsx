@@ -48,13 +48,13 @@ export default function MealIngredientChoice({
     if (!selectedIngredientStock) return;
 
     if (!quantityPerService || quantityPerService <= 0)
-      return setError(translations("errors.required_quantity"));
-    if (quantityPerService > selectedIngredientStock.quantity_left)
-      return setError(translations("errors.not_enough_stock"));
+      return setError(translations("errors.requiredQuantity"));
+    if (quantityPerService > selectedIngredientStock.quantityLeft)
+      return setError(translations("errors.notEnoughStock"));
     const exists = values.some(
       (item) =>
-        item.ref_ingredient_stock_id ===
-        selectedIngredientStock.ingredient_stock.id,
+        item.refIngredientStockId ===
+        selectedIngredientStock.ingredientStock.id,
     );
 
     if (exists) {
@@ -64,14 +64,14 @@ export default function MealIngredientChoice({
 
     const listItem = {
       id: "",
-      ref_meal_id: "",
-      ref_ingredient_unit_id: "",
-      ref_ingredient_stock_id: selectedIngredientStock.ingredient_stock.id,
-      ingredient_name: selectedIngredientStock.ingredient_name,
-      ingredient_unit: selectedIngredientStock.ingredient_unit,
-      total_price:
-        String(quantityPerService * Number(selectedIngredientStock.ingredient_stock.unit_cost)),
-      stock_description: getIngredientStockNameSimple(selectedIngredientStock), // optional, only for reads
+      refMealId: "",
+      refIngredientUnitId: "",
+      refIngredientStockId: selectedIngredientStock.ingredientStock.id,
+      ingredientName: selectedIngredientStock.ingredientName,
+      ingredientUnit: selectedIngredientStock.ingredientUnit,
+      totalPrice:
+        String(quantityPerService * Number(selectedIngredientStock.ingredientStock.unitCost)),
+      stockDescription: getIngredientStockNameSimple(selectedIngredientStock), // optional, only for reads
       quantity: String(quantityPerService),
     };
 
@@ -85,7 +85,7 @@ export default function MealIngredientChoice({
     onChange(
       values.filter(
         (item) =>
-          item.ref_ingredient_stock_id !== itemToRemove.ref_ingredient_stock_id,
+          item.refIngredientStockId !== itemToRemove.refIngredientStockId,
       ),
     );
   }
@@ -130,12 +130,12 @@ export default function MealIngredientChoice({
         />
         <div className="flex flex-row items-end gap-2">
           <Field
-            id="quantity_per_serving"
+            id="quantityPerServing"
             type="decimal"
             className="w-20"
             value={String(quantityPerService ?? "")}
             onChange={(v) => setQuantityPerServing(Number(v) || 0)}
-            placeholder={translations("fields.quantity_per_serving")}
+            placeholder={translations("fields.quantityPerServing")}
           />
           <div className="bg-white/10 border border-white/20 rounded-lg h-10 w-10 flex items-center justify-center text-gray-300 text-sm">
             {selectedIngredient?.unit}
@@ -155,7 +155,7 @@ export default function MealIngredientChoice({
         <div className="mt-3 space-y-2 pt-4 border-t border-white/20 pb-6 flex flex-col max-h-[40vh] overflow-auto">
           {values.map((item) => (
             <div
-              key={item.ref_ingredient_stock_id}
+              key={item.refIngredientStockId}
               className="
           flex
           items-center
@@ -177,20 +177,20 @@ export default function MealIngredientChoice({
           "
               >
                 <div className="font-semibold text-gray-300">
-                  {item.ingredient_name}
+                  {item.ingredientName}
                 </div>
 
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
                   <span className="text-custom-sand-dune">
-                    {formatNumber(item.quantity)} {item.ingredient_unit}
+                    {formatNumber(item.quantity)} {item.ingredientUnit}
                   </span>
 
                   <span className="text-gray-400">
-                    Stock: {item.stock_description}
+                    Stock: {item.stockDescription}
                   </span>
 
                   <span className="font-semibold text-custom-money-green">
-                    {formatNumberToCurrency(item.total_price ?? 0)}
+                    {formatNumberToCurrency(item.totalPrice ?? 0)}
                   </span>
                 </div>
               </div>

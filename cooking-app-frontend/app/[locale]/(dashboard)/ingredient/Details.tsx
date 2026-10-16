@@ -45,7 +45,7 @@ export default function IngredientDetailsPage({
   const triggerRefresh = () => setStockRefreshKey((k) => k + 1);
 
   const translations = useTranslations("Ingredient");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
@@ -60,9 +60,9 @@ export default function IngredientDetailsPage({
   const [ingredient, setIngredient] = useState<IngredientUpdateData>({
     id: "",
     name: "",
-    ref_ingredient_unit_id: "",
-    ref_ingredient_type_id: "",
-    estimated_price: "0",
+    refIngredientUnitId: "",
+    refIngredientTypeId: "",
+    estimatedPrice: "0",
   });
 
   const [initialValues, setInitialValues] = useState<IngredientBase | null>(
@@ -81,23 +81,23 @@ export default function IngredientDetailsPage({
     return isIngredientDirty(
       {
         name: initialValues?.name ?? "",
-        ingredient_unit_id: initialValues?.ref_ingredient_unit_id ?? "",
-        ingredient_type_id: initialValues?.ref_ingredient_type_id ?? "",
-        estimated_price: initialValues?.estimated_price ?? "0",
+        ingredientUnitId: initialValues?.refIngredientUnitId ?? "",
+        ingredientTypeId: initialValues?.refIngredientTypeId ?? "",
+        estimatedPrice: initialValues?.estimatedPrice ?? "0",
       },
       {
         name: ingredient.name,
-        ingredient_unit_id: ingredient.ref_ingredient_unit_id,
-        ingredient_type_id: ingredient.ref_ingredient_type_id,
-        estimated_price: ingredient.estimated_price,
+        ingredientUnitId: ingredient.refIngredientUnitId,
+        ingredientTypeId: ingredient.refIngredientTypeId,
+        estimatedPrice: ingredient.estimatedPrice,
       },
     );
   }, [
     initialValues,
     ingredient.name,
-    ingredient.ref_ingredient_unit_id,
-    ingredient.ref_ingredient_type_id,
-    ingredient.estimated_price,
+    ingredient.refIngredientUnitId,
+    ingredient.refIngredientTypeId,
+    ingredient.estimatedPrice,
   ]);
 
   useEffect(() => {
@@ -121,10 +121,10 @@ export default function IngredientDetailsPage({
         if (cancelled) return;
 
         setInitialValues(item.ingredient);
-        setSelectedIngredientUnit(item.ingredient_unit);
-        setSelectedIngredientType(item.ingredient_type);
+        setSelectedIngredientUnit(item.ingredientUnit);
+        setSelectedIngredientType(item.ingredientType);
         setIngredient(item.ingredient);
-        setQuantityLeft(item.quantity_left);
+        setQuantityLeft(item.quantityLeft);
       } catch (e: unknown) {
         if (cancelled) return;
 
@@ -153,13 +153,13 @@ export default function IngredientDetailsPage({
 
     // Verify values (match eng.json keys)
     if (!ingredient.name.trim())
-      return setError(translations("errors.required_name"));
-    if (!ingredient.ref_ingredient_unit_id.trim())
-      return setError(translations("errors.required_unit"));
-    if (!ingredient.ref_ingredient_type_id.trim())
-      return setError(translations("errors.required_ingredient_type_id"));
-    if (!ingredient.estimated_price || Number(ingredient.estimated_price) <= 0)
-      return setError(translations("errors.required_estimated_price"));
+      return setError(translations("errors.requiredName"));
+    if (!ingredient.refIngredientUnitId.trim())
+      return setError(translations("errors.requiredUnit"));
+    if (!ingredient.refIngredientTypeId.trim())
+      return setError(translations("errors.requiredIngredientTypeId"));
+    if (!ingredient.estimatedPrice || Number(ingredient.estimatedPrice) <= 0)
+      return setError(translations("errors.requiredEstimatedPrice"));
 
     if (!isDirty) return;
 
@@ -168,7 +168,7 @@ export default function IngredientDetailsPage({
       const updatedIngredient = await updateIngredient(ingredient);
       setInitialValues(updatedIngredient.ingredient);
       setIngredient(updatedIngredient.ingredient);
-      setQuantityLeft(updatedIngredient.quantity_left);
+      setQuantityLeft(updatedIngredient.quantityLeft);
 
       setSuccess(translations("success.updated"));
       onUpdated?.();
@@ -179,7 +179,7 @@ export default function IngredientDetailsPage({
       }
 
       const msg = getErrorMessage(e);
-      setError(translations("errors.update_failed", { message: msg }));
+      setError(translations("errors.updateFailed", { message: msg }));
     } finally {
       setSubmitting(false);
     }
@@ -198,25 +198,25 @@ export default function IngredientDetailsPage({
           `ingredients/${ingredient.id}`,
         );
         if (uploaded.length === 0) {
-          throw new Error(general_translations("errors.upload_error"));
+          throw new Error(generalTranslations("errors.uploadError"));
         }
-        const uploaded_image = uploaded[0];
+        const uploadedImage = uploaded[0];
 
         const imageBody: IngredientImageData = {
           id: ingredient.id,
-          image_url: uploaded_image.secure_url,
-          storage_key: uploaded_image.public_id,
+          imageUrl: uploadedImage.secureUrl,
+          storageKey: uploadedImage.publicId,
         };
 
         await setIngredientImage(imageBody);
-        setImageSuccess(translations("success.image_change_success"));
+        setImageSuccess(translations("success.imageChangeSuccess"));
       } catch (e: unknown) {
         if (e instanceof UnauthorizedError) {
           router.replace("/login");
           return;
         }
         const msg = getErrorMessage(e);
-        setImageError(translations("errors.update_failed", { message: msg }));
+        setImageError(translations("errors.updateFailed", { message: msg }));
       } finally {
         setSubmittingImage(false);
       }
@@ -268,51 +268,51 @@ export default function IngredientDetailsPage({
             value={selectedIngredientUnit}
             onSelect={(d) => {
               setSelectedIngredientUnit(d);
-              setIngredient((p) => ({ ...p, ref_ingredient_unit_id: d.id }));
+              setIngredient((p) => ({ ...p, refIngredientUnitId: d.id }));
             }}
             onClear={() => {
               setSelectedIngredientUnit(null);
-              setIngredient((p) => ({ ...p, ref_ingredient_unit_id: "" }));
+              setIngredient((p) => ({ ...p, refIngredientUnitId: "" }));
             }}
             getName={getIngredientUnitName}
             fetchOptions={fetchIngredientUnits}
           />
 
           <Field
-            id="estimated_price"
+            id="estimatedPrice"
             className="w-full"
-            label={translations("fields.estimated_price")}
-            value={String(ingredient.estimated_price || "")}
+            label={translations("fields.estimatedPrice")}
+            value={String(ingredient.estimatedPrice || "")}
             onChange={(v) =>
-              setIngredient((p) => ({ ...p, estimated_price: v }))
+              setIngredient((p) => ({ ...p, estimatedPrice: v }))
             }
-            placeholder={translations("fields.estimated_price")}
+            placeholder={translations("fields.estimatedPrice")}
           />
           <GeneralAutocomplete<IngredientTypeBase>
-            label={translations("fields.ingredient_type")}
+            label={translations("fields.ingredientType")}
             translationsKey="Ingredient"
             showShadow={false}
             className="w-full"
             value={selectedIngredientType}
             onSelect={(d) => {
               setSelectedIngredientType(d);
-              setIngredient((p) => ({ ...p, ref_ingredient_type_id: d.id }));
+              setIngredient((p) => ({ ...p, refIngredientTypeId: d.id }));
             }}
             onClear={() => {
               setSelectedIngredientType(null);
-              setIngredient((p) => ({ ...p, ref_ingredient_type_id: "" }));
+              setIngredient((p) => ({ ...p, refIngredientTypeId: "" }));
             }}
             getName={getIngredientTypeName}
             fetchOptions={fetchIngredientTypes}
           />
           <Field
-            id="quantity_left"
+            id="quantityLeft"
             className="w-full"
-            label={translations("fields.quantity_left")}
+            label={translations("fields.quantityLeft")}
             value={String(quantityLeft || "")}
             onChange={(v) => setQuantityLeft(Number(v))}
             isDisabled={true}
-            placeholder={translations("fields.quantity_left")}
+            placeholder={translations("fields.quantityLeft")}
           />
 
           <div className="flex flex-col justify-center gap-2 py-4 w-full border-t border-white/20">
@@ -322,8 +322,8 @@ export default function IngredientDetailsPage({
               className="h-10 w-full rounded-lg bg-custom-validation-green px-5 text-sm text-white disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer hover:bg-custom-validation-green/90"
             >
               {submitting
-                ? general_translations("actions.saving")
-                : general_translations("actions.save_changes")}
+                ? generalTranslations("actions.saving")
+                : generalTranslations("actions.saveChanges")}
             </Button>
 
             {success && (
@@ -342,7 +342,7 @@ export default function IngredientDetailsPage({
           <div className="border rounded-xl bg-white/10 p-4 border-white/20 flex-1">
             <div className="flex flex-wrap items-center gap-3">
               <label className="inline-flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-sm shadow-sm cursor-pointer text-gray-300">
-                <span>{translations("images.choose_new")}</span>
+                <span>{translations("images.chooseNew")}</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -373,7 +373,7 @@ export default function IngredientDetailsPage({
                     type="button"
                     onClick={() => setImage(null)}
                     className="flex flex-row justify-center items-center absolute -right-3 -top-3 rounded-4xl w-7 h-7 bg-red-500 text-xs border shadow-sm hover:bg-red-800 cursor-pointer"
-                    aria-label={general_translations("actions.select")}
+                    aria-label={generalTranslations("actions.select")}
                   >
                     <X size={16} className="text-white" />
                   </button>
@@ -393,8 +393,8 @@ export default function IngredientDetailsPage({
               className="h-10 rounded-lg bg-custom-validation-green px-5 text-sm text-white disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer hover:bg-custom-validation-green/90"
             >
               {submittingImage
-                ? general_translations("actions.saving")
-                : general_translations("actions.save_image_changes")}
+                ? generalTranslations("actions.saving")
+                : generalTranslations("actions.saveImageChanges")}
             </Button>
 
             {imageSuccess && (

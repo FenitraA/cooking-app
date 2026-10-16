@@ -24,7 +24,7 @@ function IngredientCard({
   ingredientType,
   onImageClick,
 }: IngredientCardProps) {
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
 
   return (
     <div
@@ -74,7 +74,7 @@ function IngredientCard({
         <div className="w-full space-y-2">
           <div className="flex justify-between items-center rounded-lg bg-white/5 px-3 py-2">
             <span className="text-xs uppercase tracking-wide text-gray-400">
-              {general_translations("price")}
+              {generalTranslations("price")}
             </span>
             <span className="text-xs font-semibold text-custom-money-green">
               {formatNumberToCurrency(estimatedPrice)}
@@ -84,7 +84,7 @@ function IngredientCard({
 
           <div className="flex justify-between items-center rounded-lg bg-white/5 px-3 py-2">
             <span className="text-xs uppercase tracking-wide text-gray-400">
-              {general_translations("stock")}
+              {generalTranslations("stock")}
             </span>
             <span className="text-xs font-semibold text-custom-sand-dune">
               {formatNumber(quantityLeft)}

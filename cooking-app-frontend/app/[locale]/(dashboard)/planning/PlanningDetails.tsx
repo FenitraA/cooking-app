@@ -30,7 +30,7 @@ export default function PlanningDetails({
   planningRecipeId: string;
 }) {
   const translations = useTranslations("Planning");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
@@ -51,32 +51,32 @@ export default function PlanningDetails({
   const [planningRecipe, setPlanningRecipe] =
     useState<PlanningRecipeUpdateData>({
       id: "",
-      ref_recipe_id: "",
-      planning_date: "",
-      nb_serving: "0",
+      refRecipeId: "",
+      planningDate: "",
+      nbServing: "0",
       description: "",
     });
   const isDirty = useMemo(() => {
     if (!initialValues) return false;
     return isPlanningRecipeDirty(
       {
-        ref_recipe_id: initialValues?.ref_recipe_id ?? "",
-        planning_date: initialValues?.planning_date ?? "",
-        nb_serving: initialValues?.nb_serving ?? "0",
+        refRecipeId: initialValues?.refRecipeId ?? "",
+        planningDate: initialValues?.planningDate ?? "",
+        nbServing: initialValues?.nbServing ?? "0",
         description: initialValues?.description ?? "",
       },
       {
-        ref_recipe_id: planningRecipe.ref_recipe_id,
-        planning_date: planningRecipe.planning_date,
-        nb_serving: planningRecipe.nb_serving,
+        refRecipeId: planningRecipe.refRecipeId,
+        planningDate: planningRecipe.planningDate,
+        nbServing: planningRecipe.nbServing,
         description: planningRecipe.description,
       },
     );
   }, [
     initialValues,
-    planningRecipe.ref_recipe_id,
-    planningRecipe.planning_date,
-    planningRecipe.nb_serving,
+    planningRecipe.refRecipeId,
+    planningRecipe.planningDate,
+    planningRecipe.nbServing,
     planningRecipe.description,
   ]);
 
@@ -91,11 +91,11 @@ export default function PlanningDetails({
         const item = await fetchRecipeById(planningRecipeId);
         if (cancelled) return;
 
-        setInitialValues(item.planning_recipe);
+        setInitialValues(item.planningRecipe);
         setSelectedRecipe(item.recipe);
-        setPlanningRecipe((p) => ({ ...p, ...item.planning_recipe }));
-        setTotalPrice(item.estimated_cost_price);
-        setIngredients(item.recipe_ingredients);
+        setPlanningRecipe((p) => ({ ...p, ...item.planningRecipe }));
+        setTotalPrice(item.estimatedCostPrice);
+        setIngredients(item.recipeIngredients);
       } catch (e: unknown) {
         if (cancelled) return;
 
@@ -122,23 +122,23 @@ export default function PlanningDetails({
     setError(null);
     setSuccess(null);
 
-    if (!planningRecipe.ref_recipe_id.trim())
-      return setError(translations("errors.required_recipe"));
-    if (!planningRecipe.planning_date.trim())
-      return setError(translations("errors.required_planning_date"));
-    if (!planningRecipe.nb_serving || Number(planningRecipe.nb_serving) <= 0)
-      return setError(translations("errors.required_nb_serving"));
+    if (!planningRecipe.refRecipeId.trim())
+      return setError(translations("errors.requiredRecipe"));
+    if (!planningRecipe.planningDate.trim())
+      return setError(translations("errors.requiredPlanningDate"));
+    if (!planningRecipe.nbServing || Number(planningRecipe.nbServing) <= 0)
+      return setError(translations("errors.requiredNbServing"));
 
     if (!isDirty) return;
 
     setSubmitting(true);
     try {
       const updatedPlanningRecipe = await updatePlanningRecipe(planningRecipe);
-      setInitialValues(updatedPlanningRecipe.planning_recipe);
+      setInitialValues(updatedPlanningRecipe.planningRecipe);
 
       setPlanningRecipe((p) => ({
         ...p,
-        ...updatedPlanningRecipe.planning_recipe,
+        ...updatedPlanningRecipe.planningRecipe,
       }));
 
       setSuccess(translations("success.updated"));
@@ -150,7 +150,7 @@ export default function PlanningDetails({
       }
 
       const msg = getErrorMessage(e);
-      setError(translations("errors.update_failed", { message: msg }));
+      setError(translations("errors.updateFailed", { message: msg }));
     } finally {
       setSubmitting(false);
     }
@@ -174,7 +174,7 @@ export default function PlanningDetails({
             </h2>
           </header>
           <GeneralAutocomplete<RecipeBase>
-            label={translations("fields.choose_recipe")}
+            label={translations("fields.chooseRecipe")}
             translationsKey="Recipe"
             showShadow={false}
             className="w-full min-w-50"
@@ -183,42 +183,42 @@ export default function PlanningDetails({
               setSelectedRecipe(d);
               setPlanningRecipe((p) => ({
                 ...p,
-                ref_recipe_id: d.id,
+                refRecipeId: d.id,
               }));
             }}
             onClear={() => {
               setSelectedRecipe(null);
               setPlanningRecipe((p) => ({
                 ...p,
-                ref_recipe_id: "",
+                refRecipeId: "",
               }));
             }}
             getName={getRecipeName}
             fetchOptions={fetchRecipeByName}
           />
           <Field
-            id="nb_serving"
-            label={translations("fields.nb_serving")}
+            id="nbServing"
+            label={translations("fields.nbServing")}
             type="decimal"
             className="w-full min-w-50"
-            value={String(planningRecipe.nb_serving ?? "")}
+            value={String(planningRecipe.nbServing ?? "")}
             onChange={(v) =>
               setPlanningRecipe((p) => ({
                 ...p,
-                nb_serving: v,
+                nbServing: v,
               }))
             }
           />
           <Field
-            id="planning_date"
-            label={translations("fields.planning_date")}
+            id="planningDate"
+            label={translations("fields.planningDate")}
             type="date"
             className="w-full min-w-50"
-            value={planningRecipe.planning_date}
+            value={planningRecipe.planningDate}
             onChange={(v) =>
               setPlanningRecipe((p) => ({
                 ...p,
-                planning_date: v,
+                planningDate: v,
               }))
             }
           />
@@ -230,8 +230,8 @@ export default function PlanningDetails({
               className="h-10 rounded-lg bg-custom-validation-green px-5 text-sm text-white disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer hover:bg-custom-validation-green/90"
             >
               {submitting
-                ? general_translations("actions.saving")
-                : general_translations("actions.save_changes")}
+                ? generalTranslations("actions.saving")
+                : generalTranslations("actions.saveChanges")}
             </Button>
 
             {success && (
@@ -271,27 +271,27 @@ export default function PlanningDetails({
           <div className="flex-1 px-4 pt-3">
             {ingredients.map((item) => (
               <div
-                key={item.recipe_ingredient_base.ref_ingredient_id}
+                key={item.recipeIngredientBase.refIngredientId}
                 className="flex items-center gap-4 justify-between border-l-4 border-white/20 bg-white/10 px-3 h-10 w-full"
               >
                 <div className="flex flex-row items-center justify-between gap-6 w-2/3 h-full">
                   <div className="text-sm text-gray-300 bg-wh">
-                    {item.ingredient_name} :
+                    {item.ingredientName} :
                   </div>
                   <div className="text-sm text-gray-300">
                     {formatNumber(
-                      Number(item.recipe_ingredient_base.quantity) *
-                        Number(planningRecipe.nb_serving),
+                      Number(item.recipeIngredientBase.quantity) *
+                        Number(planningRecipe.nbServing),
                     )}{" "}
-                    {item.ingredient_unit}
+                    {item.ingredientUnit}
                   </div>
                 </div>
                 <div className="flex flex-row items-center justify-end gap-6 w-1/3 h-full font-semibold text-sm text-custom-money-green">
                   💰{" "}
                   {formatNumberToCurrency(
-                    item.estimated_cost_per_unit *
-                      Number(item.recipe_ingredient_base.quantity) *
-                      Number(planningRecipe.nb_serving),
+                    item.estimatedCostPerUnit *
+                      Number(item.recipeIngredientBase.quantity) *
+                      Number(planningRecipe.nbServing),
                   )}
                 </div>
               </div>

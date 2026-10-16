@@ -1,7 +1,7 @@
-import { UnauthorizedError } from "../errors";
-import { safeReadError } from "../utils";
+
+import { apiFetch } from "../api-client";
 import { BASE_URL } from "../variables";
-import {
+import type {
   DeletePlanningRecipeData,
   PlanningRecipeBase,
   PlanningRecipeCreate,
@@ -10,137 +10,85 @@ import {
   PlanningResult,
 } from "./types";
 
-export async function createPlanningRecipe(
+export function createPlanningRecipe(
   body: PlanningRecipeCreate,
 ): Promise<PlanningRecipeBase[]> {
-  const res = await fetch(`${BASE_URL}/proxy/planning`, {
+  return apiFetch<PlanningRecipeBase[]>(`${BASE_URL}/proxy/planning`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    json: body,
   });
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to create planning recipe.");
-  }
-
-  const planningRecipes = (await res.json()) as PlanningRecipeBase[];
-  return planningRecipes;
 }
 
-export async function fetchWeeklyPlanning(
+export function fetchWeeklyPlanning(
   planningDate: string,
 ): Promise<PlanningResult> {
-  const res = await fetch(
-    `${BASE_URL}/proxy/planning/weekly?planning_date=${encodeURIComponent(planningDate)}`,
+  const params = new URLSearchParams({
+    planning_date: planningDate,
+  });
+
+  return apiFetch<PlanningResult>(
+    `${BASE_URL}/proxy/planning/weekly?${params.toString()}`,
   );
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to fetch weekly planning");
-  }
-
-  const planning = (await res.json()) as PlanningResult;
-  return planning;
 }
 
-export async function fetchPlanningByDate(
+export function fetchPlanningByDate(
   startDate: string,
   endDate: string,
 ): Promise<PlanningResult> {
-  const res = await fetch(
-    `${BASE_URL}/proxy/planning/by-dates?start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`,
+  const params = new URLSearchParams({
+    start_date: startDate,
+    end_date: endDate,
+  });
+
+  return apiFetch<PlanningResult>(
+    `${BASE_URL}/proxy/planning/by-dates?${params.toString()}`,
   );
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to fetch planning");
-  }
-
-  const planning = (await res.json()) as PlanningResult;
-  return planning;
 }
 
-export async function fetchPlanning(
+export function fetchPlanning(
   todayDate: string,
 ): Promise<PlanningResult> {
-  const res = await fetch(
-    `${BASE_URL}/proxy/planning?today_date=${encodeURIComponent(todayDate)}`,
+  const params = new URLSearchParams({
+    today_date: todayDate,
+  });
+
+  return apiFetch<PlanningResult>(
+    `${BASE_URL}/proxy/planning?${params.toString()}`,
   );
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to fetch weekly planning");
-  }
-
-  const planning = (await res.json()) as PlanningResult;
-  return planning;
 }
 
-export async function fetchRecipeById(planningRecipeId: string): Promise<PlanningRecipeRead> {
-  const res = await fetch(
-    `${BASE_URL}/proxy/planning/one?planning_recipe_id=${encodeURIComponent(planningRecipeId)}`,
+export function fetchRecipeById(
+  planningRecipeId: string,
+): Promise<PlanningRecipeRead> {
+  const params = new URLSearchParams({
+    planning_recipe_id: planningRecipeId,
+  });
+
+  return apiFetch<PlanningRecipeRead>(
+    `${BASE_URL}/proxy/planning/one?${params.toString()}`,
   );
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to fetch planning_recipe");
-  }
-
-  const planningRecipe = (await res.json()) as PlanningRecipeRead;
-  return planningRecipe;
 }
 
-export async function deletePlanningRecipe(
+export function deletePlanningRecipe(
   body: DeletePlanningRecipeData,
 ): Promise<PlanningRecipeBase> {
-  const res = await fetch(`${BASE_URL}/proxy/planning/delete`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(body),
-  });
-
-  if (res.status === 401) throw new UnauthorizedError("Unauthorized");
-  if (!res.ok) throw new Error(await res.text().catch(() => "Request failed"));
-
-  const planningRecipe = (await res.json()) as PlanningRecipeBase;
-  return planningRecipe;
+  return apiFetch<PlanningRecipeBase>(
+    `${BASE_URL}/proxy/planning/delete`,
+    {
+      method: "PATCH",
+      json: body,
+    },
+  );
 }
 
-export async function updatePlanningRecipe(
+export function updatePlanningRecipe(
   body: PlanningRecipeUpdateData,
 ): Promise<PlanningRecipeRead> {
-  const res = await fetch(`${BASE_URL}/proxy/planning/update`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(body),
-  });
-
-  if (res.status === 401) throw new UnauthorizedError("Unauthorized");
-  if (!res.ok) throw new Error(await res.text().catch(() => "Request failed"));
-
-  const planningRecipe = (await res.json()) as PlanningRecipeRead;
-  return planningRecipe;
+  return apiFetch<PlanningRecipeRead>(
+    `${BASE_URL}/proxy/planning/update`,
+    {
+      method: "PATCH",
+      json: body,
+    },
+  );
 }

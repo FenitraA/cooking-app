@@ -1,7 +1,7 @@
-import { UnauthorizedError } from "../errors";
-import { safeReadError } from "../utils";
+
+import { apiFetch } from "../api-client";
 import { BASE_URL } from "../variables";
-import {
+import type {
   DeleteMealData,
   MealBase,
   MealCreate,
@@ -19,29 +19,16 @@ import {
   RecipeUpdateData,
 } from "./types";
 
-export async function createRecipe(
+export function createRecipe(
   body: RecipeCreate,
 ): Promise<RecipeCreateResponse> {
-  const res = await fetch(`${BASE_URL}/proxy/recipes`, {
+  return apiFetch<RecipeCreateResponse>(`${BASE_URL}/proxy/recipes`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    json: body,
   });
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to create recipe.");
-  }
-
-  const recipe = (await res.json()) as RecipeCreateResponse;
-  return recipe;
 }
 
-export async function fetchRecipesSearch(
+export function fetchRecipesSearch(
   searchParams: RecipeSearchParams,
 ): Promise<RecipeSearchResult> {
   const params = new URLSearchParams();
@@ -49,7 +36,7 @@ export async function fetchRecipesSearch(
   if (searchParams.name) {
     params.set("name", searchParams.name);
   }
-  if (searchParams.maxMakingTime) {
+  if (searchParams.maxMakingTime !== undefined) {
     params.set("max_making_time", String(searchParams.maxMakingTime));
   }
   if (searchParams.ingredientIds) {
@@ -64,150 +51,88 @@ export async function fetchRecipesSearch(
     params.set("limit", String(searchParams.limit));
   }
 
-  const res = await fetch(`${BASE_URL}/proxy/recipes?${params.toString()}`);
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to fetch recipes.");
-  }
-
-  const data = (await res.json()) as RecipeSearchResult;
-  return data;
-}
-
-export async function fetchRecipeByName(name: string): Promise<RecipeBase[]> {
-  const res = await fetch(
-    `${BASE_URL}/proxy/recipes/select?name=${encodeURIComponent(name)}`,
+  return apiFetch<RecipeSearchResult>(
+    `${BASE_URL}/proxy/recipes?${params.toString()}`,
   );
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to fetch recipes");
-  }
-
-  const recipes = (await res.json()) as RecipeBase[];
-  return recipes;
 }
 
-export async function fetchRecipeById(recipeId: string): Promise<RecipeRead> {
-  const res = await fetch(
-    `${BASE_URL}/proxy/recipes/one?recipe_id=${encodeURIComponent(recipeId)}`,
+export function fetchRecipeByName(name: string): Promise<RecipeBase[]> {
+  const params = new URLSearchParams({ name });
+
+  return apiFetch<RecipeBase[]>(
+    `${BASE_URL}/proxy/recipes/select?${params.toString()}`,
   );
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to fetch recipe");
-  }
-
-  const recipe = (await res.json()) as RecipeRead;
-  return recipe;
 }
 
-export async function updateRecipe(
+export function fetchRecipeById(recipeId: string): Promise<RecipeRead> {
+  const params = new URLSearchParams({ recipe_id: recipeId });
+
+  return apiFetch<RecipeRead>(
+    `${BASE_URL}/proxy/recipes/one?${params.toString()}`,
+  );
+}
+
+export function updateRecipe(
   body: RecipeUpdateData,
 ): Promise<RecipeRead> {
-  const res = await fetch(`${BASE_URL}/proxy/recipes/update`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(body),
-  });
-
-  if (res.status === 401) throw new UnauthorizedError("Unauthorized");
-  if (!res.ok) throw new Error(await res.text().catch(() => "Request failed"));
-
-  const recipe = (await res.json()) as RecipeRead;
-  return recipe;
+  return apiFetch<RecipeRead>(
+    `${BASE_URL}/proxy/recipes/update`,
+    {
+      method: "PATCH",
+      json: body,
+    },
+  );
 }
 
-export async function setRecipeImage(
+export function setRecipeImage(
   body: RecipeImageData,
 ): Promise<RecipeRead> {
-  const res = await fetch(`${BASE_URL}/proxy/recipes/image`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(body),
-  });
-
-  if (res.status === 401) throw new UnauthorizedError("Unauthorized");
-  if (!res.ok) throw new Error(await res.text().catch(() => "Request failed"));
-
-  const recipe = (await res.json()) as RecipeRead;
-  return recipe;
+  return apiFetch<RecipeRead>(
+    `${BASE_URL}/proxy/recipes/image`,
+    {
+      method: "PATCH",
+      json: body,
+    },
+  );
 }
 
-export async function createMeal(
+export function createMeal(
   body: MealCreate,
 ): Promise<MealCreateResponse> {
-  const res = await fetch(`${BASE_URL}/proxy/recipes/meals`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to create meal.");
-  }
-
-  const meal = (await res.json()) as MealCreateResponse;
-  return meal;
+  return apiFetch<MealCreateResponse>(
+    `${BASE_URL}/proxy/recipes/meals`,
+    {
+      method: "POST",
+      json: body,
+    },
+  );
 }
 
-export async function deleteMeal(body: DeleteMealData): Promise<MealBase> {
-  const res = await fetch(`${BASE_URL}/proxy/recipes/meals/delete`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(body),
-  });
-
-  if (res.status === 401) throw new UnauthorizedError("Unauthorized");
-  if (!res.ok) throw new Error(await res.text().catch(() => "Request failed"));
-
-  const meal = (await res.json()) as MealBase;
-  return meal;
+export function deleteMeal(body: DeleteMealData): Promise<MealBase> {
+  return apiFetch<MealBase>(
+    `${BASE_URL}/proxy/recipes/meals/delete`,
+    {
+      method: "PATCH",
+      json: body,
+    },
+  );
 }
 
-export async function getMealSetupFromRecipe(
+export function getMealSetupFromRecipe(
   recipeId: string,
   nbServing: number,
 ): Promise<MealIngredientRead[]> {
-  const res = await fetch(
-    `${BASE_URL}/proxy/recipes/meals/initial-setup?recipe_id=${encodeURIComponent(recipeId)}&nb_serving=${encodeURIComponent(nbServing)}`,
+  const params = new URLSearchParams({
+    recipe_id: recipeId,
+    nb_serving: String(nbServing),
+  });
+
+  return apiFetch<MealIngredientRead[]>(
+    `${BASE_URL}/proxy/recipes/meals/initial-setup?${params.toString()}`,
   );
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to fetch meal setup");
-  }
-
-  const recipe = (await res.json()) as MealIngredientRead[];
-  return recipe;
 }
 
-export async function fetchMealSearch(
+export function fetchMealSearch(
   searchParams: MealSearchParams,
 ): Promise<MealSearchResult> {
   const params = new URLSearchParams();
@@ -228,17 +153,7 @@ export async function fetchMealSearch(
     params.set("limit", String(searchParams.limit));
   }
 
-  const res = await fetch(`${BASE_URL}/proxy/recipes/meals?${params.toString()}`);
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to fetch meals.");
-  }
-
-  const data = (await res.json()) as MealSearchResult;
-  return data;
+  return apiFetch<MealSearchResult>(
+    `${BASE_URL}/proxy/recipes/meals?${params.toString()}`,
+  );
 }

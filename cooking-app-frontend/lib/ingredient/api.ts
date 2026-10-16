@@ -1,7 +1,7 @@
-import { UnauthorizedError } from "../errors";
-import { safeReadError } from "../utils";
+
+import { apiFetch } from "../api-client";
 import { BASE_URL } from "../variables";
-import {
+import type {
   DeleteIngredientStockData,
   IngredientBase,
   IngredientImageData,
@@ -16,29 +16,19 @@ import {
   SellerBase,
 } from "./types";
 
-export async function createIngredient(
+export function createIngredient(
   body: IngredientBase,
 ): Promise<IngredientBase> {
-  const res = await fetch(`${BASE_URL}/proxy/ingredients`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to create ingredient.");
-  }
-
-  const ingredient = (await res.json()) as IngredientBase;
-  return ingredient;
+  return apiFetch<IngredientBase>(
+    `${BASE_URL}/proxy/ingredients`,
+    {
+      method: "POST",
+      json: body,
+    },
+  );
 }
 
-export async function fetchIngredientsSearch(
+export function fetchIngredientsSearch(
   searchParams: IngredientSearchParams,
 ): Promise<IngredientSearchResult> {
   const params = new URLSearchParams();
@@ -65,208 +55,117 @@ export async function fetchIngredientsSearch(
     params.set("limit", String(searchParams.limit));
   }
 
-  const res = await fetch(`${BASE_URL}/proxy/ingredients?${params.toString()}`);
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to fetch ingredients.");
-  }
-
-  const data = await res.json() as IngredientSearchResult;
-  return data;
+  return apiFetch<IngredientSearchResult>(
+    `${BASE_URL}/proxy/ingredients?${params.toString()}`,
+  );
 }
 
-export async function fetchIngredientTypes(
+export function fetchIngredientTypes(
   name: string,
 ): Promise<IngredientTypeBase[]> {
-  const res = await fetch(
-    `${BASE_URL}/proxy/ingredients/types?name=${encodeURIComponent(name)}`,
+  const params = new URLSearchParams({ name });
+
+  return apiFetch<IngredientTypeBase[]>(
+    `${BASE_URL}/proxy/ingredients/types?${params.toString()}`,
   );
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to fetch ingredient types");
-  }
-
-  const ingredientTypes = (await res.json()) as IngredientTypeBase[];
-  return ingredientTypes;
 }
 
-export async function fetchIngredientUnits(
+export function fetchIngredientUnits(
   name: string,
 ): Promise<IngredientUnitBase[]> {
-  const res = await fetch(
-    `${BASE_URL}/proxy/ingredients/units?name=${encodeURIComponent(name)}`,
+  const params = new URLSearchParams({ name });
+
+  return apiFetch<IngredientUnitBase[]>(
+    `${BASE_URL}/proxy/ingredients/units?${params.toString()}`,
   );
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to fetch ingredient units");
-  }
-
-  const ingredientUnits = (await res.json()) as IngredientUnitBase[];
-  return ingredientUnits;
 }
 
-export async function fetchIngredientById(
-  ingredient_id: string,
+export function fetchIngredientById(
+  ingredientId: string,
 ): Promise<IngredientRead> {
-  const res = await fetch(
-    `${BASE_URL}/proxy/ingredients/one?ingredient_id=${encodeURIComponent(ingredient_id)}`,
+  const params = new URLSearchParams({
+    ingredient_id: ingredientId,
+  });
+
+  return apiFetch<IngredientRead>(
+    `${BASE_URL}/proxy/ingredients/one?${params.toString()}`,
   );
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to fetch ingredient");
-  }
-
-  const ingredient = (await res.json()) as IngredientRead;
-  return ingredient;
 }
 
-export async function updateIngredient(
+export function updateIngredient(
   body: IngredientUpdateData,
 ): Promise<IngredientRead> {
-  const res = await fetch(`${BASE_URL}/proxy/ingredients/update`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(body),
-  });
-
-  if (res.status === 401) throw new UnauthorizedError("Unauthorized");
-  if (!res.ok) throw new Error(await res.text().catch(() => "Request failed"));
-
-  const ingredient = (await res.json()) as IngredientRead;
-  return ingredient;
+  return apiFetch<IngredientRead>(
+    `${BASE_URL}/proxy/ingredients/update`,
+    {
+      method: "PATCH",
+      json: body,
+    },
+  );
 }
 
-export async function setIngredientImage(
+export function setIngredientImage(
   body: IngredientImageData,
 ): Promise<IngredientRead> {
-  const res = await fetch(`${BASE_URL}/proxy/ingredients/image`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(body),
-  });
-
-  if (res.status === 401) throw new UnauthorizedError("Unauthorized");
-  if (!res.ok) throw new Error(await res.text().catch(() => "Request failed"));
-
-  const ingredient = (await res.json()) as IngredientRead;
-  return ingredient;
+  return apiFetch<IngredientRead>(
+    `${BASE_URL}/proxy/ingredients/image`,
+    {
+      method: "PATCH",
+      json: body,
+    },
+  );
 }
 
-export async function fetchIngredientStocks(
+export function fetchIngredientStocks(
   ingredientId: string,
 ): Promise<IngredientStockRead[]> {
-  const res = await fetch(
-    `${BASE_URL}/proxy/ingredients/stocks?ingredient_id=${encodeURIComponent(ingredientId)}`,
+  const params = new URLSearchParams({
+    ingredient_id: ingredientId,
+  });
+
+  return apiFetch<IngredientStockRead[]>(
+    `${BASE_URL}/proxy/ingredients/stocks?${params.toString()}`,
   );
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to fetch ingredient stocks");
-  }
-
-  const ingredientStocks = (await res.json()) as IngredientStockRead[];
-  return ingredientStocks;
 }
 
-export async function createStock(
+export function createStock(
   body: IngredientStockBase,
 ): Promise<IngredientStockBase> {
-  const res = await fetch(`${BASE_URL}/proxy/ingredients/stocks`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to create ingredient stock.");
-  }
-
-  const ingredientStock = (await res.json()) as IngredientStockBase;
-  return ingredientStock;
+  return apiFetch<IngredientStockBase>(
+    `${BASE_URL}/proxy/ingredients/stocks`,
+    {
+      method: "POST",
+      json: body,
+    },
+  );
 }
 
-export async function deleteIngredientStock(
+export function deleteIngredientStock(
   body: DeleteIngredientStockData,
 ): Promise<IngredientStockBase> {
-  const res = await fetch(`${BASE_URL}/proxy/ingredients/stocks/delete`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(body),
-  });
-
-  if (res.status === 401) throw new UnauthorizedError("Unauthorized");
-  if (!res.ok) throw new Error(await res.text().catch(() => "Request failed"));
-
-  const ingredient_stock = (await res.json()) as IngredientStockBase;
-  return ingredient_stock;
-}
-
-export async function fetchSellers(name: string): Promise<SellerBase[]> {
-  const res = await fetch(
-    `${BASE_URL}/proxy/ingredients/sellers?name=${encodeURIComponent(name)}`,
+  return apiFetch<IngredientStockBase>(
+    `${BASE_URL}/proxy/ingredients/stocks/delete`,
+    {
+      method: "PATCH",
+      json: body,
+    },
   );
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to fetch sellers");
-  }
-
-  const sellers = (await res.json()) as SellerBase[];
-  return sellers;
 }
 
-export async function fetchIngredientByName(
+export function fetchSellers(name: string): Promise<SellerBase[]> {
+  const params = new URLSearchParams({ name });
+
+  return apiFetch<SellerBase[]>(
+    `${BASE_URL}/proxy/ingredients/sellers?${params.toString()}`,
+  );
+}
+
+export function fetchIngredientByName(
   name: string,
 ): Promise<IngredientBase[]> {
-  const res = await fetch(
-    `${BASE_URL}/proxy/ingredients/select?name=${encodeURIComponent(name)}`,
+  const params = new URLSearchParams({ name });
+
+  return apiFetch<IngredientBase[]>(
+    `${BASE_URL}/proxy/ingredients/select?${params.toString()}`,
   );
-
-  if (res.status === 401) {
-    throw new UnauthorizedError();
-  }
-
-  if (!res.ok) {
-    const msg = await safeReadError(res);
-    throw new Error(msg || "Failed to fetch ingredients");
-  }
-
-  const ingredients = (await res.json()) as IngredientBase[];
-  return ingredients;
 }

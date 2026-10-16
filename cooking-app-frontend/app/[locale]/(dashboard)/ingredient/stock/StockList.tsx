@@ -72,7 +72,7 @@ export default function IngredientStockListPage({
   async function handleDeleteStock() {
     setDeleteLoading(true);
     try {
-      await deleteIngredientStock({ ingredient_stock_id: stockIdToDelete });
+      await deleteIngredientStock({ ingredientStockId: stockIdToDelete });
       refreshTrigger?.();
     } finally {
       setDeleteLoading(false);
@@ -97,7 +97,7 @@ export default function IngredientStockListPage({
           )}
 
           {/* <div className="text-xs text-gray-400 ml-2 mb-2">
-            {translations("count_label")} :{" "}
+            {translations("countLabel")} :{" "}
             <span className="text-gray-700 font-bold">{total}</span>
           </div> */}
 
@@ -109,10 +109,10 @@ export default function IngredientStockListPage({
                     {translations("table.seller")}
                   </th>
                   <th className="bg-white/10 py-2 px-4 border-r border-white/20">
-                    {translations("table.quantity_left")}
+                    {translations("table.quantityLeft")}
                   </th>
                   <th className="bg-white/10 py-2 px-4 border-r border-white/20">
-                    {translations("table.unit_cost")}
+                    {translations("table.unitCost")}
                   </th>
                   <th
                     className="bg-white/10 py-2 pl-4 pr-8 w-10 rounded-tr-xl cursor-pointer"
@@ -128,18 +128,18 @@ export default function IngredientStockListPage({
               <tbody>
                 {ingredientStocks.map((item) => (
                   <tr
-                    key={item.ingredient_stock.id}
+                    key={item.ingredientStock.id}
                     className="text-gray-300 text-sm border-b border-white/20"
                   >
                     <td className="py-2 px-4 border-x border-white/20">
-                      {item.seller_name}
+                      {item.sellerName}
                     </td>
                     <td className="py-2 px-4 border-r border-white/20">
-                      {formatNumber(Number(item.quantity_left))}{" "}
-                      {item.ingredient_unit}
+                      {formatNumber(Number(item.quantityLeft))}{" "}
+                      {item.ingredientUnit}
                     </td>
                     <td className="py-2 px-4 border-r border-white/20">
-                      {formatNumberToCurrency(item.ingredient_stock.unit_cost)}
+                      {formatNumberToCurrency(item.ingredientStock.unitCost)}
                     </td>
                     <td className="py-2 px-4 border-r border-white/20">
                       <X
@@ -147,7 +147,7 @@ export default function IngredientStockListPage({
                         className="text-red-500 hover:text-red-700 cursor-pointer"
                         onClick={() => {
                           setOpenDeleteModal(true);
-                          setStockIdToDelete(item.ingredient_stock.id);
+                          setStockIdToDelete(item.ingredientStock.id);
                         }}
                       />
                     </td>

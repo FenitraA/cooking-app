@@ -19,18 +19,18 @@ export default function RecipeCreatePage({
 }) {
   const router = useRouter();
   const translations = useTranslations("Recipe");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
 
   const [recipe, setRecipe] = useState<RecipeCreate>({
     id: "",
     name: "",
-    ref_household_id: "",
+    refHouseholdId: "",
     description: "",
-    estimated_time: "0",
-    parallel_cooking: "1",
-    image_url: null,
-    storage_key: null,
-    recipe_ingredients: [],
+    estimatedTime: "0",
+    parallelCooking: "1",
+    imageUrl: null,
+    storageKey: null,
+    recipeIngredients: [],
   });
 
   const [submitting, setSubmitting] = useState(false);
@@ -68,15 +68,15 @@ export default function RecipeCreatePage({
     setSuccess(null);
 
     if (!recipe.name.trim())
-      return setError(translations("errors.required_name"));
+      return setError(translations("errors.requiredName"));
     if (!recipe.description.trim())
-      return setError(translations("errors.required_description"));
-    if (!recipe.estimated_time || Number(recipe.estimated_time) <= 0)
-      return setError(translations("errors.required_estimated_time"));
-    if (!recipe.parallel_cooking || Number(recipe.parallel_cooking) <= 0)
-      return setError(translations("errors.required_parallel_cooking"));
-    if (!recipe.recipe_ingredients || recipe.recipe_ingredients.length <= 0)
-      return setError(translations("errors.required_ingredients"));
+      return setError(translations("errors.requiredDescription"));
+    if (!recipe.estimatedTime || Number(recipe.estimatedTime) <= 0)
+      return setError(translations("errors.requiredEstimatedTime"));
+    if (!recipe.parallelCooking || Number(recipe.parallelCooking) <= 0)
+      return setError(translations("errors.requiredParallelCooking"));
+    if (!recipe.recipeIngredients || recipe.recipeIngredients.length <= 0)
+      return setError(translations("errors.requiredIngredients"));
 
     setSubmitting(true);
 
@@ -90,14 +90,14 @@ export default function RecipeCreatePage({
           `recipes/${recipeId}`,
         );
         if (uploaded.length === 0) {
-          throw new Error(general_translations("errors.upload_error"));
+          throw new Error(generalTranslations("errors.uploadError"));
         }
-        const uploaded_image = uploaded[0];
+        const uploadedImage = uploaded[0];
 
         const imageBody: RecipeImageData = {
           id: recipeId,
-          image_url: uploaded_image.secure_url,
-          storage_key: uploaded_image.public_id,
+          imageUrl: uploadedImage.secureUrl,
+          storageKey: uploadedImage.publicId,
         };
 
         await setRecipeImage(imageBody);
@@ -108,13 +108,13 @@ export default function RecipeCreatePage({
         ...v,
         id: "",
         name: "",
-        ref_household_id: "",
+        refHouseholdId: "",
         description: "",
-        estimated_time: "0",
-        parallel_cooking: "1",
-        image_url: null,
-        storage_key: null,
-        recipe_ingredients: [],
+        estimatedTime: "0",
+        parallelCooking: "1",
+        imageUrl: null,
+        storageKey: null,
+        recipeIngredients: [],
       }));
       setImage(null);
       onCreated?.();
@@ -125,7 +125,7 @@ export default function RecipeCreatePage({
       }
 
       const msg = getErrorMessage(e);
-      setError(translations("errors.create_failed", { message: msg }));
+      setError(translations("errors.createFailed", { message: msg }));
     } finally {
       setSubmitting(false);
     }
@@ -136,7 +136,7 @@ export default function RecipeCreatePage({
       <header className="relative mb-4 mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
-            {translations("create_title")}
+            {translations("createTitle")}
           </h1>
         </div>
       </header>
@@ -149,11 +149,11 @@ export default function RecipeCreatePage({
             </h2>
           </header>
           <IngredientChoice
-            values={recipe.recipe_ingredients}
-            onChange={(recipe_ingredients) =>
+            values={recipe.recipeIngredients}
+            onChange={(recipeIngredients) =>
               setRecipe((p) => ({
                 ...p,
-                recipe_ingredients: recipe_ingredients,
+                recipeIngredients: recipeIngredients,
               }))
             }
             className="sm:px-6"
@@ -177,7 +177,7 @@ export default function RecipeCreatePage({
           <div className="flex items-end sm:border rounded-xl flex-wrap sm:bg-white/10 border-white/20">
             <header className="text-center mb-2 px-2 py-2 border-b border-custom-sand-dune w-full mx-4 mt-2">
               <h2 className="text-md font-semibold text-custom-sand-dune tracking-tight">
-                {translations("basic_infos")}
+                {translations("basicInfos")}
               </h2>
             </header>
             <div className="flex flex-row justify-left gap-6 sm:p-6 py-2 items-end flex-wrap">
@@ -190,26 +190,26 @@ export default function RecipeCreatePage({
                 placeholder={translations("fields.name")}
               />
               <Field
-                id="estimated_time"
+                id="estimatedTime"
                 className="w-full"
                 type="decimal"
-                label={translations("fields.estimated_time")}
-                value={String(recipe.estimated_time ?? "")}
+                label={translations("fields.estimatedTime")}
+                value={String(recipe.estimatedTime ?? "")}
                 onChange={(v) =>
-                  setRecipe((p) => ({ ...p, estimated_time: v }))
+                  setRecipe((p) => ({ ...p, estimatedTime: v }))
                 }
-                placeholder={translations("fields.estimated_time")}
+                placeholder={translations("fields.estimatedTime")}
               />
               <Field
-                id="parallel_cooking"
+                id="parallelCooking"
                 className="w-full"
                 type="decimal"
-                label={translations("fields.parallel_cooking")}
-                value={String(recipe.parallel_cooking ?? "")}
+                label={translations("fields.parallelCooking")}
+                value={String(recipe.parallelCooking ?? "")}
                 onChange={(v) =>
-                  setRecipe((p) => ({ ...p, parallel_cooking: v }))
+                  setRecipe((p) => ({ ...p, parallelCooking: v }))
                 }
-                placeholder={translations("fields.parallel_cooking")}
+                placeholder={translations("fields.parallelCooking")}
               />
             </div>
           </div>
@@ -248,7 +248,7 @@ export default function RecipeCreatePage({
                     type="button"
                     onClick={() => removeImage()}
                     className="flex flex-row justify-center items-center absolute -right-3 -top-3 rounded-4xl w-7 h-7 bg-red-500 text-xs border shadow-sm hover:bg-red-800 cursor-pointer"
-                    aria-label={general_translations("actions.select")}
+                    aria-label={generalTranslations("actions.select")}
                   >
                     <X size={16} className="text-white" />
                   </button>
@@ -267,7 +267,7 @@ export default function RecipeCreatePage({
               className="h-10 w-full rounded-lg bg-custom-validation-green px-5 text-sm text-white disabled:bg-white/10 disabled:cursor-not-allowed cursor-pointer hover:bg-custom-validation-green/90"
             >
               {submitting
-                ? general_translations("actions.saving")
+                ? generalTranslations("actions.saving")
                 : translations("actions.save")}
             </Button>
 

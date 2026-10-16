@@ -6,8 +6,8 @@ import { useTranslations } from "next-intl";
 type DayPlanningCardProps = {
   day: string;
   date: string;
-  total_price: number;
-  recipes: PlanningRecipeRead[];
+  totalPrice: number;
+  planningRecipes: PlanningRecipeRead[];
   colorClass: string;
   onDeleteClick: (planningRecipeId: string) => void;
   onEdit: (planningRecipeId: string) => void;
@@ -16,8 +16,8 @@ type DayPlanningCardProps = {
 export default function DayPlanningCard({
   day,
   date,
-  total_price,
-  recipes: planning_recipes,
+  totalPrice,
+  planningRecipes,
   colorClass,
   onDeleteClick,
   onEdit,
@@ -33,27 +33,27 @@ export default function DayPlanningCard({
       </div>
 
       <div className="p-3 space-y-2 min-h-40">
-        {planning_recipes.length === 0 ? (
+        {planningRecipes.length === 0 ? (
           <div className="text-sm text-gray-400 italic">
-            {translations("no_recipe_planned")}
+            {translations("noRecipePlanned")}
           </div>
         ) : (
-          planning_recipes.map((planning_recipe) => (
+          planningRecipes.map((planningRecipe) => (
             <div
-              key={planning_recipe.planning_recipe.id}
+              key={planningRecipe.planningRecipe.id}
               className="relative flex items-center gap-4 rounded-lg bg-white/5 px-3 py-2 cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
-                onEdit(planning_recipe.planning_recipe.id);
+                onEdit(planningRecipe.planningRecipe.id);
               }}
             >
               <div className="flex flex-col flex-1 min-w-0">
                 <span className="text-white truncate">
-                  {planning_recipe.recipe.name}
+                  {planningRecipe.recipe.name}
                 </span>
 
                 <span className="text-xs text-custom-money-green">
-                  {formatNumberToCurrency(planning_recipe.estimated_cost_price)}
+                  {formatNumberToCurrency(planningRecipe.estimatedCostPrice)}
                 </span>
               </div>
 
@@ -69,7 +69,7 @@ export default function DayPlanningCard({
                   group-hover:mr-16
                 "
               >
-                {planning_recipe.planning_recipe.nb_serving}
+                {planningRecipe.planningRecipe.nbServing}
               </span>
 
               <div
@@ -84,7 +84,7 @@ export default function DayPlanningCard({
                   className="cursor-pointer text-custom-button-red hover:text-red-600"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onDeleteClick(planning_recipe.planning_recipe.id);
+                    onDeleteClick(planningRecipe.planningRecipe.id);
                   }}
                 />
               </div>
@@ -93,7 +93,7 @@ export default function DayPlanningCard({
         )}
       </div>
       <div className="font-semibold border-t border-white/20 py-2 text-custom-money-green w-5/6 mx-auto">
-        💰 {formatNumberToCurrency(total_price)}
+        💰 {formatNumberToCurrency(totalPrice)}
       </div>
     </div>
   );

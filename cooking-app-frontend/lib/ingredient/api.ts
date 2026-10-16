@@ -46,17 +46,17 @@ export async function fetchIngredientsSearch(
   if (searchParams.name) {
     params.set("name", searchParams.name);
   }
-  if (searchParams.type_id) {
-    params.set("type_id", searchParams.type_id);
+  if (searchParams.typeId) {
+    params.set("type_id", searchParams.typeId);
   }
-  if (searchParams.min_stock !== undefined) {
-    params.set("min_stock", String(searchParams.min_stock));
+  if (searchParams.minStock !== undefined) {
+    params.set("min_stock", String(searchParams.minStock));
   }
-  if (searchParams.sort_by) {
-    params.set("sort_by", searchParams.sort_by);
+  if (searchParams.sortBy) {
+    params.set("sort_by", searchParams.sortBy);
   }
-  if (searchParams.sort_direction) {
-    params.set("sort_direction", searchParams.sort_direction);
+  if (searchParams.sortDirection) {
+    params.set("sort_direction", searchParams.sortDirection);
   }
   if (searchParams.offset !== undefined) {
     params.set("offset", String(searchParams.offset));
@@ -175,10 +175,10 @@ export async function setIngredientImage(
 }
 
 export async function fetchIngredientStocks(
-  ingredient_id: string,
+  ingredientId: string,
 ): Promise<IngredientStockRead[]> {
   const res = await fetch(
-    `${BASE_URL}/proxy/ingredients/stocks?ingredient_id=${encodeURIComponent(ingredient_id)}`,
+    `${BASE_URL}/proxy/ingredients/stocks?ingredient_id=${encodeURIComponent(ingredientId)}`,
   );
 
   if (res.status === 401) {
@@ -212,8 +212,8 @@ export async function createStock(
     throw new Error(msg || "Failed to create ingredient stock.");
   }
 
-  const ingredient_stock = (await res.json()) as IngredientStockBase;
-  return ingredient_stock;
+  const ingredientStock = (await res.json()) as IngredientStockBase;
+  return ingredientStock;
 }
 
 export async function deleteIngredientStock(

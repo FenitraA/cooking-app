@@ -60,7 +60,7 @@ export default function HouseholdPage() {
           {createCollapsed ? (
             <div className="h-full rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
               <span className="text-xl font-medium text-custom-sand-dune lg:[writing-mode:vertical-rl]">
-                {translations("create_title")}
+                {translations("createTitle")}
               </span>
             </div>
           ) : (

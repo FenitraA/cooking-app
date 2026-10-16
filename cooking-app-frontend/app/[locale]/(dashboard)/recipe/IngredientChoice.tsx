@@ -35,9 +35,9 @@ export default function IngredientChoice({
     if (!selectedIngredient) return;
 
     if (!quantity ||  Number(quantity) <=0)
-      return setError(translations("errors.required_quantity"));
+      return setError(translations("errors.requiredQuantity"));
     const exists = values.some(
-      (item) => item.ref_ingredient_id === selectedIngredient.id,
+      (item) => item.refIngredientId === selectedIngredient.id,
     );
 
     if (exists) {
@@ -47,11 +47,11 @@ export default function IngredientChoice({
 
     const listItem = {
       id: "",
-      insertion_id: "",
-      ref_ingredient_id: selectedIngredient.id,
-      ingredient_name: selectedIngredient.name,
-      ingredient_unit: selectedIngredient.unit,
-      ref_recipe_id: "",
+      insertionId: "",
+      refIngredientId: selectedIngredient.id,
+      ingredientName: selectedIngredient.name,
+      ingredientUnit: selectedIngredient.unit,
+      refRecipeId: "",
       quantity: String(quantity),
     };
 
@@ -64,7 +64,7 @@ export default function IngredientChoice({
   function removeItem(itemToRemove: RecipeIngredientBase) {
     onChange(
       values.filter(
-        (item) => item.ref_ingredient_id !== itemToRemove.ref_ingredient_id,
+        (item) => item.refIngredientId !== itemToRemove.refIngredientId,
       ),
     );
   }
@@ -98,7 +98,7 @@ export default function IngredientChoice({
             type="decimal"
             value={String(quantity ?? "")}
             onChange={(v) => setQuantityPerServing(v)}
-            placeholder={translations("fields.quantity_per_serving")}
+            placeholder={translations("fields.quantityPerServing")}
           />
           
           <div className="bg-white/10 border border-white/20 rounded-lg h-10 w-10 flex items-center justify-center text-gray-300 text-sm">
@@ -119,7 +119,7 @@ export default function IngredientChoice({
         <div className="mt-3 space-y-2 pt-4 border-t border-white/20 pb-6 flex flex-col max-h-[40vh] overflow-auto">
           {values.map((item) => (
             <div
-              key={item.ref_ingredient_id}
+              key={item.refIngredientId}
               className="flex items-center gap-4 justify-between border-l-4 border-white/20 bg-white/10 p-3 w-full"
             >
               <div
@@ -133,11 +133,11 @@ export default function IngredientChoice({
                 "
               >
                 <div className="font-semibold text-gray-300 bg-wh">
-                  {item.ingredient_name}
+                  {item.ingredientName}
                 </div>
                 <div className="text-sm text-custom-sand-dune">
                   {formatNumber(item.quantity)}{" "}
-                  {item.ingredient_unit}
+                  {item.ingredientUnit}
                 </div>
               </div>
 

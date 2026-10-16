@@ -34,15 +34,15 @@ export default function MealCreatePage({
   const nbServingParam = searchParams.get("nbServing");
 
   const translations = useTranslations("Meal");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
 
   const [selectedRecipe, setSelectedRecipe] = useState<RecipeBase | null>(null);
 
   const [meal, setMeal] = useState<MealCreate>({
     id: "",
-    ref_recipe_id: "",
-    nb_serving: "0",
-    meal_ingredients: [],
+    refRecipeId: "",
+    nbServing: "0",
+    mealIngredients: [],
   });
 
   const [submitting, setSubmitting] = useState(false);
@@ -55,11 +55,11 @@ export default function MealCreatePage({
 
   const totalPrice = useMemo(
     () =>
-      meal.meal_ingredients.reduce(
-        (sum, ingredient) => sum + (Number(ingredient.total_price) ?? 0),
+      meal.mealIngredients.reduce(
+        (sum, ingredient) => sum + (Number(ingredient.totalPrice) ?? 0),
         0,
       ),
-    [meal.meal_ingredients],
+    [meal.mealIngredients],
   );
 
   useEffect(() => {
@@ -102,35 +102,35 @@ export default function MealCreatePage({
     if (!selectedRecipe) return;
 
     if (Number(nbServing) <= 0)
-      return setError(translations("errors.required_nb_serving"));
+      return setError(translations("errors.requiredNbServing"));
 
     setLoadingMealSetup(true);
     try {
-      const meal_ingredients = await getMealSetupFromRecipe(
+      const mealIngredients = await getMealSetupFromRecipe(
         selectedRecipe.id,
         Number(nbServing),
       );
-      const meal_ingredients_bases = meal_ingredients.map((element) => ({
+      const mealIngredientsBases = mealIngredients.map((element) => ({
         id: "",
-        ref_meal_id: "",
-        ref_ingredient_unit_id: "",
-        ref_ingredient_stock_id:
-          element.meal_ingredient_base.ref_ingredient_stock_id,
-        ingredient_name: element.ingredient_name, // optional, only for reads
-        ingredient_unit: element.ingredient_unit, // optional, only for reads
-        stock_description: getMealIngredientStockDescription(element), // optional, only for reads
-        total_price: String(element.total_price),
-        quantity: element.meal_ingredient_base.quantity,
+        refMealId: "",
+        refIngredientUnitId: "",
+        refIngredientStockId:
+          element.mealIngredientBase.refIngredientStockId,
+        ingredientName: element.ingredientName, // optional, only for reads
+        ingredientUnit: element.ingredientUnit, // optional, only for reads
+        stockDescription: getMealIngredientStockDescription(element), // optional, only for reads
+        totalPrice: String(element.totalPrice),
+        quantity: element.mealIngredientBase.quantity,
       }));
 
-      setMeal((p) => ({ ...p, meal_ingredients: meal_ingredients_bases }));
+      setMeal((p) => ({ ...p, mealIngredients: mealIngredientsBases }));
     } catch (e: unknown) {
       if (e instanceof UnauthorizedError) {
         router.replace("/login");
         return;
       }
       const msg = getErrorMessage(e);
-      setError(translations("errors.setup_failed", { message: msg }));
+      setError(translations("errors.setupFailed", { message: msg }));
     } finally {
       setLoadingMealSetup(false);
     }
@@ -145,15 +145,15 @@ export default function MealCreatePage({
 
     const mealToCreate: MealCreate = {
       ...meal,
-      ref_recipe_id: selectedRecipe.id,
-      nb_serving: nbServing,
+      refRecipeId: selectedRecipe.id,
+      nbServing: nbServing,
     };
 
-    if (Number(mealToCreate.nb_serving) <= 0)
-      return setError(translations("errors.required_nb_serving"));
+    if (Number(mealToCreate.nbServing) <= 0)
+      return setError(translations("errors.requiredNbServing"));
 
-    if (mealToCreate.meal_ingredients.length <= 0)
-      return setError(translations("errors.required_ingredients"));
+    if (mealToCreate.mealIngredients.length <= 0)
+      return setError(translations("errors.requiredIngredients"));
 
     setSubmitting(true);
 
@@ -164,9 +164,9 @@ export default function MealCreatePage({
       setMeal((v) => ({
         ...v,
         id: "",
-        ref_recipe_id: "",
-        nb_serving: "0",
-        meal_ingredients: [],
+        refRecipeId: "",
+        nbServing: "0",
+        mealIngredients: [],
       }));
       onCreated?.();
     } catch (e: unknown) {
@@ -176,7 +176,7 @@ export default function MealCreatePage({
       }
 
       const msg = getErrorMessage(e);
-      setError(translations("errors.create_failed", { message: msg }));
+      setError(translations("errors.createFailed", { message: msg }));
     } finally {
       setSubmitting(false);
     }
@@ -186,13 +186,13 @@ export default function MealCreatePage({
       <header className="relative mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
-            {translations("create_title")}
+            {translations("createTitle")}
           </h1>
         </div>
       </header>
       <div className="flex flex-row flex-wrap items-end border-b border-white/20 mx-4 pb-4 gap-6">
         <GeneralAutocomplete<RecipeBase>
-          label={translations("choose_recipe")}
+          label={translations("chooseRecipe")}
           translationsKey="Recipe"
           showShadow={false}
           className="w-full sm:min-w-80"
@@ -208,8 +208,8 @@ export default function MealCreatePage({
         />
         <div className="flex flex-row gap-6 items-end">
           <Field
-            id="nb_serving"
-            label={translations("fields.nb_serving")}
+            id="nbServing"
+            label={translations("fields.nbServing")}
             type="decimal"
             className="w-full sm:min-w-40"
             value={String(nbServing ?? "")}
@@ -228,22 +228,22 @@ export default function MealCreatePage({
       <header className="relative mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-4 py-2 shadow-sm">
         <div className="flex items-center gap-2">
           <h2 className="text-md font-semibold tracking-tight text-custom-sand-dune">
-            {translations("meal_ingredients")}
+            {translations("mealIngredients")}
           </h2>
         </div>
       </header>
       <MealIngredientChoice
-        values={meal.meal_ingredients}
-        onChange={(meal_ingredients) =>
+        values={meal.mealIngredients}
+        onChange={(mealIngredients) =>
           setMeal((p) => ({
             ...p,
-            meal_ingredients: meal_ingredients,
+            mealIngredients: mealIngredients,
           }))
         }
         className="border-b border-white/20 pb-4 mx-4"
       />
       <div className="text-sm text-gray-300 mx-4">
-        <span className="underline">{general_translations("total_cost")}</span>{" "}
+        <span className="underline">{generalTranslations("totalCost")}</span>{" "}
         : {formatNumberToCurrency(totalPrice)}
       </div>
       <div className="flex flex-col space-y-3 pb-4 mx-4">
@@ -253,7 +253,7 @@ export default function MealCreatePage({
           className="h-10 w-full sm:min-w-80 rounded-lg bg-custom-validation-green px-5 text-sm text-white disabled:bg-white/10 disabled:cursor-not-allowed cursor-pointer hover:bg-custom-validation-green/90"
         >
           {submitting
-            ? general_translations("actions.saving")
+            ? generalTranslations("actions.saving")
             : translations("actions.save")}
         </Button>
         {/* 

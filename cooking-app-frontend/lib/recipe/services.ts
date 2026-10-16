@@ -5,35 +5,35 @@ export function isRecipeDirty(
   initial: {
     name: string;
     description: string;
-    estimated_time: string;
-    parallel_cooking: string;
-    recipe_ingredients: RecipeIngredientBase[];
+    estimatedTime: string;
+    parallelCooking: string;
+    recipeIngredients: RecipeIngredientBase[];
   },
   current: typeof initial,
 ): boolean {
   // Compare recipe ingredients as "normalized rows"
-  const recipe_ingredients_a = initial.recipe_ingredients
+  const recipeIngredientsA = initial.recipeIngredients
     .map(
-      (recipe_ingredient) =>
-        `${normStr(recipe_ingredient.ref_ingredient_id)}|${recipe_ingredient.quantity}`,
+      (recipeIngredient) =>
+        `${normStr(recipeIngredient.refIngredientId)}|${recipeIngredient.quantity}`,
     )
     .sort();
 
-  const recipe_ingredients_b = current.recipe_ingredients
+  const recipeIngredientsB = current.recipeIngredients
     .map(
-      (recipe_ingredient) =>
-        `${normStr(recipe_ingredient.ref_ingredient_id)}|${recipe_ingredient.quantity}`,
+      (recipeIngredient) =>
+        `${normStr(recipeIngredient.refIngredientId)}|${recipeIngredient.quantity}`,
     )
     .sort();
 
-  if (recipe_ingredients_a.length !== recipe_ingredients_b.length) return true;
-  for (let i = 0; i < recipe_ingredients_a.length; i++) {
-    if (recipe_ingredients_a[i] !== recipe_ingredients_b[i]) return true;
+  if (recipeIngredientsA.length !== recipeIngredientsB.length) return true;
+  for (let i = 0; i < recipeIngredientsA.length; i++) {
+    if (recipeIngredientsA[i] !== recipeIngredientsB[i]) return true;
   }
 
   return (
     Object.keys(initial) as Array<
-      Exclude<keyof typeof initial, "recipe_ingredients">
+      Exclude<keyof typeof initial, "recipeIngredients">
     >
   ).some((key) => normStr(initial[key]) !== normStr(current[key]));
 }

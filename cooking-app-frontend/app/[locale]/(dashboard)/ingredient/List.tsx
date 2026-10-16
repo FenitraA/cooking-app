@@ -48,7 +48,7 @@ export default function IngredientListPage({
 }) {
   const router = useRouter();
   const translations = useTranslations("Ingredient");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
 
   const triggerRefresh = () => onRefresh();
 
@@ -65,10 +65,10 @@ export default function IngredientListPage({
       limit: 50,
       offset: 0,
       name: undefined,
-      type_id: undefined,
-      min_stock: undefined,
-      sort_by: undefined,
-      sort_direction: "desc",
+      typeId: undefined,
+      minStock: undefined,
+      sortBy: undefined,
+      sortDirection: "desc",
     });
 
   const [isDesc, setIsDesc] = useState(true);
@@ -85,7 +85,7 @@ export default function IngredientListPage({
   const groupedIngredients = useMemo(() => {
     return ingredients.reduce(
       (acc, item) => {
-        const groupId = item.ingredient_unit.ref_unit_group_id;
+        const groupId = item.ingredientUnit.refUnitGroupId;
 
         if (!acc[groupId]) {
           acc[groupId] = [];
@@ -118,14 +118,14 @@ export default function IngredientListPage({
     console.log(v);
     setIngredientSearchParams((p) => ({
       ...p,
-      sort_by: v || undefined,
+      sortBy: v || undefined,
       offset: 0,
     }));
   }
   function setSortDirection() {
     setIngredientSearchParams((p) => ({
       ...p,
-      sort_direction: p.sort_direction === "desc" ? "asc" : "desc",
+      sortDirection: p.sortDirection === "desc" ? "asc" : "desc",
       offset: 0,
     }));
 
@@ -142,7 +142,7 @@ export default function IngredientListPage({
   function setMinStock(v: string) {
     setIngredientSearchParams((p) => ({
       ...p,
-      min_stock: v || undefined,
+      minStock: v || undefined,
       offset: 0,
     }));
   }
@@ -186,7 +186,7 @@ export default function IngredientListPage({
     };
   }, [router, debouncedSearchParams, refreshKey]);
 
-  function preview_image(imageUrl: string) {
+  function previewImage(imageUrl: string) {
     setSelectedImage(imageUrl);
   }
 
@@ -208,9 +208,9 @@ export default function IngredientListPage({
 
       <Field
         icon={SquareMinus}
-        value={String(ingredientSearchParams.min_stock ?? "")}
+        value={String(ingredientSearchParams.minStock ?? "")}
         onChange={setMinStock}
-        placeholder={translations("filters.min_stock")}
+        placeholder={translations("filters.minStock")}
       />
       <GeneralAutocomplete<IngredientTypeBase>
         translationsKey="IngredientType"
@@ -218,26 +218,26 @@ export default function IngredientListPage({
         value={selectedIngredientType}
         onSelect={(d) => {
           setSelectedIngredientType(d);
-          setIngredientSearchParams((p) => ({ ...p, type_id: d.id }));
+          setIngredientSearchParams((p) => ({ ...p, typeId: d.id }));
         }}
         onClear={() => {
           setSelectedIngredientType(null);
-          setIngredientSearchParams((p) => ({ ...p, type_id: undefined }));
+          setIngredientSearchParams((p) => ({ ...p, typeId: undefined }));
         }}
         getName={getIngredientTypeName}
         fetchOptions={fetchIngredientTypes}
       />
       <div className="flex flex-row gap-3">
         <FilterSelect<string>
-          value={ingredientSearchParams.sort_by || ""}
+          value={ingredientSearchParams.sortBy || ""}
           icon={ArrowDownAZ}
           onChange={setSortBy}
           className="flex-1"
           placeholder="Sort by"
           options={[
             { value: "", label: "None" },
-            { value: "quantity_left", label: "Stock" },
-            { value: "unit_cost", label: "Price" },
+            { value: "quantityLeft", label: "Stock" },
+            { value: "unitCost", label: "Price" },
           ]}
         />
         <button
@@ -254,7 +254,7 @@ export default function IngredientListPage({
       >
         <SwitchCamera size={20} onClick={changeListType} />
         <span className="mr-2">
-          {general_translations("actions.change_view")}
+          {generalTranslations("actions.changeView")}
         </span>{" "}
       </div>
     </div>
@@ -265,7 +265,7 @@ export default function IngredientListPage({
       <header className="relative mb-4 mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
-            {translations("list_title")}
+            {translations("listTitle")}
           </h1>
         </div>
 
@@ -306,7 +306,7 @@ export default function IngredientListPage({
           )}
 
           {/* <div className="text-xs text-gray-400 ml-2 mb-2">
-            {translations("count_label")} :{" "}
+            {translations("countLabel")} :{" "}
             <span className="text-gray-700 font-bold">{total}</span>
           </div> */}
 
@@ -342,14 +342,14 @@ export default function IngredientListPage({
                         <IngredientCard
                           ingredientId={item.ingredient.id}
                           name={item.ingredient.name}
-                          imageUrl={item.ingredient.image_url}
-                          unit={item.ingredient_unit.symbol}
+                          imageUrl={item.ingredient.imageUrl}
+                          unit={item.ingredientUnit.symbol}
                           estimatedPrice={Number(
-                            item.ingredient.estimated_price,
+                            item.ingredient.estimatedPrice,
                           )}
-                          quantityLeft={item.quantity_left}
-                          ingredientType={item.ingredient_type.name}
-                          onImageClick={preview_image}
+                          quantityLeft={item.quantityLeft}
+                          ingredientType={item.ingredientType.name}
+                          onImageClick={previewImage}
                         />
                       </div>
                     ))}
@@ -369,13 +369,13 @@ export default function IngredientListPage({
                       {translations("table.name")}
                     </th>
                     <th className="bg-gray-500 py-2 px-4 border-r border-white/20">
-                      {translations("table.estimated_price")}
+                      {translations("table.estimatedPrice")}
                     </th>
                     <th className="bg-gray-500 py-2 px-4 border-r border-white/20">
-                      {translations("table.quantity_left")}
+                      {translations("table.quantityLeft")}
                     </th>
                     <th className="bg-gray-500 py-2 px-4 border-r border-white/20">
-                      {translations("table.ingredient_type")}
+                      {translations("table.ingredientType")}
                     </th>
                   </tr>
                 </thead>
@@ -389,7 +389,7 @@ export default function IngredientListPage({
                             colSpan={4}
                             className="px-4 py-2 font-semibold text-white border-y border-white/20"
                           >
-                            {group[0].group_name}
+                            {group[0].groupName}
                           </td>
                         </tr>
 
@@ -403,16 +403,16 @@ export default function IngredientListPage({
                             </td>
                             <td className="py-2 px-4 border-r border-white/20">
                               {formatNumberToCurrency(
-                                item.ingredient.estimated_price,
+                                item.ingredient.estimatedPrice,
                               )}{" "}
-                              / {item.ingredient_unit.name}
+                              / {item.ingredientUnit.name}
                             </td>
                             <td className="py-2 px-4 border-r border-white/20">
-                              {formatNumber(item.quantity_left)}{" "}
-                              {item.ingredient_unit.name}
+                              {formatNumber(item.quantityLeft)}{" "}
+                              {item.ingredientUnit.name}
                             </td>
                             <td className="py-2 px-4 border-r border-white/20">
-                              {item.ingredient_type.name}
+                              {item.ingredientType.name}
                             </td>
                           </tr>
                         ))}
@@ -430,8 +430,8 @@ export default function IngredientListPage({
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
               onPageChange={onPageChange}
-              previousLabel={general_translations("actions.previous")}
-              nextLabel={general_translations("actions.next")}
+              previousLabel={generalTranslations("actions.previous")}
+              nextLabel={generalTranslations("actions.next")}
               showIcons
             />
           </div>
@@ -445,11 +445,11 @@ export default function IngredientListPage({
       >
         <ModalBody className="bg-custom-dark-blue border border-custom-sand-dune">
           <div className="flex text-xl text-custom-sand-dune flex-row justify-between w-full mb-3 pb-3 border-b border-custom-sand-dune">
-            <h2>{translations("edit_title")}</h2>
+            <h2>{translations("editTitle")}</h2>
             <button
               className="flex justify-center items-center cursor-pointer h-6 w-6 border border-custom-sand-dune rounded-full text-custom-sand-dune hover:bg-custom-sand-dune/20"
               onClick={() => setOpenEditModal(false)}
-              aria-label={general_translations("actions.select")}
+              aria-label={generalTranslations("actions.select")}
             >
               <X size={16} />
             </button>

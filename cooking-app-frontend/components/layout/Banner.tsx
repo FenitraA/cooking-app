@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Link, usePathname, useRouter } from "@/i18n/navigation"; // ✅ locale-aware
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { ChevronDown, Globe, LogOut, Menu, Settings, User } from "lucide-react";
 import { BASE_URL, LOCALES } from "@/lib/variables";
 import { useUser } from "./dashboardShell";
@@ -19,8 +19,8 @@ export default function Bannert({
   const gt = useTranslations("General");
   const ut = useTranslations("User");
 
-  const pathname = usePathname(); // returns pathname WITHOUT locale, e.g. "/household"
-  const locale = useLocale(); // current locale, e.g. "fr"
+  const pathname = usePathname();
+  const locale = useLocale();
 
   const { user, setUser } = useUser();
 
@@ -94,7 +94,7 @@ export default function Bannert({
 
         <h1 className="text-md sm:text-2xl font-bold tracking-tight mt-0.5">
           <span className="bg-linear-to-r from-green-400 via-green-300 to-orange-400 bg-clip-text text-transparent">
-            {gt("app_title")}
+            {gt("appTitle")}
           </span>
         </h1>
       </div>
@@ -186,7 +186,7 @@ export default function Bannert({
             "
               >
                 <Settings size={18} className="mr-3" />
-                {ut("setting_title")}
+                {ut("settingTitle")}
               </Link>
 
               <button

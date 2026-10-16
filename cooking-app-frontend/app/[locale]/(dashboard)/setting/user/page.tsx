@@ -11,7 +11,7 @@ import { useUser } from "@/components/layout/dashboardShell";
 export default function AccountSettingsForm() {
   const router = useRouter();
   const translations = useTranslations("User");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
 
   const { user, setUser } = useUser();
   const [newUsername, setNewUsername] = useState("");
@@ -38,12 +38,12 @@ export default function AccountSettingsForm() {
     setSuccess(null);
 
     if (user == null) {
-      setError(translations("errors.no_user"));
+      setError(translations("errors.noUser"));
       return;
     }
 
     if (!newUsername.trim()) {
-      setError(translations("errors.username_required"));
+      setError(translations("errors.usernameRequired"));
       return;
     }
 
@@ -51,9 +51,9 @@ export default function AccountSettingsForm() {
     try {
       const userRes = await changeUsername({
         id: user.id,
-        new_username: newUsername.trim(),
+        newUsername: newUsername.trim(),
       });
-      setSuccess(translations("success.username_updated"));
+      setSuccess(translations("success.usernameUpdated"));
       setUser(userRes);
     } catch (e: unknown) {
       if (e instanceof UnauthorizedError) {
@@ -72,23 +72,23 @@ export default function AccountSettingsForm() {
     setSuccess(null);
 
     if (user == null) {
-      setError(translations("errors.no_user"));
+      setError(translations("errors.noUser"));
       return;
     }
     if (!oldPassword.trim()) {
-      setError(translations("errors.old_password_required"));
+      setError(translations("errors.oldPasswordRequired"));
       return;
     }
     if (!newPassword.trim()) {
-      setError(translations("errors.new_password_required"));
+      setError(translations("errors.newPasswordRequired"));
       return;
     }
     if (newPassword.length < 6) {
-      setError(translations("errors.password_min_length"));
+      setError(translations("errors.passwordMinLength"));
       return;
     }
     if (!passwordConfirmed) {
-      setError(translations("errors.passwords_not_match"));
+      setError(translations("errors.passwordsNotMatch"));
       return;
     }
 
@@ -96,11 +96,11 @@ export default function AccountSettingsForm() {
     try {
       await changeUserPassword({
         id: user.id,
-        old_password: oldPassword,
-        new_password: newPassword,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
       });
 
-      setSuccess(translations("success.password_updated"));
+      setSuccess(translations("success.passwordUpdated"));
       setOldPassword("");
       setNewPassword("");
       setConfirmNewPassword("");
@@ -120,7 +120,7 @@ export default function AccountSettingsForm() {
       <header className="relative mb-4 mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
-            {translations("setting_title")}
+            {translations("settingTitle")}
           </h1>
         </div>
       </header>
@@ -144,8 +144,8 @@ export default function AccountSettingsForm() {
 
       <form onSubmit={submitUsername} className="space-y-4">
         <Field
-          id="new_username"
-          label={translations("fields.new_username")}
+          id="newUsername"
+          label={translations("fields.newUsername")}
           value={newUsername}
           onChange={setNewUsername}
           placeholder={translations("placeholders.username")}
@@ -158,8 +158,8 @@ export default function AccountSettingsForm() {
             className="h-10 rounded-lg bg-custom-validation-green px-5 text-sm text-white disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
           >
             {savingUsername
-              ? general_translations("actions.saving")
-              : translations("actions.update_username")}
+              ? generalTranslations("actions.saving")
+              : translations("actions.updateUsername")}
           </button>
         </div>
       </form>
@@ -170,7 +170,7 @@ export default function AccountSettingsForm() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <Field
             id="oldPassword"
-            label={translations("fields.old_password")}
+            label={translations("fields.oldPassword")}
             value={oldPassword}
             onChange={setOldPassword}
             placeholder={translations("placeholders.password")}
@@ -178,7 +178,7 @@ export default function AccountSettingsForm() {
           />
           <Field
             id="newPassword"
-            label={translations("fields.new_password")}
+            label={translations("fields.newPassword")}
             value={newPassword}
             onChange={setNewPassword}
             placeholder={translations("placeholders.password")}
@@ -186,7 +186,7 @@ export default function AccountSettingsForm() {
           />
           <Field
             id="confirmNewPassword"
-            label={translations("fields.confirm_new_password")}
+            label={translations("fields.confirmNewPassword")}
             value={confirmNewPassword}
             onChange={setConfirmNewPassword}
             placeholder={translations("placeholders.password")}
@@ -201,8 +201,8 @@ export default function AccountSettingsForm() {
             className="h-10 rounded-lg bg-custom-validation-green px-5 text-sm text-white disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
           >
             {savingPassword
-              ? general_translations("actions.saving")
-              : translations("actions.update_password")}
+              ? generalTranslations("actions.saving")
+              : translations("actions.updatePassword")}
           </button>
         </div>
       </form>

@@ -1,14 +1,22 @@
+
+import { CamelCasedPropertiesDeep } from "../case-types";
+
 // Ingredients
-export interface IngredientSearchParams {
+
+export interface IngredientSearchParamsApi {
   name?: string;
   type_id?: string;
   min_stock?: string;
-  sort_by? : string;
-  sort_direction? : string;
+  sort_by?: string;
+  sort_direction?: string;
   offset?: number;
   limit?: number;
 }
-export interface IngredientBase {
+
+export type IngredientSearchParams =
+  CamelCasedPropertiesDeep<IngredientSearchParamsApi>;
+
+export interface IngredientBaseApiResponse {
   id: string;
   name: string;
   unit?: string;
@@ -18,25 +26,41 @@ export interface IngredientBase {
   image_url: string | null;
   storage_key: string | null;
 }
-export interface IngredientImageData {
+
+export type IngredientBase =
+  CamelCasedPropertiesDeep<IngredientBaseApiResponse>;
+
+export interface IngredientImageDataApiResponse {
   id: string;
   image_url: string;
   storage_key: string;
 }
-export interface IngredientRead {
-  ingredient: IngredientBase;
-  ingredient_unit: IngredientUnitBase;
-  ingredient_type: IngredientTypeBase;
+
+export type IngredientImageData =
+  CamelCasedPropertiesDeep<IngredientImageDataApiResponse>;
+
+export interface IngredientReadApiResponse {
+  ingredient: IngredientBaseApiResponse;
+  ingredient_unit: IngredientUnitBaseApiResponse;
+  ingredient_type: IngredientTypeBaseApiResponse;
   quantity_left: number;
   group_name: string;
 }
-export interface IngredientSearchResult {
-  items: IngredientRead[];
+
+export type IngredientRead =
+  CamelCasedPropertiesDeep<IngredientReadApiResponse>;
+
+export interface IngredientSearchResultApiResponse {
+  items: IngredientReadApiResponse[];
   total: number;
   offset: number;
   limit: number;
 }
-export interface IngredientUpdateData {
+
+export type IngredientSearchResult =
+  CamelCasedPropertiesDeep<IngredientSearchResultApiResponse>;
+
+export interface IngredientUpdateDataApiRequest {
   id: string;
   name: string;
   ref_ingredient_unit_id: string;
@@ -44,42 +68,69 @@ export interface IngredientUpdateData {
   estimated_price: string;
 }
 
-//Ingredient stock
-export interface IngredientStockBase {
+export type IngredientUpdateData =
+  CamelCasedPropertiesDeep<IngredientUpdateDataApiRequest>;
+
+// Ingredient stock
+
+export interface IngredientStockBaseApiResponse {
   id: string;
   unit_cost: string;
   quantity: string;
   ref_seller_id: string;
   ref_ingredient_id: string;
 }
-export interface IngredientStockRead {
-  ingredient_stock: IngredientStockBase;
+
+export type IngredientStockBase =
+  CamelCasedPropertiesDeep<IngredientStockBaseApiResponse>;
+
+export interface IngredientStockReadApiResponse {
+  ingredient_stock: IngredientStockBaseApiResponse;
   ingredient_name: string;
   ingredient_unit: string;
   seller_name: string;
   quantity_left: number;
 }
 
-export interface DeleteIngredientStockData {
+export type IngredientStockRead =
+  CamelCasedPropertiesDeep<IngredientStockReadApiResponse>;
+
+export interface DeleteIngredientStockApiRequest {
   ingredient_stock_id: string;
 }
 
-//Ingredient type
-export interface IngredientTypeBase {
+export type DeleteIngredientStockData =
+  CamelCasedPropertiesDeep<DeleteIngredientStockApiRequest>;
+
+// Ingredient type
+
+export interface IngredientTypeBaseApiResponse {
   id: string;
   name: string;
 }
 
-//Ingredient unit
-export interface IngredientUnitBase {
+export type IngredientTypeBase =
+  CamelCasedPropertiesDeep<IngredientTypeBaseApiResponse>;
+
+// Ingredient unit
+
+export interface IngredientUnitBaseApiResponse {
   id: string;
   name: string;
   symbol: string;
   multiplier_to_base: string;
-  ref_unit_group_id : string;
+  ref_unit_group_id: string;
 }
-//Seller
-export interface SellerBase {
+
+export type IngredientUnitBase =
+  CamelCasedPropertiesDeep<IngredientUnitBaseApiResponse>;
+
+// Seller
+
+export interface SellerBaseApiResponse {
   id: string;
   name: string;
 }
+
+export type SellerBase =
+  CamelCasedPropertiesDeep<SellerBaseApiResponse>;

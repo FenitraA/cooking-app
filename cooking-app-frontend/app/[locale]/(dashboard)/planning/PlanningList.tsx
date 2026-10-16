@@ -47,7 +47,7 @@ export default function PlanningList({
 }) {
   const router = useRouter();
   const translations = useTranslations("Planning");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
 
   const triggerRefresh = () => onRefresh();
 
@@ -186,7 +186,7 @@ export default function PlanningList({
   async function handleDeletePlanningRecipe() {
     setDeleteLoading(true);
     try {
-      await deletePlanningRecipe({ planning_recipe_id: planningIdToDelete });
+      await deletePlanningRecipe({ planningRecipeId: planningIdToDelete });
       triggerRefresh();
     } finally {
       setDeleteLoading(false);
@@ -252,7 +252,7 @@ export default function PlanningList({
       <div className="flex flex-row justify-center items-center gap-6 mb-5 w-full sm:w-1/3 mx-auto">
         <span className="font-semibold text-lg text-custom-money-green border-b border-custom-money-green">
           Total :{" "}
-          {formatNumberToCurrency(planning?.total_estimated_cost_price || "0")}
+          {formatNumberToCurrency(planning?.totalEstimatedCostPrice || "0")}
         </span>
         <span className="flex justify-center items-center border border-white/20 rounded p-2">
           <Beef
@@ -272,13 +272,13 @@ export default function PlanningList({
         )}
 
         <div className="flex flex-col sm:flex-row sm:flex-wrap">
-          {planning?.planning_repartitions.map((day, index) => (
+          {planning?.planningRepartitions.map((day, index) => (
             <DayPlanningCard
-              key={day.planning_group_date}
-              day={day.day_name}
-              date={day.planning_group_date}
-              total_price={day.estimated_cost_price}
-              recipes={day.planning_recipes}
+              key={day.planningGroupDate}
+              day={day.dayName}
+              date={day.planningGroupDate}
+              totalPrice={day.estimatedCostPrice}
+              planningRecipes={day.planningRecipes}
               colorClass={DAY_COLORS[index % DAY_COLORS.length]}
               onDeleteClick={handleDeleteClick}
               onEdit={handleEditClick}
@@ -296,7 +296,7 @@ export default function PlanningList({
           >
             <ArrowLeftFromLine size={16} />{" "}
             <span className="hidden sm:inline">
-              {general_translations("actions.previous")}
+              {generalTranslations("actions.previous")}
             </span>
           </button>
 
@@ -305,7 +305,7 @@ export default function PlanningList({
             onClick={goToCurrentWeek}
             className="px-4 py-2 rounded-lg bg-custom-sand-dune/20 border border-custom-sand-dune/40 text-custom-sand-dune hover:bg-custom-sand-dune/30 cursor-pointer"
           >
-            {general_translations("actions.this_week")}
+            {generalTranslations("actions.thisWeek")}
           </button>
 
           <button
@@ -314,7 +314,7 @@ export default function PlanningList({
             className="flex flex-row items-center gap-3 px-4 py-2 text-gray-300 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 cursor-pointer"
           >
             <span className="hidden sm:inline">
-              {general_translations("actions.next")}
+              {generalTranslations("actions.next")}
             </span>{" "}
             <ArrowRightFromLine size={16} />
           </button>
@@ -333,11 +333,11 @@ export default function PlanningList({
       >
         <ModalBody className="bg-custom-dark-blue border border-custom-sand-dune">
           <div className="flex text-xl text-custom-sand-dune flex-row justify-between w-full mb-3 pb-3 border-b border-custom-sand-dune">
-            <h2>{translations("edit_title")}</h2>
+            <h2>{translations("editTitle")}</h2>
             <button
               className="flex justify-center items-center cursor-pointer h-6 w-6 border border-custom-sand-dune rounded-full text-custom-sand-dune hover:bg-custom-sand-dune/20"
               onClick={() => setOpenEditModal(false)}
-              aria-label={general_translations("actions.select")}
+              aria-label={generalTranslations("actions.select")}
             >
               <X size={16} />
             </button>
@@ -358,20 +358,20 @@ export default function PlanningList({
       >
         <ModalBody className="bg-custom-dark-blue border border-custom-sand-dune">
           <div className="flex text-xl text-custom-sand-dune flex-row justify-between w-full mb-3 pb-3 border-b border-custom-sand-dune">
-            <h2>{translations("ingredients_list")}</h2>
+            <h2>{translations("ingredientsList")}</h2>
             <button
               className="flex justify-center items-center cursor-pointer h-6 w-6 border border-custom-sand-dune rounded-full text-custom-sand-dune hover:bg-custom-sand-dune/20"
               onClick={() => setOpenIngredientsModal(false)}
-              aria-label={general_translations("actions.select")}
+              aria-label={generalTranslations("actions.select")}
             >
               <X size={16} />
             </button>
           </div>
 
           <div className="mt-3 space-y-2 pt-4 border-t border-white/20 pb-6 flex flex-col max-h-[40vh] overflow-auto">
-            {planning?.ingredients_to_buy.map((item) => (
+            {planning?.ingredientsToBuy.map((item) => (
               <div
-                key={item.recipe_ingredient_base.ref_ingredient_id}
+                key={item.recipeIngredientBase.refIngredientId}
                 className="
                           flex
                           items-center
@@ -393,19 +393,19 @@ export default function PlanningList({
                           "
                 >
                   <div className="font-semibold text-gray-300">
-                    {item.ingredient_name}
+                    {item.ingredientName}
                   </div>
 
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
                     <span className="text-custom-sand-dune">
-                      {formatNumber(item.recipe_ingredient_base.quantity)}{" "}
-                      {item.ingredient_unit}
+                      {formatNumber(item.recipeIngredientBase.quantity)}{" "}
+                      {item.ingredientUnit}
                     </span>
 
                     <span className="ml-2 text-custom-money-green font-semibold">
                       {formatNumberToCurrency(
-                        item.estimated_cost_per_unit *
-                          Number(item.recipe_ingredient_base.quantity),
+                        item.estimatedCostPerUnit *
+                          Number(item.recipeIngredientBase.quantity),
                       )}
                     </span>
                   </div>

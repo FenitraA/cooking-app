@@ -33,16 +33,16 @@ export default function IngredientCreatePage({
 }) {
   const router = useRouter();
   const translations = useTranslations("Ingredient");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
 
   const [ingredient, setIngredient] = useState<IngredientBase>({
     id: "",
     name: "",
-    ref_ingredient_unit_id: "",
-    ref_ingredient_type_id: "",
-    estimated_price: "0",
-    image_url: null,
-    storage_key: null,
+    refIngredientUnitId: "",
+    refIngredientTypeId: "",
+    estimatedPrice: "0",
+    imageUrl: null,
+    storageKey: null,
   });
 
   const [submitting, setSubmitting] = useState(false);
@@ -85,13 +85,13 @@ export default function IngredientCreatePage({
     setSuccess(null);
 
     if (!ingredient.name.trim())
-      return setError(translations("errors.required_name"));
-    if (!ingredient.ref_ingredient_unit_id.trim())
-      return setError(translations("errors.required_unit"));
-    if (!ingredient.ref_ingredient_type_id.trim())
-      return setError(translations("errors.required_ingredient_type_id"));
-    if (!ingredient.estimated_price || Number(ingredient.estimated_price) <= 0)
-      return setError(translations("errors.required_estimated_price"));
+      return setError(translations("errors.requiredName"));
+    if (!ingredient.refIngredientUnitId.trim())
+      return setError(translations("errors.requiredUnit"));
+    if (!ingredient.refIngredientTypeId.trim())
+      return setError(translations("errors.requiredIngredientTypeId"));
+    if (!ingredient.estimatedPrice || Number(ingredient.estimatedPrice) <= 0)
+      return setError(translations("errors.requiredEstimatedPrice"));
 
     setSubmitting(true);
 
@@ -105,14 +105,14 @@ export default function IngredientCreatePage({
           `ingredients/${ingredientId}`,
         );
         if (uploaded.length === 0) {
-          throw new Error(general_translations("errors.upload_error"));
+          throw new Error(generalTranslations("errors.uploadError"));
         }
-        const uploaded_image = uploaded[0];
+        const uploadedImage = uploaded[0];
 
         const imageBody: IngredientImageData = {
           id: ingredientId,
-          image_url: uploaded_image.secure_url,
-          storage_key: uploaded_image.public_id,
+          imageUrl: uploadedImage.secureUrl,
+          storageKey: uploadedImage.publicId,
         };
 
         await setIngredientImage(imageBody);
@@ -124,9 +124,9 @@ export default function IngredientCreatePage({
         id: "",
         name: "",
         unit: "",
-        estimated_price: "0",
-        image_url: null,
-        storage_key: null,
+        estimatedPrice: "0",
+        imageUrl: null,
+        storageKey: null,
       }));
       setImage(null);
       onCreated?.();
@@ -137,7 +137,7 @@ export default function IngredientCreatePage({
       }
 
       const msg = getErrorMessage(e);
-      setError(translations("errors.create_failed", { message: msg }));
+      setError(translations("errors.createFailed", { message: msg }));
     } finally {
       setSubmitting(false);
     }
@@ -148,7 +148,7 @@ export default function IngredientCreatePage({
       <header className="relative mb-4 mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
-            {translations("create_title")}
+            {translations("createTitle")}
           </h1>
         </div>
       </header>
@@ -174,39 +174,39 @@ export default function IngredientCreatePage({
             value={selectedIngredientUnit}
             onSelect={(d) => {
               setSelectedIngredientUnit(d);
-              setIngredient((p) => ({ ...p, ref_ingredient_unit_id: d.id }));
+              setIngredient((p) => ({ ...p, refIngredientUnitId: d.id }));
             }}
             onClear={() => {
               setSelectedIngredientUnit(null);
-              setIngredient((p) => ({ ...p, ref_ingredient_unit_id: "" }));
+              setIngredient((p) => ({ ...p, refIngredientUnitId: "" }));
             }}
             getName={getIngredientUnitName}
             fetchOptions={fetchIngredientUnits}
           />
           <Field
-            id="estimated_price"
+            id="estimatedPrice"
             className="w-full"
             type="decimal"
-            label={translations("fields.estimated_price")}
-            value={String(ingredient.estimated_price ?? "")}
+            label={translations("fields.estimatedPrice")}
+            value={String(ingredient.estimatedPrice ?? "")}
             onChange={(v) =>
-              setIngredient((p) => ({ ...p, estimated_price: v }))
+              setIngredient((p) => ({ ...p, estimatedPrice: v }))
             }
-            placeholder={translations("fields.estimated_price")}
+            placeholder={translations("fields.estimatedPrice")}
           />
           <GeneralAutocomplete<IngredientTypeBase>
-            label={translations("fields.ingredient_type")}
+            label={translations("fields.ingredientType")}
             translationsKey="Ingredient"
             showShadow={false}
             className="w-full"
             value={selectedIngredientType}
             onSelect={(d) => {
               setSelectedIngredientType(d);
-              setIngredient((p) => ({ ...p, ref_ingredient_type_id: d.id }));
+              setIngredient((p) => ({ ...p, estimatedPrrefIngredientTypeIdice: d.id }));
             }}
             onClear={() => {
               setSelectedIngredientType(null);
-              setIngredient((p) => ({ ...p, ref_ingredient_type_id: "" }));
+              setIngredient((p) => ({ ...p, estimatedPrrefIngredientTypeIdice: "" }));
             }}
             getName={getIngredientTypeName}
             fetchOptions={fetchIngredientTypes}
@@ -246,7 +246,7 @@ export default function IngredientCreatePage({
                   type="button"
                   onClick={() => removeImage()}
                   className="flex flex-row justify-center items-center absolute -right-3 -top-3 rounded-4xl w-7 h-7 bg-red-500 text-xs border shadow-sm hover:bg-red-800 cursor-pointer"
-                  aria-label={general_translations("actions.select")}
+                  aria-label={generalTranslations("actions.select")}
                 >
                   <X size={16} className="text-white" />
                 </button>
@@ -265,7 +265,7 @@ export default function IngredientCreatePage({
             className="h-10 w-full rounded-lg bg-custom-validation-green px-5 text-sm text-white disabled:bg-white/10 disabled:cursor-not-allowed cursor-pointer hover:bg-custom-validation-green/90"
           >
             {submitting
-              ? general_translations("actions.saving")
+              ? generalTranslations("actions.saving")
               : translations("actions.save")}
           </Button>
 

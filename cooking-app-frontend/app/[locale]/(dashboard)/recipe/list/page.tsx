@@ -28,7 +28,7 @@ export default function RecipeListPage() {
 
   const router = useRouter();
   const translations = useTranslations("Recipe");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
 
   const [openEditModal, setOpenEditModal] = useState(false);
   const [selectedRecipeID, setSelectedRecipeID] = useState("");
@@ -42,8 +42,8 @@ export default function RecipeListPage() {
       limit: 50,
       offset: 0,
       name: undefined,
-      max_making_time: undefined,
-      ingredient_ids: undefined,
+      maxMakingTime: undefined,
+      ingredientIds: undefined,
     });
 
   const debouncedSearchParams = useDebounce(recipeSearchParams, 400);
@@ -81,11 +81,11 @@ export default function RecipeListPage() {
   function setMaxMakingTime(v: string) {
     setRecipeSearchParams((p) => ({
       ...p,
-      max_making_time: v || undefined,
+      maxMakingTime: v || undefined,
       offset: 0,
     }));
   }
-  function preview_image(imageUrl: string) {
+  function previewImage(imageUrl: string) {
     setSelectedImage(imageUrl);
   }
 
@@ -94,7 +94,7 @@ export default function RecipeListPage() {
       (ingredient) => ingredient.id,
     );
 
-    setRecipeSearchParams((p) => ({ ...p, ingredient_ids: ingredientIds }));
+    setRecipeSearchParams((p) => ({ ...p, ingredientIds: ingredientIds }));
   }, [selectedIngredients]);
   useEffect(() => {
     let cancelled = false;
@@ -141,7 +141,7 @@ export default function RecipeListPage() {
     <div className="flex flex-col sm:p-6 gap-6 mb-3 w-full h-full lg:min-w-64 sm:bg-white/10 rounded-xl sm:border border-white/20">
       <header className="lg:block hidden text-center mb-2 px-2 py-2 border-b border-custom-sand-dune">
         <h2 className="text-md font-semibold text-custom-sand-dune tracking-tight">
-          {general_translations("search_filters")}
+          {generalTranslations("searchFilters")}
         </h2>
       </header>
       <Field
@@ -153,9 +153,9 @@ export default function RecipeListPage() {
 
       <Field
         icon={Clock}
-        value={String(recipeSearchParams.max_making_time ?? "")}
+        value={String(recipeSearchParams.maxMakingTime ?? "")}
         onChange={setMaxMakingTime}
-        placeholder={translations("filters.max_making_time")}
+        placeholder={translations("filters.maxMakingTime")}
       />
       <GeneralAutocompleteList
         translationsKey="Ingredient"
@@ -174,7 +174,7 @@ export default function RecipeListPage() {
       <header className="relative mb-4 mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
-            {translations("list_title")}
+            {translations("listTitle")}
           </h1>
         </div>
 
@@ -215,7 +215,7 @@ export default function RecipeListPage() {
             )}
 
             {/* <div className="text-xs text-gray-400 ml-2 mb-2">
-            {translations("count_label")} :{" "}
+            {translations("countLabel")} :{" "}
             <span className="text-gray-700 font-bold">{total}</span>
           </div> */}
 
@@ -232,7 +232,7 @@ export default function RecipeListPage() {
                       setSelectedRecipeID(item.recipe.id);
                       setOpenEditModal(true);
                     }}
-                    onImageClick={preview_image}
+                    onImageClick={previewImage}
                   />
                 </div>
               ))}
@@ -245,8 +245,8 @@ export default function RecipeListPage() {
                 currentPage={pagination.currentPage}
                 totalPages={pagination.totalPages}
                 onPageChange={onPageChange}
-                previousLabel={general_translations("actions.previous")}
-                nextLabel={general_translations("actions.next")}
+                previousLabel={generalTranslations("actions.previous")}
+                nextLabel={generalTranslations("actions.next")}
                 showIcons
               />
             </div>
@@ -261,11 +261,11 @@ export default function RecipeListPage() {
       >
         <ModalBody className="bg-custom-dark-blue border border-custom-sand-dune">
           <div className="flex text-xl text-custom-sand-dune flex-row justify-between w-full mb-3 pb-3 border-b border-custom-sand-dune">
-            <h2>{translations("edit_title")}</h2>
+            <h2>{translations("editTitle")}</h2>
             <button
               className="flex justify-center items-center cursor-pointer h-6 w-6 border border-custom-sand-dune rounded-full text-custom-sand-dune hover:bg-custom-sand-dune/20"
               onClick={() => setOpenEditModal(false)}
-              aria-label={general_translations("actions.select")}
+              aria-label={generalTranslations("actions.select")}
             >
               <X size={16} />
             </button>

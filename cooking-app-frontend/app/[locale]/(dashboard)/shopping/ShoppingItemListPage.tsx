@@ -32,16 +32,16 @@ import { fetchIngredientByName } from "@/lib/ingredient/api";
 export default function ShoppingItemListPage() {
   const router = useRouter();
   const translations = useTranslations("ShoppingItems");
-  const general_translations = useTranslations("General");
+  const generalTranslations = useTranslations("General");
 
   const [shoppingItemSearchParams, setShoppingItemSearchParams] =
     useState<ShoppingItemSearchParams>({
       limit: 50,
       offset: 0,
       name: undefined,
-      ingredient_id: undefined,
-      start_date: undefined,
-      end_date: undefined,
+      ingredientId: undefined,
+      startDate: undefined,
+      endDate: undefined,
     });
 
   const debouncedSearchParams = useDebounce(shoppingItemSearchParams, 400);
@@ -80,14 +80,14 @@ export default function ShoppingItemListPage() {
   function setStartDate(v: string) {
     setShoppingItemSearchParams((p) => ({
       ...p,
-      start_date: v || undefined,
+      startDate: v || undefined,
       offset: 0,
     }));
   }
   function setEndDate(v: string) {
     setShoppingItemSearchParams((p) => ({
       ...p,
-      end_date: v || undefined,
+      endDate: v || undefined,
       offset: 0,
     }));
   }
@@ -151,14 +151,14 @@ export default function ShoppingItemListPage() {
           setSelectedIngredient(d);
           setShoppingItemSearchParams((p) => ({
             ...p,
-            ingredient_id: d.id,
+            ingredientId: d.id,
           }));
         }}
         onClear={() => {
           setSelectedIngredient(null);
           setShoppingItemSearchParams((p) => ({
             ...p,
-            ingredient_id: undefined,
+            ingredientId: undefined,
           }));
         }}
         getName={getIngredientName}
@@ -168,7 +168,7 @@ export default function ShoppingItemListPage() {
         className="w-full sm:w-auto"
         type="date"
         icon={CalendarArrowDown}
-        value={String(shoppingItemSearchParams.start_date ?? "")}
+        value={String(shoppingItemSearchParams.startDate ?? "")}
         onChange={setStartDate}
       />
       <ChevronsLeftRightEllipsis
@@ -179,7 +179,7 @@ export default function ShoppingItemListPage() {
         className="w-full sm:w-auto"
         type="date"
         icon={CalendarArrowUp}
-        value={String(shoppingItemSearchParams.end_date ?? "")}
+        value={String(shoppingItemSearchParams.endDate ?? "")}
         onChange={setEndDate}
       />
     </div>
@@ -190,7 +190,7 @@ export default function ShoppingItemListPage() {
       <header className="relative mb-4 mx-1 flex items-center justify-center rounded-xl border border-custom-sand-dune/30 bg-custom-sand-dune/5 px-6 py-3 shadow-sm">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold tracking-tight text-custom-sand-dune">
-            {translations("list_title")}
+            {translations("listTitle")}
           </h1>
         </div>
 
@@ -232,16 +232,16 @@ export default function ShoppingItemListPage() {
           )}
           {shoppingItems.map((item) => (
             <div
-              key={item.shopping_item.id}
+              key={item.shoppingItem.id}
               className={`relative flex flex-row items-center w-full min-h-12 px-3 py-1 bg-white/10 border border-white/20 shrink-0 text-gray-300 cursor-pointer`}
             >
               <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4 flex-1 w-full">
                 <span className="font-semibold text-base sm:text-sm mt-0.5 sm:mt-0 wrap-break-word">
                   <span className="text-custom-sand-dune">
-                    {formatDateFRNoTime(item.shopping_date)}
+                    {formatDateFRNoTime(item.shoppingDate)}
                   </span>{" "}
                   {" - "}
-                  {item.shopping_item.name}
+                  {item.shoppingItem.name}
                 </span>
 
                 {/* Math & Actions Container */}
@@ -250,13 +250,13 @@ export default function ShoppingItemListPage() {
                   <div className="flex items-center gap-2">
                     <span className="text-custom-money-green">
                       <span>
-                        {formatNumberToCurrency(item.shopping_item.unit_price)}
+                        {formatNumberToCurrency(item.shoppingItem.unitPrice)}
                       </span>
                     </span>
                     <span className="text-custom-sand-dune">x</span>
                     <span className="text-custom-sand-dune">
                       <span>
-                        {formatNumber(item.shopping_item.units_bought)}  {item.ingredient_unit}
+                        {formatNumber(item.shoppingItem.unitsBought)}  {item.ingredientUnit}
                       </span>
                     </span>
                   </div>
@@ -267,8 +267,8 @@ export default function ShoppingItemListPage() {
                       <span>=</span>
                       <span>
                         {formatNumberToCurrency(
-                          Number(item.shopping_item.units_bought) *
-                            Number(item.shopping_item.unit_price),
+                          Number(item.shoppingItem.unitsBought) *
+                            Number(item.shoppingItem.unitPrice),
                         )}
                       </span>
                     </span>
@@ -285,8 +285,8 @@ export default function ShoppingItemListPage() {
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
               onPageChange={onPageChange}
-              previousLabel={general_translations("actions.previous")}
-              nextLabel={general_translations("actions.next")}
+              previousLabel={generalTranslations("actions.previous")}
+              nextLabel={generalTranslations("actions.next")}
               showIcons
             />
           </div>

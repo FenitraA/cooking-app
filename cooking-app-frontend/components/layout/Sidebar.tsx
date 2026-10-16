@@ -26,12 +26,12 @@ export default function Sidebar({
 
   const nav = [
     { href: "/ingredient", label: t("ingredients"), icon: Beef },
-    { href: "/recipe/create", label: t("recipes_create"), icon: NotebookPen },
-    { href: "/recipe/list", label: t("recipes_list"), icon: Notebook },
+    { href: "/recipe/create", label: t("recipesCreate"), icon: NotebookPen },
+    { href: "/recipe/list", label: t("recipesList"), icon: Notebook },
     { href: "/recipe/meal", label: t("meals"), icon: CookingPot },
     { href: "/planning", label: t("planning"), icon: CalendarDays },
     { href: "/shopping", label: t("shopping"), icon: ShoppingCart },
-    { href: "/shopping/to-buy", label: t("item_to_buy"), icon:  PackagePlus},
+    { href: "/shopping/to-buy", label: t("itemToBuy"), icon:  PackagePlus},
   ];
 
   const pathname = usePathname();

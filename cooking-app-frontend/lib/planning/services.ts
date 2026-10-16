@@ -3,9 +3,9 @@ import { normStr } from "../utils";
 
 export function isPlanningRecipeDirty(
   initial: {
-    ref_recipe_id: string;
-    planning_date: string;
-    nb_serving: string;
+    refRecipeId: string;
+    planningDate: string;
+    nbServing: string;
     description: string;
   },
   current: typeof initial,

@@ -31,10 +31,10 @@ export default function LoginPage() {
 
     const newErrors: Record<string, string> = {};
     if (!form.username)
-      newErrors.username = translations("errors.username_required");
+      newErrors.username = translations("errors.usernameRequired");
 
     if (!form.password)
-      newErrors.password = translations("errors.password_required");
+      newErrors.password = translations("errors.passwordRequired");
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
@@ -57,14 +57,14 @@ export default function LoginPage() {
 
       if (!res.ok) {
         const msg = await safeReadError(res);
-        throw new Error(msg || translations("errors.login_failed"));
+        throw new Error(msg || translations("errors.quantityLeft"));
       }
 
       router.push("/");
     } catch (error: unknown) {
       console.error("Login error:", error);
       setErrors({
-        general: translations("errors.login_failed"),
+        general: translations("errors.quantityLeft"),
       });
     } finally {
       setIsSubmitting(false);
@@ -86,10 +86,10 @@ export default function LoginPage() {
         
         <div className="w-full mx-auto">
           <h1 className="text-3xl font-bold mb-2 text-center text-custom-sand-dune tracking-tight">
-            {translations("welcome_back_title")}
+            {translations("welcomeBackTitle")}
           </h1>
           <h2 className="text-sm text-gray-300 opacity-80 mb-8 text-center">
-            {translations("enter_credentials")}
+            {translations("enterCredentials")}
           </h2>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-1">
@@ -122,7 +122,7 @@ export default function LoginPage() {
                     <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
                     <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path>
                   </svg>
-                  {translations("logging_in")}
+                  {translations("loggingIn")}
                 </span>
               ) : (
                 translations("logging")

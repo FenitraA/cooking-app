@@ -26,17 +26,17 @@ export default function RecipeCard({ data }: RecipeCardProps) {
           <div className="flex flex-1 flex-col text-left">
             <div className="flex flex-row gap-3 justify-between sm:justify-start items-center">
               <span className="text-lg font-bold text-custom-sand-dune">
-                {formatDateFRNoTime(data.shopping.shopping_date)}
+                {formatDateFRNoTime(data.shopping.shoppingDate)}
               </span>
             </div>
 
             <span className="text-sm text-white/70">
-              {data.shopping_items.length} {translations("items")}
+              {data.shoppingItems.length} {translations("items")}
             </span>
 
             <div className="mt-2 flex flex-wrap gap-3 text-sm">
               <span className="text-custom-money-green font-semibold">
-                💰 {formatNumberToCurrency(data.total_cost)}
+                💰 {formatNumberToCurrency(data.totalCost)}
               </span>
             </div>
           </div>
@@ -53,9 +53,9 @@ export default function RecipeCard({ data }: RecipeCardProps) {
           </header>
 
           <div className="space-y-2">
-            {data.shopping_items.map((item) => (
+            {data.shoppingItems.map((item) => (
               <div
-                key={item.shopping_item.id}
+                key={item.shoppingItem.id}
                 className="
                   flex
                   bg-white/10
@@ -69,7 +69,7 @@ export default function RecipeCard({ data }: RecipeCardProps) {
               >
                 <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4 flex-1 w-full">
                   <span className="font-semibold text-base sm:text-sm mt-0.5 sm:mt-0 wrap-break-word">
-                    {item.shopping_item.name}
+                    {item.shoppingItem.name}
                   </span>
 
                   {/* Math & Actions Container */}
@@ -79,14 +79,14 @@ export default function RecipeCard({ data }: RecipeCardProps) {
                       <span className="text-custom-money-green">
                         <span>
                           {formatNumberToCurrency(
-                            item.shopping_item.unit_price,
+                            item.shoppingItem.unitPrice,
                           )}
                         </span>
                       </span>
                       <span className="text-custom-sand-dune">x</span>
                       <span className="text-custom-sand-dune">
                         <span>
-                          {formatNumber(item.shopping_item.units_bought)}
+                          {formatNumber(item.shoppingItem.unitsBought)}
                         </span>
                       </span>
                     </div>
@@ -97,8 +97,8 @@ export default function RecipeCard({ data }: RecipeCardProps) {
                         <span>=</span>
                         <span>
                           {formatNumberToCurrency(
-                            Number(item.shopping_item.units_bought) *
-                              Number(item.shopping_item.unit_price),
+                            Number(item.shoppingItem.unitsBought) *
+                              Number(item.shoppingItem.unitPrice),
                           )}
                         </span>
                       </span>

@@ -23,7 +23,7 @@ export default function HouseholdPage() {
               : "text-gray-400 hover:text-white"
           }`}
         >
-          {t("tabs.shopping_history")}
+          {t("tabs.shoppingHistory")}
         </button>
         <button
           onClick={() => setActiveTab("shopping")}
@@ -33,7 +33,7 @@ export default function HouseholdPage() {
               : "text-gray-400 hover:text-white"
           }`}
         >
-          {t("tabs.shopping_item_list")}
+          {t("tabs.shoppingItemList")}
         </button>
       </div>
 

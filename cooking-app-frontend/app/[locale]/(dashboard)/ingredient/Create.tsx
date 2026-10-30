@@ -202,11 +202,11 @@ export default function IngredientCreatePage({
             value={selectedIngredientType}
             onSelect={(d) => {
               setSelectedIngredientType(d);
-              setIngredient((p) => ({ ...p, estimatedPrrefIngredientTypeIdice: d.id }));
+              setIngredient((p) => ({ ...p, refIngredientTypeId: d.id }));
             }}
             onClear={() => {
               setSelectedIngredientType(null);
-              setIngredient((p) => ({ ...p, estimatedPrrefIngredientTypeIdice: "" }));
+              setIngredient((p) => ({ ...p, refIngredientTypeId: "" }));
             }}
             getName={getIngredientTypeName}
             fetchOptions={fetchIngredientTypes}

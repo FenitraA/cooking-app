@@ -48,7 +48,7 @@ export default function ItemToBuyCreatePage({
   const [ingredientCategory, setIngredientCategory] =
     useState<ItemCategoryBase | null>(null);
 
-  const currentUnit = selectedIngredient?.unit ?? "Pce";
+  const currentUnit = selectedIngredient?.unit ?? "pc";
   
 
   useEffect(() => {

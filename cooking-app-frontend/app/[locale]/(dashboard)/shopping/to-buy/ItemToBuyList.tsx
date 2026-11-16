@@ -75,6 +75,7 @@ export default function ItemToBuyListPage({
 
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
 
   const [itemsToBuy, setItemsToBuy] = useState<ItemToBuyRead[]>([]);
 
@@ -137,31 +138,46 @@ export default function ItemToBuyListPage({
 
     setEditData({
       id: item.itemToBuy.id,
-      estimatedUnitPrice: String(
-        Number(item.itemToBuy.estimatedUnitPrice),
-      ),
+      estimatedUnitPrice: String(Number(item.itemToBuy.estimatedUnitPrice)),
       unitsToBuy: String(Number(item.itemToBuy.unitsToBuy)),
     });
   }
   async function saveEdit() {
-    await updateItemToBuy(editData);
+    if (editLoading) return;
 
-    setItemsToBuy((prev) =>
-      prev.map((item) =>
-        item.itemToBuy.id === editData.id
-          ? {
-              ...item,
-              itemToBuy: {
-                ...item.itemToBuy,
-                unitsToBuy: editData.unitsToBuy,
-                estimatedUnitPrice: editData.estimatedUnitPrice,
-              },
-            }
-          : item,
-      ),
-    );
+    setEditLoading(true);
+    setError(null);
 
-    setEditingId(null);
+    try {
+      await updateItemToBuy(editData);
+
+      setItemsToBuy((prev) =>
+        prev.map((item) =>
+          item.itemToBuy.id === editData.id
+            ? {
+                ...item,
+                itemToBuy: {
+                  ...item.itemToBuy,
+                  unitsToBuy: editData.unitsToBuy,
+                  estimatedUnitPrice: editData.estimatedUnitPrice,
+                },
+              }
+            : item,
+        ),
+      );
+
+      setEditingId(null);
+    } catch (e: unknown) {
+      if (e instanceof UnauthorizedError) {
+        router.replace("/login");
+        return;
+      }
+
+      const msg = getErrorMessage(e);
+      setError(msg);
+    } finally {
+      setEditLoading(false);
+    }
   }
   async function handleDeleteItemToBuy() {
     setDeleteLoading(true);
@@ -386,8 +402,7 @@ export default function ItemToBuyListPage({
             )}
             <span>
               {isAllSelected
-                ? (generalTranslations("actions.deselectAll") ??
-                  "Deselect All")
+                ? (generalTranslations("actions.deselectAll") ?? "Deselect All")
                 : (generalTranslations("actions.selectAll") ?? "Select All")}
             </span>
           </div>
@@ -475,12 +490,12 @@ export default function ItemToBuyListPage({
                                 }))
                               }
                             />
-                            {item.ingredientUnit}
+                            {item.ingredientUnit ?? "pc"}
                           </div>
                         ) : (
                           <span>
                             {formatNumber(item.itemToBuy.unitsToBuy)}{" "}
-                            {item.ingredientUnit}
+                            {item.ingredientUnit ?? "pc"}
                           </span>
                         )}
                       </span>
@@ -502,10 +517,16 @@ export default function ItemToBuyListPage({
                         {editingId === item.itemToBuy.id ? (
                           <div className="flex gap-2">
                             <button
-                              className="text-custom-sand-dune cursor-pointer p-1 -m-1"
+                              type="button"
+                              disabled={editLoading}
                               onClick={saveEdit}
+                              className="text-custom-sand-dune cursor-pointer p-1 -m-1 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                              <SquareCheck size={20} />
+                              {editLoading ? (
+                                <Loader2 size={20} className="animate-spin" />
+                              ) : (
+                                <SquareCheck size={20} />
+                              )}
                             </button>
                             <button
                               className="text-custom-sand-dune cursor-pointer p-1 -m-1"

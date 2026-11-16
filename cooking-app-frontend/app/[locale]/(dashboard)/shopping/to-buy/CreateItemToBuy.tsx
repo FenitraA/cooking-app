@@ -35,7 +35,6 @@ export default function ItemToBuyCreatePage({
     refItemCategoryId: "",
     refHouseholdId: "",
   });
-
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,6 +48,9 @@ export default function ItemToBuyCreatePage({
   const [ingredientCategory, setIngredientCategory] =
     useState<ItemCategoryBase | null>(null);
 
+  const currentUnit = selectedIngredient?.unit ?? "Pce";
+  
+
   useEffect(() => {
     const loadIngredientCategory = async () => {
       try {
@@ -61,23 +63,28 @@ export default function ItemToBuyCreatePage({
 
     loadIngredientCategory();
   }, []);
-  
+
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setSuccess(null);
 
     const newErrors: Record<string, string> = {};
-    
+
     if (!itemToBuy.name.trim())
       newErrors.name = translations("errors.requiredName");
-    if (!itemToBuy.estimatedUnitPrice || Number(itemToBuy.estimatedUnitPrice) <= 0)
-      newErrors.estimatedUnitPrice = translations("errors.requiredEstimatedUnitPrice");
+    if (
+      !itemToBuy.estimatedUnitPrice ||
+      Number(itemToBuy.estimatedUnitPrice) <= 0
+    )
+      newErrors.estimatedUnitPrice = translations(
+        "errors.requiredEstimatedUnitPrice",
+      );
     if (!itemToBuy.unitsToBuy || Number(itemToBuy.unitsToBuy) <= 0)
       newErrors.unitsToBuy = translations("errors.requiredUnitsToBuy");
     if (!itemToBuy.refItemCategoryId.trim())
       newErrors.refItemCategoryId = translations("errors.requiredItemCategory");
-    
+
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
@@ -173,18 +180,27 @@ export default function ItemToBuyCreatePage({
             error={errors.description}
             placeholder={translations("fields.description")}
           />
-          <Field
-            id="unitsToBuy"
-            className="w-full"
-            type="decimal"
-            label={translations("fields.unitsToBuy")}
-            value={String(itemToBuy.unitsToBuy ?? "")}
-            onChange={(v) =>
-              setItemToBuy((p) => ({ ...p, unitsToBuy: v }))
-            }
-            error={errors.unitsToBuy}
-            placeholder={translations("fields.unitsToBuy")}
-          />
+          <div className="flex flex-row gap-4 w-full">
+            <Field
+              id="unitsToBuy"
+              className="w-[80%]"
+              type="decimal"
+              label={translations("fields.unitsToBuy")}
+              value={String(itemToBuy.unitsToBuy ?? "")}
+              onChange={(v) => setItemToBuy((p) => ({ ...p, unitsToBuy: v }))}
+              error={errors.unitsToBuy}
+              placeholder={translations("fields.unitsToBuy")}
+            />
+            <Field
+              id="currentUnit"
+              className="flex-1"
+              type="text"
+              label={translations("fields.unit")}
+              value={currentUnit}
+              error={errors.unitsToBuy}
+              isDisabled
+            />
+          </div>
           <Field
             id="estimatedUnitPrice"
             className="w-full"

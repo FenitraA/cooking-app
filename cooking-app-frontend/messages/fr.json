@@ -294,6 +294,7 @@
       "name": "Nom",
       "description": "Description",
       "unitsToBuy": "Unités à acheter",
+      "unit": "Unité",
       "ingredient": "Ingrédient",
       "estimatedUnitPrice": "Prix unitaire estimé (Ar)",
       "itemCategory": "Catégorie d’article"

@@ -421,139 +421,182 @@ export default function ItemToBuyListPage({
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-gray-800" />
             </div>
           )}
+
           {itemsToBuy.map((item) => {
-            const isSelected = selectedIds.has(item.itemToBuy.id);
+            const id = item.itemToBuy.id;
+            const isSelected = selectedIds.has(id);
+            const isEditing = editingId === id;
+
+            const totalPrice =
+              Number(item.itemToBuy.unitsToBuy) *
+              Number(item.itemToBuy.estimatedUnitPrice);
+
             return (
               <div
-                key={item.itemToBuy.id}
-                /* Changed items-start to items-center to keep everything vertically stable */
-                className={`relative flex flex-row items-center w-full px-3 py-3 sm:py-2.5 min-h-14 bg-white/10 border text-gray-300 transition-colors shrink-0 ${
-                  isSelected ? "border-custom-sand-dune" : "border-white/20"
-                }`}
+                key={id}
+                className={`
+                  group relative rounded-2xl border-2 border-custom-sand-dune/70 p-4 sm:p-5
+                  transition-all duration-200
+                  ${
+                    isSelected
+                      ? " bg-custom-sand-dune/10 border-custom-sand-dune/70 shadow-md shadow-black/10"
+                      : "border-white/10 bg-white/5 hover:border-custom-sand-dune/30 hover:bg-white/8"
+                  }
+                `}
               >
-                <div
-                  className="mr-3 flex items-center cursor-pointer shrink-0"
-                  onClick={() => toggleSelectItem(item.itemToBuy.id)}
-                >
-                  {isSelected ? (
-                    <CheckSquare className="w-5 h-5 text-custom-sand-dune shrink-0" />
-                  ) : (
-                    <Square className="w-5 h-5 text-gray-400 shrink-0" />
-                  )}
+                {/* Top section */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3 min-w-0">
+                    <button
+                      type="button"
+                      onClick={() => toggleSelectItem(id)}
+                      aria-label={isSelected ? "Deselect item" : "Select item"}
+                      aria-pressed={isSelected}
+                      className="mt-1 shrink-0 transition-transform hover:scale-110"
+                    >
+                      {isSelected ? (
+                        <CheckSquare
+                          size={21}
+                          className="text-custom-sand-dune"
+                        />
+                      ) : (
+                        <Square
+                          size={21}
+                          className="text-gray-500 group-hover:text-custom-sand-dune"
+                        />
+                      )}
+                    </button>
+
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-gray-100 text-base sm:text-lg wrap-break-words">
+                        {item.itemToBuy.name}
+                      </h3>
+
+                      <p className="text-xs text-gray-500 mt-1">
+                        {item.ingredientUnit}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {isEditing ? (
+                      <>
+                        <button
+                          type="button"
+                          disabled={editLoading}
+                          onClick={saveEdit}
+                          aria-label="Save changes"
+                          className="p-2 rounded-lg text-custom-sand-dune hover:bg-custom-sand-dune/10 disabled:opacity-50"
+                        >
+                          {editLoading ? (
+                            <Loader2 size={19} className="animate-spin" />
+                          ) : (
+                            <SquareCheck size={19} />
+                          )}
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={editLoading}
+                          onClick={() => setEditingId(null)}
+                          aria-label="Cancel editing"
+                          className="p-2 rounded-lg text-gray-400 hover:bg-white/10 disabled:opacity-50"
+                        >
+                          <Undo2 size={19} />
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => startEdit(item)}
+                        aria-label="Edit item"
+                        className="p-2 rounded-lg text-gray-400 hover:text-custom-sand-dune hover:bg-custom-sand-dune/10 transition-colors"
+                      >
+                        <PenBox size={19} />
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenDeleteModal(true);
+                        setItemToBuyIDToDelete(id);
+                      }}
+                      aria-label="Delete item"
+                      className="p-2 rounded-lg text-gray-500 hover:text-custom-button-red hover:bg-red-500/10 transition-colors"
+                    >
+                      <SquareX size={19} />
+                    </button>
+                  </div>
                 </div>
 
-                {/* Added items-center here as well for larger screens */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 flex-1 w-full">
-                  <span className="font-semibold text-base sm:text-sm wrap-break-word">
-                    {item.itemToBuy.name}
-                  </span>
+                {/* Details */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-5">
+                  <div className="rounded-xl bg-black/10 p-3 min-w-0">
+                    <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">
+                      Unit price
+                    </p>
 
-                  {/* Math & Actions Container */}
-                  <div className="flex flex-row flex-wrap items-center justify-between sm:justify-end gap-3 sm:gap-6 font-medium text-sm w-full sm:w-auto">
-                    {/* Price & Quantity Group */}
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-custom-money-green">
-                        {editingId === item.itemToBuy.id ? (
-                          <div className="w-20 sm:w-24">
-                            <Field
-                              id="estimatedUnitPrice"
-                              type="decimal"
-                              value={editData.estimatedUnitPrice}
-                              onChange={(v) =>
-                                setEditData((p) => ({
-                                  ...p,
-                                  estimatedUnitPrice: v,
-                                }))
-                              }
-                            />
-                          </div>
-                        ) : (
-                          <span>
-                            {formatNumberToCurrency(
-                              item.itemToBuy.estimatedUnitPrice,
-                            )}
-                          </span>
+                    {isEditing ? (
+                      <Field
+                        id={`price-${id}`}
+                        type="decimal"
+                        value={editData.estimatedUnitPrice}
+                        onChange={(v) =>
+                          setEditData((p) => ({
+                            ...p,
+                            estimatedUnitPrice: v,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <p className="font-semibold text-sm text-custom-money-green wrap-break-words">
+                        {formatNumberToCurrency(
+                          item.itemToBuy.estimatedUnitPrice,
                         )}
-                      </span>
-                      <span className="text-custom-sand-dune">x</span>
-                      <span className="text-custom-sand-dune">
-                        {editingId === item.itemToBuy.id ? (
-                          <div className="flex flex-row items-center gap-2 w-16 sm:w-20">
-                            <Field
-                              id=""
-                              type="decimal"
-                              value={editData.unitsToBuy}
-                              onChange={(v) =>
-                                setEditData((p) => ({
-                                  ...p,
-                                  unitsToBuy: v,
-                                }))
-                              }
-                            />
-                            {item.ingredientUnit ?? "pc"}
-                          </div>
-                        ) : (
-                          <span>
-                            {formatNumber(item.itemToBuy.unitsToBuy)}{" "}
-                            {item.ingredientUnit ?? "pc"}
-                          </span>
-                        )}
-                      </span>
-                    </div>
+                      </p>
+                    )}
+                  </div>
 
-                    {/* Total & Action Buttons Group */}
-                    <div className="flex items-center gap-4 shrink-0">
-                      <span className="text-custom-money-green font-semibold flex items-center gap-1.5">
-                        <span>=</span>
-                        <span>
-                          {formatNumberToCurrency(
-                            Number(item.itemToBuy.unitsToBuy) *
-                              Number(item.itemToBuy.estimatedUnitPrice),
-                          )}
-                        </span>
-                      </span>
+                  <div className="rounded-xl bg-black/10 p-3 min-w-0">
+                    <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">
+                      Quantity
+                    </p>
 
-                      <div className="flex gap-2 items-center">
-                        {editingId === item.itemToBuy.id ? (
-                          <div className="flex gap-2">
-                            <button
-                              type="button"
-                              disabled={editLoading}
-                              onClick={saveEdit}
-                              className="text-custom-sand-dune cursor-pointer p-1 -m-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              {editLoading ? (
-                                <Loader2 size={20} className="animate-spin" />
-                              ) : (
-                                <SquareCheck size={20} />
-                              )}
-                            </button>
-                            <button
-                              className="text-custom-sand-dune cursor-pointer p-1 -m-1"
-                              onClick={() => setEditingId(null)}
-                            >
-                              <Undo2 size={20} />
-                            </button>
-                          </div>
-                        ) : (
-                          <button
-                            className="text-custom-sand-dune cursor-pointer p-1 -m-1"
-                            onClick={() => startEdit(item)}
-                          >
-                            <PenBox size={18} />
-                          </button>
-                        )}
-                        <button
-                          className="text-custom-button-red cursor-pointer p-1 -m-1"
-                          onClick={() => {
-                            setOpenDeleteModal(true);
-                            setItemToBuyIDToDelete(item.itemToBuy.id);
-                          }}
-                        >
-                          <SquareX size={20} />
-                        </button>
-                      </div>
-                    </div>
+                    {isEditing ? (
+                      <Field
+                        id={`quantity-${id}`}
+                        type="decimal"
+                        value={editData.unitsToBuy}
+                        onChange={(v) =>
+                          setEditData((p) => ({
+                            ...p,
+                            unitsToBuy: v,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <p className="font-semibold text-sm text-gray-200">
+                        {formatNumber(item.itemToBuy.unitsToBuy)}{" "}
+                        {item.ingredientUnit}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="col-span-2 sm:col-span-1 rounded-xl bg-custom-money-green/5 border border-custom-money-green/10 p-3 min-w-0">
+                    <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">
+                      Total
+                    </p>
+
+                    <p className="font-bold text-sm text-custom-money-green wrap-break-words">
+                      {formatNumberToCurrency(
+                        isEditing
+                          ? Number(editData.unitsToBuy) *
+                              Number(editData.estimatedUnitPrice)
+                          : totalPrice,
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>

@@ -435,51 +435,122 @@ export default function ItemToBuyListPage({
               <div
                 key={id}
                 className={`
-                  group relative rounded-2xl border-2 border-custom-sand-dune/70 p-4 sm:p-5
-                  transition-all duration-200
-                  ${
-                    isSelected
-                      ? " bg-custom-sand-dune/10 border-custom-sand-dune/70 shadow-md shadow-black/10"
-                      : "border-white/10 bg-white/5 hover:border-custom-sand-dune/30 hover:bg-white/8"
-                  }
-                `}
+    group relative rounded-xl border px-3 py-2.5
+    transition-all duration-200
+    ${
+      isSelected
+        ? "bg-custom-sand-dune/10 border-custom-sand-dune/70 shadow-sm"
+        : "border-white/10 bg-white/5 hover:border-custom-sand-dune/30 hover:bg-white/8"
+    }
+  `}
               >
-                {/* Top section */}
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-3 min-w-0">
+                <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-5">
+                  {/* Selection + Name */}
+                  <div className="flex items-center gap-2.5 min-w-0 lg:flex-1">
                     <button
                       type="button"
                       onClick={() => toggleSelectItem(id)}
                       aria-label={isSelected ? "Deselect item" : "Select item"}
                       aria-pressed={isSelected}
-                      className="mt-1 shrink-0 transition-transform hover:scale-110"
+                      className="shrink-0 transition-transform hover:scale-110"
                     >
                       {isSelected ? (
                         <CheckSquare
-                          size={21}
+                          size={19}
                           className="text-custom-sand-dune"
                         />
                       ) : (
                         <Square
-                          size={21}
+                          size={19}
                           className="text-gray-500 group-hover:text-custom-sand-dune"
                         />
                       )}
                     </button>
 
                     <div className="min-w-0">
-                      <h3 className="font-semibold text-gray-100 text-base sm:text-lg wrap-break-words">
+                      <h3 className="font-semibold text-sm text-gray-100 truncate">
                         {item.itemToBuy.name}
                       </h3>
-
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-[11px] text-gray-500">
                         {item.ingredientUnit}
                       </p>
                     </div>
                   </div>
 
+                  {/* Details */}
+                  <div className="grid grid-cols-3 gap-2 lg:gap-5 lg:w-auto lg:flex lg:items-center">
+                    {/* Unit price */}
+                    <div className="min-w-0">
+                      <p className="text-[9px] uppercase tracking-wider text-gray-500 mb-1">
+                        Unit price
+                      </p>
+
+                      {isEditing ? (
+                        <Field
+                          id={`price-${id}`}
+                          type="decimal"
+                          value={editData.estimatedUnitPrice}
+                          onChange={(v) =>
+                            setEditData((p) => ({
+                              ...p,
+                              estimatedUnitPrice: v,
+                            }))
+                          }
+                        />
+                      ) : (
+                        <p className="font-semibold text-xs text-custom-money-green truncate">
+                          {formatNumberToCurrency(
+                            item.itemToBuy.estimatedUnitPrice,
+                          )}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Quantity */}
+                    <div className="min-w-0 lg:w-28">
+                      <p className="text-[9px] uppercase tracking-wider text-gray-500 mb-1">
+                        Quantity
+                      </p>
+
+                      {isEditing ? (
+                        <Field
+                          id={`quantity-${id}`}
+                          type="decimal"
+                          value={editData.unitsToBuy}
+                          onChange={(v) =>
+                            setEditData((p) => ({
+                              ...p,
+                              unitsToBuy: v,
+                            }))
+                          }
+                        />
+                      ) : (
+                        <p className="font-semibold text-xs text-gray-200 truncate">
+                          {formatNumber(item.itemToBuy.unitsToBuy)}{" "}
+                          {item.ingredientUnit}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Total */}
+                    <div className="min-w-0 lg:w-32">
+                      <p className="text-[9px] uppercase tracking-wider text-gray-500 mb-1">
+                        Total
+                      </p>
+
+                      <p className="font-bold text-sm text-custom-money-green truncate">
+                        {formatNumberToCurrency(
+                          isEditing
+                            ? Number(editData.unitsToBuy) *
+                                Number(editData.estimatedUnitPrice)
+                            : totalPrice,
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
                   {/* Actions */}
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-1 shrink-0 justify-end lg:border-l lg:border-white/10 lg:pl-3">
                     {isEditing ? (
                       <>
                         <button
@@ -487,12 +558,12 @@ export default function ItemToBuyListPage({
                           disabled={editLoading}
                           onClick={saveEdit}
                           aria-label="Save changes"
-                          className="p-2 rounded-lg text-custom-sand-dune hover:bg-custom-sand-dune/10 disabled:opacity-50"
+                          className="p-1.5 rounded-lg text-custom-sand-dune hover:bg-custom-sand-dune/10 disabled:opacity-50"
                         >
                           {editLoading ? (
-                            <Loader2 size={19} className="animate-spin" />
+                            <Loader2 size={17} className="animate-spin" />
                           ) : (
-                            <SquareCheck size={19} />
+                            <SquareCheck size={17} />
                           )}
                         </button>
 
@@ -501,9 +572,9 @@ export default function ItemToBuyListPage({
                           disabled={editLoading}
                           onClick={() => setEditingId(null)}
                           aria-label="Cancel editing"
-                          className="p-2 rounded-lg text-gray-400 hover:bg-white/10 disabled:opacity-50"
+                          className="p-1.5 rounded-lg text-gray-400 hover:bg-white/10 disabled:opacity-50"
                         >
-                          <Undo2 size={19} />
+                          <Undo2 size={17} />
                         </button>
                       </>
                     ) : (
@@ -511,9 +582,9 @@ export default function ItemToBuyListPage({
                         type="button"
                         onClick={() => startEdit(item)}
                         aria-label="Edit item"
-                        className="p-2 rounded-lg text-gray-400 hover:text-custom-sand-dune hover:bg-custom-sand-dune/10 transition-colors"
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-custom-sand-dune hover:bg-custom-sand-dune/10"
                       >
-                        <PenBox size={19} />
+                        <PenBox size={17} />
                       </button>
                     )}
 
@@ -524,79 +595,10 @@ export default function ItemToBuyListPage({
                         setItemToBuyIDToDelete(id);
                       }}
                       aria-label="Delete item"
-                      className="p-2 rounded-lg text-gray-500 hover:text-custom-button-red hover:bg-red-500/10 transition-colors"
+                      className="p-1.5 rounded-lg text-gray-500 hover:text-custom-button-red hover:bg-red-500/10"
                     >
-                      <SquareX size={19} />
+                      <SquareX size={17} />
                     </button>
-                  </div>
-                </div>
-
-                {/* Details */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-5">
-                  <div className="rounded-xl bg-black/10 p-3 min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">
-                      Unit price
-                    </p>
-
-                    {isEditing ? (
-                      <Field
-                        id={`price-${id}`}
-                        type="decimal"
-                        value={editData.estimatedUnitPrice}
-                        onChange={(v) =>
-                          setEditData((p) => ({
-                            ...p,
-                            estimatedUnitPrice: v,
-                          }))
-                        }
-                      />
-                    ) : (
-                      <p className="font-semibold text-sm text-custom-money-green wrap-break-words">
-                        {formatNumberToCurrency(
-                          item.itemToBuy.estimatedUnitPrice,
-                        )}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="rounded-xl bg-black/10 p-3 min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">
-                      Quantity
-                    </p>
-
-                    {isEditing ? (
-                      <Field
-                        id={`quantity-${id}`}
-                        type="decimal"
-                        value={editData.unitsToBuy}
-                        onChange={(v) =>
-                          setEditData((p) => ({
-                            ...p,
-                            unitsToBuy: v,
-                          }))
-                        }
-                      />
-                    ) : (
-                      <p className="font-semibold text-sm text-gray-200">
-                        {formatNumber(item.itemToBuy.unitsToBuy)}{" "}
-                        {item.ingredientUnit}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="col-span-2 sm:col-span-1 rounded-xl bg-custom-money-green/5 border border-custom-money-green/10 p-3 min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">
-                      Total
-                    </p>
-
-                    <p className="font-bold text-sm text-custom-money-green wrap-break-words">
-                      {formatNumberToCurrency(
-                        isEditing
-                          ? Number(editData.unitsToBuy) *
-                              Number(editData.estimatedUnitPrice)
-                          : totalPrice,
-                      )}
-                    </p>
                   </div>
                 </div>
               </div>

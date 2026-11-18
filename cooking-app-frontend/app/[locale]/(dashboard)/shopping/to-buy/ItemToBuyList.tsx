@@ -472,7 +472,7 @@ export default function ItemToBuyListPage({
                         {item.itemToBuy.name}
                       </h3>
                       <p className="text-[11px] text-gray-500">
-                        {item.ingredientUnit}
+                        {item.ingredientUnit ?? "pc"} 
                       </p>
                     </div>
                   </div>
@@ -527,7 +527,7 @@ export default function ItemToBuyListPage({
                       ) : (
                         <p className="font-semibold text-xs text-gray-200 truncate">
                           {formatNumber(item.itemToBuy.unitsToBuy)}{" "}
-                          {item.ingredientUnit}
+                          {item.ingredientUnit ?? "pc"}
                         </p>
                       )}
                     </div>

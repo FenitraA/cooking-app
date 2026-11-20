@@ -1,6 +1,7 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
+
 from app.core.security import hash_password, verify_password
 from app.models.app_user import AppUser
 from app.models.role import Role
@@ -96,10 +97,10 @@ class AppUserCRUD:
         return user
 
     async def reset_password_for_admin(
-            self,
-            db: AsyncSession,
-            user_id: str,
-            new_password: str,
+        self,
+        db: AsyncSession,
+        user_id: str,
+        new_password: str,
     ) -> AppUser | None:
         user = await self.get_user_by_id(db, user_id)
         if not user:

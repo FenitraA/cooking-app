@@ -1,6 +1,8 @@
-from typing import AsyncGenerator
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, AsyncEngine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from collections.abc import AsyncGenerator
+
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
+
 from app.core.config import settings
 
 
@@ -31,12 +33,6 @@ if settings.ENVIRONMENT == "online_prod":
         pool_pre_ping=True,
         pool_recycle=1800,
     )
-
-# ENGINES = {
-#     # "dev": create_async_engine(settings.DEV_DATABASE_URL, echo=settings.DEBUG),
-#     "online_dev": create_async_engine(settings.ONLINE_DEV_DATABASE_URL, echo=settings.DEBUG),
-#     "online_prod": create_async_engine(settings.ONLINE_PROD_DATABASE_URL, echo=settings.DEBUG),
-# }
 
 SESSION_MAKERS = {
     k: sessionmaker(

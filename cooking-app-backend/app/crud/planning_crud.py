@@ -1,9 +1,10 @@
 from collections import defaultdict
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.crud.recipe_crud import recipe_cost_price_subquery, recipe_crud_instance
 from app.models.planning_recipe import PlanningRecipe
 from app.models.recipe import Recipe
 from app.schemas.planning_recipe import (
@@ -11,14 +12,13 @@ from app.schemas.planning_recipe import (
     PlanningRecipeRead,
     PlanningRecipeUpdateData,
 )
-from app.crud.recipe_crud import recipe_cost_price_subquery, recipe_crud_instance
 
 
 class PlanningCRUD:
     async def create_many(
-            self,
-            db: AsyncSession,
-            data: PlanningRecipeCreate,
+        self,
+        db: AsyncSession,
+        data: PlanningRecipeCreate,
     ) -> list[PlanningRecipe]:
         planning_recipes = [
             PlanningRecipe(
@@ -34,7 +34,7 @@ class PlanningCRUD:
         return planning_recipes
 
     async def get_one(
-            self, db: AsyncSession, household_id: str, planning_recipe_id: str
+        self, db: AsyncSession, household_id: str, planning_recipe_id: str
     ) -> PlanningRecipeRead | None:
         result = await db.execute(
             select(
@@ -73,11 +73,11 @@ class PlanningCRUD:
         )
 
     async def get_by_date(
-            self,
-            db: AsyncSession,
-            household_id: str,
-            start_of_week: date,
-            end_of_week: date,
+        self,
+        db: AsyncSession,
+        household_id: str,
+        start_of_week: date,
+        end_of_week: date,
     ) -> list[PlanningRecipeRead]:
 
         query = (
@@ -131,7 +131,7 @@ class PlanningCRUD:
         ]
 
     async def soft_delete(
-            self, db: AsyncSession, household_id: str, planning_recipe_id: str
+        self, db: AsyncSession, household_id: str, planning_recipe_id: str
     ) -> PlanningRecipe | None:
         planning_recipe = await db.scalar(
             select(PlanningRecipe).where(
@@ -144,12 +144,12 @@ class PlanningCRUD:
             return None
 
         planning_recipe.state = -1
-        planning_recipe.updated_at = datetime.now(timezone.utc)
+        planning_recipe.updated_at = datetime.now(UTC)
         await db.flush()
         return planning_recipe
 
     async def update(
-            self, db: AsyncSession, household_id: str, data: PlanningRecipeUpdateData
+        self, db: AsyncSession, household_id: str, data: PlanningRecipeUpdateData
     ) -> PlanningRecipeRead | None:
         """
         Update planning recipe core fields
@@ -169,15 +169,17 @@ class PlanningCRUD:
         for key, value in payload.items():
             setattr(planning_recipe, key, value)
 
-        planning_recipe.updated_at = datetime.now(timezone.utc)
+        planning_recipe.updated_at = datetime.now(UTC)
 
         await db.flush()
         await db.refresh(planning_recipe)
 
-        return await planning_crud_instance.get_one(db, household_id, planning_recipe.id)
+        return await planning_crud_instance.get_one(
+            db, household_id, planning_recipe.id
+        )
 
     async def generate_pdf(
-            self, db: AsyncSession, household_id: str, start_date: date, end_date: date
+        self, db: AsyncSession, household_id: str, start_date: date, end_date: date
     ):
         return
 

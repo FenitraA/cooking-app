@@ -1,5 +1,6 @@
 class RefreshTokenNotFound(Exception):
-    """Raised when the RefreshToken does not have a corresponding database equivalent."""
+    """Raised when the RefreshToken does not have a
+    corresponding database equivalent."""
 
 
 class RefreshTokenInvalid(Exception):
@@ -24,4 +25,3 @@ class NotEnoughStock(Exception):
 
 class IngredientStockHouseholdMismatchError(Exception):
     """Raised when one or more stocks do not belong to the expected household."""
-    pass

@@ -2,6 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, Field, field_validator
+
 from app.schemas.validator import reject_empty_string
 
 
@@ -32,7 +33,7 @@ class IngredientStockRead(BaseModel):
     ingredient_name: str
     ingredient_unit: str
     seller_name: str
-    quantity_left: Decimal = Decimal(0.0)
+    quantity_left: Decimal = Decimal("0.0")
 
 
 class DeleteIngredientStockData(BaseModel):

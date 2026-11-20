@@ -6,9 +6,7 @@ from app.schemas.item_category import ItemCategoryData
 
 
 class ItemCategoryCRUD:
-    async def create(
-            self, db: AsyncSession, data: ItemCategoryData
-    ) -> ItemCategory:
+    async def create(self, db: AsyncSession, data: ItemCategoryData) -> ItemCategory:
         item_category = ItemCategory(**data.model_dump())
         db.add(item_category)
 
@@ -17,9 +15,9 @@ class ItemCategoryCRUD:
         return item_category
 
     async def select_search(
-            self,
-            db: AsyncSession,
-            name: str | None = None,
+        self,
+        db: AsyncSession,
+        name: str | None = None,
     ) -> list[ItemCategory]:
         query = select(ItemCategory).where(ItemCategory.state > 0)
 

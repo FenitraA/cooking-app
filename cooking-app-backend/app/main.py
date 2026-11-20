@@ -1,29 +1,26 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 from sqlalchemy.exc import SQLAlchemyError
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
-from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.api import api_router
 from app.api.v1.cache_utils import lifespan
-
-from app.core.exceptiond import sqlalchemy_exception_handler, unexpected_exception_handler
-from app.core.security import DelayMiddleware
-from app.core.security import limiter
 from app.core.config import settings
-from app.core import cloudinary
-
-from slowapi import _rate_limit_exceeded_handler
-from slowapi.middleware import SlowAPIMiddleware
-from slowapi.errors import RateLimitExceeded
-
-
+from app.core.exceptiond import (
+    sqlalchemy_exception_handler,
+    unexpected_exception_handler,
+)
+from app.core.security import limiter
 
 app = FastAPI(
     title="Cooking App",
     description="A FastAPI backend for the cooking webapp",
     debug=True,
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 
@@ -66,10 +63,7 @@ app.add_middleware(
 # Rate limiter application
 app.state.limiter = limiter
 
-app.add_exception_handler(
-    RateLimitExceeded,
-    _rate_limit_exceeded_handler
-)
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(SlowAPIMiddleware)
 # Include all versioned routes

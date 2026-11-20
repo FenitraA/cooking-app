@@ -2,6 +2,7 @@ from datetime import date, datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, Field, field_validator
+
 from app.schemas.recipe import RecipeBase, RecipeIngredientRead
 from app.schemas.validator import reject_empty_string
 
@@ -65,6 +66,4 @@ class PlanningRecipeUpdateData(BaseModel):
     nb_serving: int | None = Field(gt=0, examples=["2"], default=None)
     description: str | None = Field(default=None, description="Notes for the planning")
 
-    _reject_empty = field_validator(
-        "ref_recipe_id"
-    )(reject_empty_string)
+    _reject_empty = field_validator("ref_recipe_id")(reject_empty_string)

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,14 +28,16 @@ class ItemToBuyCRUD:
         return item_to_buy
 
     async def get_one(
-            self, db: AsyncSession, item_to_buy_id: str
+        self, db: AsyncSession, item_to_buy_id: str
     ) -> ItemToBuyRead | None:
 
         result = await db.execute(
             select(ItemToBuy, ItemCategory, Ingredient, IngredientUnit.symbol)
             .join(ItemCategory, ItemCategory.id == ItemToBuy.ref_item_category_id)
             .outerjoin(Ingredient, Ingredient.id == ItemToBuy.ref_ingredient_id)
-            .outerjoin(IngredientUnit, IngredientUnit.id == Ingredient.ref_ingredient_unit_id)
+            .outerjoin(
+                IngredientUnit, IngredientUnit.id == Ingredient.ref_ingredient_unit_id
+            )
             .where(
                 ItemToBuy.id == item_to_buy_id,
                 ItemToBuy.state > 0,
@@ -51,11 +53,11 @@ class ItemToBuyCRUD:
             item_to_buy=row[0],
             item_category=row[1],
             ingredient_infos=row[2],
-            ingredient_unit=row[3]
+            ingredient_unit=row[3],
         )
 
     async def soft_delete(
-            self, db: AsyncSession, household_id: str, item_to_buy_id: str
+        self, db: AsyncSession, household_id: str, item_to_buy_id: str
     ) -> ItemToBuy | None:
         item_to_buy = await db.scalar(
             select(ItemToBuy).where(
@@ -68,16 +70,16 @@ class ItemToBuyCRUD:
             return None
 
         item_to_buy.state = -1
-        item_to_buy.updated_at = datetime.now(timezone.utc)
+        item_to_buy.updated_at = datetime.now(UTC)
         await db.flush()
         return item_to_buy
 
     async def mark_as_bought(
-            self,
-            db: AsyncSession,
-            updates: list[ChangeStateToBoughtData],
+        self,
+        db: AsyncSession,
+        updates: list[ChangeStateToBoughtData],
     ) -> None:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         await db.execute(
             update(ItemToBuy),
@@ -94,10 +96,10 @@ class ItemToBuyCRUD:
         await db.flush()
 
     async def get_by_ids(
-            self,
-            db: AsyncSession,
-            ids: list[str],
-            household_id: str,
+        self,
+        db: AsyncSession,
+        ids: list[str],
+        household_id: str,
     ) -> list[ItemToBuy]:
         result = await db.execute(
             select(ItemToBuy).where(
@@ -108,12 +110,12 @@ class ItemToBuyCRUD:
         return list(result.scalars().all())
 
     async def change_state_to_bought(
-            self,
-            db: AsyncSession,
-            items_to_buy: list[ItemToBuyBase],
-            shopping_items: list[ShoppingItemBase],
+        self,
+        db: AsyncSession,
+        items_to_buy: list[ItemToBuyBase],
+        shopping_items: list[ShoppingItemBase],
     ) -> None:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         await db.execute(
             update(ItemToBuy),
@@ -125,15 +127,15 @@ class ItemToBuyCRUD:
                     "updated_at": now,
                 }
                 for item_to_buy, shopping_item in zip(
-                items_to_buy,
-                shopping_items,
-                strict=True,
-            )
+                    items_to_buy,
+                    shopping_items,
+                    strict=True,
+                )
             ],
         )
 
     async def update(
-            self, db: AsyncSession, data: ItemToBuyUpdateData
+        self, db: AsyncSession, data: ItemToBuyUpdateData
     ) -> ItemToBuyRead | None:
         """
         Update item to buy core fields
@@ -149,7 +151,7 @@ class ItemToBuyCRUD:
         for key, value in payload.items():
             setattr(item, key, value)
 
-        item.updated_at = datetime.now(timezone.utc)
+        item.updated_at = datetime.now(UTC)
 
         await db.flush()
         await db.refresh(item)
@@ -157,27 +159,31 @@ class ItemToBuyCRUD:
         return await item_to_buy_crud_instance.get_one(db, item.id)
 
     async def search_with_pagination(
-            self,
-            db: AsyncSession,
-            household_id: str,
-            name: str | None = None,
-            ingredient_id: str | None = None,
-            offset: int = 0,
-            limit: int = 20,
+        self,
+        db: AsyncSession,
+        household_id: str,
+        name: str | None = None,
+        ingredient_id: str | None = None,
+        offset: int = 0,
+        limit: int = 20,
     ) -> ItemToBuySearchResult:
 
         query = (
             select(ItemToBuy, ItemCategory, Ingredient, IngredientUnit.symbol)
             .join(ItemCategory, ItemCategory.id == ItemToBuy.ref_item_category_id)
             .outerjoin(Ingredient, Ingredient.id == ItemToBuy.ref_ingredient_id)
-            .outerjoin(IngredientUnit, IngredientUnit.id == Ingredient.ref_ingredient_unit_id)
+            .outerjoin(
+                IngredientUnit, IngredientUnit.id == Ingredient.ref_ingredient_unit_id
+            )
             .where(ItemToBuy.state > 0, ItemToBuy.state < 10)
         )
         count_query = (
             select(func.count(ItemToBuy.id))
             .join(ItemCategory, ItemCategory.id == ItemToBuy.ref_item_category_id)
             .outerjoin(Ingredient, Ingredient.id == ItemToBuy.ref_ingredient_id)
-            .outerjoin(IngredientUnit, IngredientUnit.id == Ingredient.ref_ingredient_unit_id)
+            .outerjoin(
+                IngredientUnit, IngredientUnit.id == Ingredient.ref_ingredient_unit_id
+            )
             .where(ItemToBuy.state > 0, ItemToBuy.state < 10)
         )
 
@@ -214,7 +220,9 @@ class ItemToBuyCRUD:
             for row in rows
         ]
 
-        return ItemToBuySearchResult(items=items, total=total, offset=offset, limit=limit)
+        return ItemToBuySearchResult(
+            items=items, total=total, offset=offset, limit=limit
+        )
 
 
 item_to_buy_crud_instance = ItemToBuyCRUD()

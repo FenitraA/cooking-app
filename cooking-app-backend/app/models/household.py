@@ -1,18 +1,19 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from app.models.app_user import AppUser
     from app.models.ingredient_stock import IngredientStock
+    from app.models.item_to_buy import ItemToBuy
     from app.models.planning_recipe import PlanningRecipe
     from app.models.recipe import Recipe
-    from app.models.app_user import AppUser
     from app.models.shopping import Shopping
-    from app.models.item_to_buy import ItemToBuy
 
 import uuid
+from datetime import UTC, datetime
 
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import TIMESTAMP, Integer, String
-from datetime import datetime, timezone
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from app.db.database import Base
 
 prefix = "household"
@@ -29,7 +30,7 @@ class Household(Base):
 
     name: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(UTC)
     )
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),

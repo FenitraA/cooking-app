@@ -1,13 +1,13 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from app.models.meal import Meal
     from app.models.ingredient_stock import IngredientStock
+    from app.models.meal import Meal
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 
-from sqlalchemy import ForeignKey, DECIMAL, TIMESTAMP, String
+from sqlalchemy import DECIMAL, TIMESTAMP, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
@@ -19,7 +19,7 @@ class MealIngredient(Base):
     quantity: Mapped[Decimal] = mapped_column(DECIMAL(16, 3), nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(UTC)
     )
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
@@ -29,7 +29,7 @@ class MealIngredient(Base):
 
     # Foreign keys
     ref_ingredient_unit_id: Mapped[str] = mapped_column(
-        ForeignKey("ingredient_unit.id"),nullable=True
+        ForeignKey("ingredient_unit.id"), nullable=True
     )
     ref_meal_id: Mapped[str] = mapped_column(ForeignKey("meal.id"), primary_key=True)
 

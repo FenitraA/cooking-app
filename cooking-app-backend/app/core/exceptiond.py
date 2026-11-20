@@ -1,5 +1,5 @@
-import uuid
 import logging
+import uuid
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -30,8 +30,7 @@ async def sqlalchemy_exception_handler(
         content={
             "success": False,
             "message": (
-                "We couldn't complete your request right now. "
-                "Please try again later."
+                "We couldn't complete your request right now. Please try again later."
             ),
             "error_id": error_id,
         },
@@ -55,10 +54,7 @@ async def unexpected_exception_handler(
         status_code=500,
         content={
             "success": False,
-            "message": (
-                "Something went wrong on our side. "
-                "Please try again later."
-            ),
+            "message": ("Something went wrong on our side. Please try again later."),
             "error_id": error_id,
         },
     )

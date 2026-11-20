@@ -1,4 +1,3 @@
-from typing import List
 from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
@@ -30,12 +29,12 @@ class Settings(BaseSettings):
     DEV_DATABASE_URL: str
     TEST_DATABASE_URL: str
 
-    CLOUDINARY_CLOUD_NAME : str
-    CLOUDINARY_API_KEY : str
-    CLOUDINARY_API_SECRET : str
-    
-    CORS_ORIGINS: List[str]
-    
+    CLOUDINARY_CLOUD_NAME: str
+    CLOUDINARY_API_KEY: str
+    CLOUDINARY_API_SECRET: str
+
+    CORS_ORIGINS: list[str]
+
     model_config = ConfigDict(env_file=".env")
 
 

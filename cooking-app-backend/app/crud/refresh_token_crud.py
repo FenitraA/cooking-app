@@ -1,6 +1,7 @@
-from datetime import datetime, timezone
-from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import UTC, datetime
+
 from sqlalchemy import select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.app_user import AppUser
 from app.models.refresh_token import RefreshToken
@@ -49,7 +50,7 @@ class RefreshTokenCRUD:
         if refresh_token is None:
             raise RefreshTokenNotFound("Refresh token not found")
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         is_revoked = refresh_token.revoked_at is not None
         is_inactive = refresh_token.state <= 0
         is_expired = refresh_token.expires_at < now
@@ -79,7 +80,7 @@ class RefreshTokenCRUD:
         if refresh_token is None:
             raise RefreshTokenNotFound("Refresh token not found")
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         is_revoked = refresh_token.revoked_at is not None
         is_inactive = refresh_token.state <= 0
         is_expired = refresh_token.expires_at < now
@@ -105,11 +106,11 @@ class RefreshTokenCRUD:
                 RefreshToken.ref_user_id == user_id,
                 RefreshToken.revoked_at.is_(None),
             )
-            .values(revoked_at=datetime.now(timezone.utc), state=-1)
+            .values(revoked_at=datetime.now(UTC), state=-1)
         )
 
         result = await db.execute(stmt)
-        return result.rowcount # type: ignore[attr-defined]
+        return result.rowcount  # type: ignore[attr-defined]
 
 
 refresh_token_crud_instance = RefreshTokenCRUD()

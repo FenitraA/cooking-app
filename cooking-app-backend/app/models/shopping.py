@@ -5,9 +5,9 @@ if TYPE_CHECKING:
     from app.models.shopping_item import ShoppingItem
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from sqlalchemy import String, Integer, TIMESTAMP, ForeignKey
+from sqlalchemy import TIMESTAMP, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
@@ -25,9 +25,9 @@ class Shopping(Base):
     )
 
     shopping_date: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True))
-    description : Mapped[str] = mapped_column(String(128), nullable=True)
+    description: Mapped[str] = mapped_column(String(128), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(UTC)
     )
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
@@ -37,7 +37,7 @@ class Shopping(Base):
 
     # Foreign keys
     ref_household_id: Mapped[str] = mapped_column(ForeignKey("household.id"))
-    
+
     # Relationships
     household: Mapped["Household"] = relationship(back_populates="shoppings")
     shopping_items: Mapped[list["ShoppingItem"]] = relationship(

@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, Field, field_validator
@@ -19,9 +19,7 @@ class ShoppingItemData(BaseModel):
     ref_shopping_id: str = Field(description="FK to shopping.id")
     ref_item_category_id: str = Field(description="FK to item_category.id")
 
-    _reject_empty = field_validator("ref_item_category_id", "name")(
-        reject_empty_string
-    )
+    _reject_empty = field_validator("ref_item_category_id", "name")(reject_empty_string)
 
 
 class ShoppingItemBase(ShoppingItemData):

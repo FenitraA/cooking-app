@@ -5,15 +5,16 @@ from app.core.security import create_refresh_token
 if TYPE_CHECKING:
     from app.models.app_user import AppUser
 
-from datetime import datetime, timedelta, timezone
-from sqlalchemy import TIMESTAMP, Integer, String, ForeignKey, Text
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.db.database import Base
-from app.core.config import settings
-import uuid
 import hashlib
 import hmac
+import uuid
+from datetime import UTC, datetime, timedelta
 
+from sqlalchemy import TIMESTAMP, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.core.config import settings
+from app.db.database import Base
 
 prefix = "refresh_token"
 
@@ -28,11 +29,11 @@ class RefreshToken(Base):
     )
     token_hash: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(UTC)
     )
     expires_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
-        default=lambda: datetime.now(timezone.utc) + timedelta(days=7),
+        default=lambda: datetime.now(UTC) + timedelta(days=7),
     )
     revoked_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
@@ -50,25 +51,24 @@ class RefreshToken(Base):
 
     # Relationships
     user: Mapped["AppUser"] = relationship(back_populates="refresh_tokens")
-    
+
     def revoke_token(self):
         """Revoke this refresh token"""
-        self.revoked_at = datetime.now(timezone.utc)
+        self.revoked_at = datetime.now(UTC)
         self.state = -1
-        return 
-    
+
     def get_heir_token(self) -> tuple["RefreshToken", str]:
         """Get the new token for rotation"""
         new_token_value = create_refresh_token()
         new_token = RefreshToken(
             token_hash=RefreshToken.hash_refresh(new_token_value),
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
             user_agent=self.user_agent,
             ip_address=self.ip_address,
             expires_at=self.expires_at,
             ref_user_id=self.ref_user_id,
         )
-        return new_token,new_token_value
+        return new_token, new_token_value
 
     @staticmethod
     def generate_id():

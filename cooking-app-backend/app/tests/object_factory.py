@@ -1,5 +1,7 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
 import pytest
+
 from app.core.config import settings
 from app.core.security import hash_password
 from app.models.app_user import AppUser
@@ -17,13 +19,13 @@ def user_factory(db_session):
         etat=1,
         password="secret1",
     ):
-        
+
         user = AppUser(
             id=await AppUser.generate_next_id(db_session),
             username=username,
             role=role,
             password_hash=hash_password(password),
-            date_ajout=datetime.now(timezone.utc),
+            date_ajout=datetime.now(UTC),
             default_language="fr",
             etat=etat,
         )
@@ -33,4 +35,3 @@ def user_factory(db_session):
         return user
 
     return create_user
-

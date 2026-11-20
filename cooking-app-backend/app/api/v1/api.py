@@ -1,16 +1,17 @@
 from fastapi import APIRouter
+
 from app.api.v1.endpoints import (
     auth_api,
     cloudinary_api,
     household_api,
     ingredient_api,
+    item_category_api,
+    item_to_buy_api,
     planning_api,
     recipe_api,
-    user_api,
-    item_to_buy_api,
-    shopping_item_api,
     shopping_api,
-    item_category_api
+    shopping_item_api,
+    user_api,
 )
 
 api_router = APIRouter()

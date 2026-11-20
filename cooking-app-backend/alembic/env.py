@@ -1,36 +1,37 @@
 # ruff: noqa: F401
 
 from logging.config import fileConfig
+
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
-from alembic import context
-from app.db.database import Base
-from app.core.config import settings
 
+from alembic import context
+from app.core.config import settings
+from app.db.database import Base
 from app.models import (
-    app_user,
-    role,
-    user_role,
-    endpoint_access,
     api_endpoint,
-    refresh_token,
-    state,
+    app_user,
+    endpoint_access,
+    household,
     ingredient,
-    ingredient_type,
     ingredient_stock,
+    ingredient_type,
+    ingredient_unit,
+    item_category,
+    item_to_buy,
     meal,
-    recipe,
     meal_ingredient,
     planning_recipe,
+    recipe,
     recipe_ingredient,
-    household,
+    refresh_token,
+    role,
     seller,
-    ingredient_unit,
-    unit_group,
     shopping,
     shopping_item,
-    item_category,
-    item_to_buy
+    state,
+    unit_group,
+    user_role,
 )
 
 # Alembic config object

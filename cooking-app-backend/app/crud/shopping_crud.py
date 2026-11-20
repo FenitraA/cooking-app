@@ -1,9 +1,11 @@
 from collections import defaultdict
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
 from sqlalchemy import desc, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.crud.item_to_buy_crud import item_to_buy_crud_instance
+from app.crud.shopping_item_crud import shopping_item_crud_instance
 from app.models.shopping import Shopping
 from app.models.shopping_item import ShoppingItem
 from app.schemas.shopping import (
@@ -14,16 +16,13 @@ from app.schemas.shopping import (
     ShoppingRead,
     ShoppingSearchResult,
 )
-
-from app.crud.item_to_buy_crud import item_to_buy_crud_instance
-from app.crud.shopping_item_crud import shopping_item_crud_instance
 from app.schemas.shopping_item import ShoppingItemBase, ShoppingItemData
 from app.services.shopping_service import get_total_estimated_price_from_items
 
 
 class ShoppingCRUD:
     async def create(
-            self, db: AsyncSession, data: ShoppingCreate
+        self, db: AsyncSession, data: ShoppingCreate
     ) -> ShoppingCreateResponse:
         shopping = Shopping(**data.model_dump(exclude={"shopping_items"}))
         db.add(shopping)
@@ -31,20 +30,21 @@ class ShoppingCRUD:
         await db.refresh(shopping)
 
         # Add shopping items
-        new_shopping_items: list[ShoppingItemBase] = (
-            await shopping_item_crud_instance.bulk_create(
-                db, data.shopping_items, shopping.id
-            )
+        new_shopping_items: list[
+            ShoppingItemBase
+        ] = await shopping_item_crud_instance.bulk_create(
+            db, data.shopping_items, shopping.id
         )
 
         return ShoppingCreateResponse(
-            shopping=ShoppingBase.model_validate(shopping), shopping_items=new_shopping_items
+            shopping=ShoppingBase.model_validate(shopping),
+            shopping_items=new_shopping_items,
         )
 
     async def create_from_items_to_buy(
-            self,
-            db: AsyncSession,
-            data: ShoppingCreateFromItemsToBuy,
+        self,
+        db: AsyncSession,
+        data: ShoppingCreateFromItemsToBuy,
     ) -> ShoppingCreateResponse:
         shopping = Shopping(**data.model_dump(exclude={"item_to_buy_ids"}))
 
@@ -54,9 +54,7 @@ class ShoppingCRUD:
         await db.refresh(shopping)
 
         items_to_buy = await item_to_buy_crud_instance.get_by_ids(
-            db,
-            data.item_to_buy_ids,
-            data.ref_household_id
+            db, data.item_to_buy_ids, data.ref_household_id
         )
 
         shopping_items_data = [
@@ -78,7 +76,9 @@ class ShoppingCRUD:
             shopping.id,
         )
 
-        await item_to_buy_crud_instance.change_state_to_bought(db, items_to_buy, new_shopping_items)
+        await item_to_buy_crud_instance.change_state_to_bought(
+            db, items_to_buy, new_shopping_items
+        )
 
         return ShoppingCreateResponse(
             shopping=ShoppingBase.model_validate(shopping),
@@ -86,10 +86,10 @@ class ShoppingCRUD:
         )
 
     async def soft_delete(
-            self, db: AsyncSession, household_id: str, shopping_id: str
+        self, db: AsyncSession, household_id: str, shopping_id: str
     ) -> Shopping | None:
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         shopping = await db.scalar(
             select(Shopping).where(
@@ -118,13 +118,13 @@ class ShoppingCRUD:
         return shopping
 
     async def search_with_pagination(
-            self,
-            db: AsyncSession,
-            household_id: str,
-            start_date: date | None = None,
-            end_date: date | None = None,
-            offset: int = 0,
-            limit: int = 20,
+        self,
+        db: AsyncSession,
+        household_id: str,
+        start_date: date | None = None,
+        end_date: date | None = None,
+        offset: int = 0,
+        limit: int = 20,
     ) -> ShoppingSearchResult:
         query = select(
             Shopping,
@@ -180,7 +180,9 @@ class ShoppingCRUD:
             for row in rows
         ]
 
-        return ShoppingSearchResult(items=items, total=total, offset=offset, limit=limit)
+        return ShoppingSearchResult(
+            items=items, total=total, offset=offset, limit=limit
+        )
 
 
 shopping_crud_instance = ShoppingCRUD()

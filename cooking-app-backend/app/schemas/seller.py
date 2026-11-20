@@ -8,9 +8,7 @@ from app.schemas.validator import reject_empty_string
 class SellerData(BaseModel):
     name: str = Field(examples=["Bazar be"], max_length=128, min_length=2)
 
-    _reject_empty = field_validator("name")(
-        reject_empty_string
-    )
+    _reject_empty = field_validator("name")(reject_empty_string)
 
 
 class SellerBase(SellerData):

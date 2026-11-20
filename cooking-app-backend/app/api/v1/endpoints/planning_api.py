@@ -7,8 +7,8 @@ from fastapi_cache.decorator import cache
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.cache_utils import household_aware_key_builder
-from app.core.security import require_roles
-from app.core.security import limiter
+from app.core.config import settings
+from app.core.security import limiter, require_roles
 from app.crud.planning_crud import planning_crud_instance
 from app.db.database import get_db
 from app.schemas.planning_recipe import (
@@ -24,14 +24,13 @@ from app.services.planning_service import (
     get_total_ingredients_to_buy,
     redistribute_to_repartition,
 )
-from app.core.config import settings
 
 router = APIRouter(tags=["Planning"])
 
 
 @router.post("", response_model=list[PlanningRecipeBase])
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def create_planning_recipe(
     request: Request,
     data: PlanningRecipeCreate,
@@ -47,8 +46,10 @@ async def create_planning_recipe(
 
 @router.get("/weekly", response_model=PlanningResult)
 @limiter.limit("30/minute")
-@cache(expire=60 * 5, namespace="plannings:list", key_builder=household_aware_key_builder)
-#@handle_endpoint_errors()
+@cache(
+    expire=60 * 5, namespace="plannings:list", key_builder=household_aware_key_builder
+)
+# @handle_endpoint_errors()
 async def get_planning_weekly(
     request: Request,
     planning_date: date,
@@ -72,11 +73,14 @@ async def get_planning_weekly(
         ),
         ingredients_to_buy=get_total_ingredients_to_buy(planning_repartitions),
     )
-    
+
+
 @router.get("/by-dates", response_model=PlanningResult)
 @limiter.limit("30/minute")
-@cache(expire=60 * 5, namespace="plannings:list", key_builder=household_aware_key_builder)
-#@handle_endpoint_errors()
+@cache(
+    expire=60 * 5, namespace="plannings:list", key_builder=household_aware_key_builder
+)
+# @handle_endpoint_errors()
 async def get_planning_from_dates(
     request: Request,
     start_date: date,
@@ -89,9 +93,7 @@ async def get_planning_from_dates(
     plannings = await planning_crud_instance.get_by_date(
         db, household_id, start_date, end_date
     )
-    planning_repartitions = redistribute_to_repartition(
-        start_date, end_date, plannings
-    )
+    planning_repartitions = redistribute_to_repartition(start_date, end_date, plannings)
     return PlanningResult(
         planning_repartitions=planning_repartitions,
         total_estimated_cost_price=get_total_estimated_price_from_repartitions(
@@ -103,8 +105,10 @@ async def get_planning_from_dates(
 
 @router.get("", response_model=PlanningResult)
 @limiter.limit("30/minute")
-@cache(expire=60 * 5, namespace="plannings:list", key_builder=household_aware_key_builder)
-#@handle_endpoint_errors()
+@cache(
+    expire=60 * 5, namespace="plannings:list", key_builder=household_aware_key_builder
+)
+# @handle_endpoint_errors()
 async def get_planning(
     request: Request,
     today_date: date,
@@ -137,8 +141,10 @@ async def get_planning(
 
 @router.get("/one", response_model=PlanningRecipeRead)
 @limiter.limit("30/minute")
-@cache(expire=60 * 5, namespace="plannings:detail", key_builder=household_aware_key_builder)
-#@handle_endpoint_errors()
+@cache(
+    expire=60 * 5, namespace="plannings:detail", key_builder=household_aware_key_builder
+)
+# @handle_endpoint_errors()
 async def get_planning_recipe(
     request: Request,
     planning_recipe_id: str,
@@ -151,7 +157,7 @@ async def get_planning_recipe(
 
 @router.patch("/delete", response_model=PlanningRecipeBase)
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def delete_stock(
     request: Request,
     delete_data: DeletePlanningData,
@@ -170,7 +176,7 @@ async def delete_stock(
 
 @router.patch("/update", response_model=PlanningRecipeRead)
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def update_planning_recipe(
     request: Request,
     data: PlanningRecipeUpdateData,
@@ -187,7 +193,7 @@ async def update_planning_recipe(
 
 @router.get("/print/")
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def print_planning(
     request: Request,
     start_date: date,

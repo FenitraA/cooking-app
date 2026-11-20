@@ -1,15 +1,14 @@
-from typing import TYPE_CHECKING
 import uuid
-
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from app.models.ingredient import Ingredient
     from app.models.recipe import Recipe
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 
-from sqlalchemy import ForeignKey, DECIMAL, TIMESTAMP, String
+from sqlalchemy import DECIMAL, TIMESTAMP, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
@@ -17,11 +16,11 @@ from app.db.database import Base
 
 class RecipeIngredient(Base):
     __tablename__ = "recipe_ingredient"
-    
+
     quantity: Mapped[Decimal] = mapped_column(DECIMAL(16, 3))
 
     created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(UTC)
     )
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
@@ -33,7 +32,7 @@ class RecipeIngredient(Base):
         String(64),
         primary_key=True,
     )
-    
+
     # Foreign Keys
     ref_recipe_id: Mapped[str] = mapped_column(
         ForeignKey("recipe.id"),
@@ -47,7 +46,7 @@ class RecipeIngredient(Base):
     # Relationships
     recipe: Mapped["Recipe"] = relationship(back_populates="recipe_ingredients")
     ingredient: Mapped["Ingredient"] = relationship(back_populates="recipe_ingredients")
-    
+
     @staticmethod
     def generate_insertion_id():
         """Generate a prefixed UUID string ID"""

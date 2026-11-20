@@ -1,19 +1,19 @@
-from typing import TYPE_CHECKING
 import uuid
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from app.models.household import Household
     from app.models.recipe import Recipe
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
-from sqlalchemy import Date, ForeignKey, TIMESTAMP, Integer, String, Text
+from sqlalchemy import TIMESTAMP, Date, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
 
-
 prefix = "planning_recipe"
+
 
 class PlanningRecipe(Base):
     __tablename__ = "planning_recipe"
@@ -23,11 +23,11 @@ class PlanningRecipe(Base):
         primary_key=True,
         default=lambda: f"{prefix}_{uuid.uuid4()}",
     )
-    nb_serving : Mapped[int] = mapped_column(Integer)
+    nb_serving: Mapped[int] = mapped_column(Integer)
     planning_date: Mapped[date] = mapped_column(Date)
-    description: Mapped[str] = mapped_column(Text,nullable=True)
+    description: Mapped[str] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(UTC)
     )
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),

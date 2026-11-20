@@ -4,9 +4,8 @@ from fastapi_cache.decorator import cache
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.cache_utils import household_aware_key_builder
-from app.core.security import require_roles
-from app.core.security import limiter
 from app.core.config import settings
+from app.core.security import limiter, require_roles
 from app.crud.item_to_buy_crud import item_to_buy_crud_instance
 from app.db.database import get_db
 from app.schemas.item_to_buy import (
@@ -23,7 +22,7 @@ router = APIRouter(tags=["ItemsToBuy"])
 
 @router.post("", response_model=ItemToBuyBase)
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def create_item_to_buy(
     request: Request,
     data: ItemToBuyData,
@@ -39,8 +38,12 @@ async def create_item_to_buy(
 
 @router.get("", response_model=ItemToBuySearchResult)
 @limiter.limit("30/minute")
-@cache(expire=60 * 5, namespace="items_to_buy:list", key_builder=household_aware_key_builder)
-#@handle_endpoint_errors()
+@cache(
+    expire=60 * 5,
+    namespace="items_to_buy:list",
+    key_builder=household_aware_key_builder,
+)
+# @handle_endpoint_errors()
 async def search_items_to_buy(
     request: Request,
     name: str | None = None,
@@ -58,7 +61,7 @@ async def search_items_to_buy(
 
 @router.patch("/delete", response_model=ItemToBuyBase)
 @limiter.limit("20/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def delete_item_to_buy(
     request: Request,
     delete_data: DeleteItemToBuyData,
@@ -76,7 +79,7 @@ async def delete_item_to_buy(
 
 @router.patch("/update", response_model=ItemToBuyRead)
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def update_ingredient(
     request: Request,
     data: ItemToBuyUpdateData,

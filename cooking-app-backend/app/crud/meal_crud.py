@@ -1,10 +1,12 @@
 from collections import defaultdict
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from decimal import Decimal
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import desc, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.crud.ingredient_stock_crud import ingredient_stock_crud_instance
+from app.crud.recipe_crud import recipe_crud_instance
 from app.models.ingredient import Ingredient
 from app.models.ingredient_stock import IngredientStock
 from app.models.ingredient_unit import IngredientUnit
@@ -23,8 +25,6 @@ from app.schemas.meal import (
     MealRead,
     MealSearchResult,
 )
-from app.crud.recipe_crud import recipe_crud_instance
-from app.crud.ingredient_stock_crud import ingredient_stock_crud_instance
 
 
 class MealCRUD:
@@ -52,7 +52,9 @@ class MealCRUD:
             ]
             meal_ingredient.ref_meal_id = new_meal.id
             new_meal_ingredients.append(
-                MealIngredientBase.model_validate(await meal_crud_instance.create_meal_ingredient(db, meal_ingredient))
+                MealIngredientBase.model_validate(
+                    await meal_crud_instance.create_meal_ingredient(db, meal_ingredient)
+                )
             )
 
         await ingredient_stock_crud_instance.check_stocks_quantities(
@@ -61,10 +63,13 @@ class MealCRUD:
         await ingredient_stock_crud_instance.check_stocks_households(
             db, ingredient_stock_ids
         )
-        return MealCreateResponse(meal=MealBase.model_validate(new_meal), meal_ingredients=new_meal_ingredients)
+        return MealCreateResponse(
+            meal=MealBase.model_validate(new_meal),
+            meal_ingredients=new_meal_ingredients,
+        )
 
     async def create_meal_ingredient(
-            self, db: AsyncSession, data: MealIngredientBase
+        self, db: AsyncSession, data: MealIngredientBase
     ) -> MealIngredient:
         new_recipe = MealIngredient(**data.model_dump())
         db.add(new_recipe)
@@ -74,7 +79,7 @@ class MealCRUD:
         return new_recipe
 
     async def get_meal_ingredients(
-            self, db: AsyncSession, meal_id: str
+        self, db: AsyncSession, meal_id: str
     ) -> list[MealIngredientRead]:
         query = (
             select(
@@ -116,7 +121,7 @@ class MealCRUD:
         ]
 
     async def get_meal_recipe_setup(
-            self, db: AsyncSession, household_id: str, recipe_id: str, nb_serving: int
+        self, db: AsyncSession, household_id: str, recipe_id: str, nb_serving: int
     ) -> list[MealIngredientRead]:
         recipe = await recipe_crud_instance.get_one(db, recipe_id)
 
@@ -142,7 +147,6 @@ class MealCRUD:
         allocations: list[MealIngredientRead] = []
 
         for recipe_ingredient in recipe.recipe_ingredients:
-
             ingredient_name = recipe_ingredient.ingredient_name
             ingredient_unit = recipe_ingredient.ingredient_unit
             ingredient_id = recipe_ingredient.recipe_ingredient_base.ref_ingredient_id
@@ -188,18 +192,18 @@ class MealCRUD:
             return None
 
         meal.state = -1
-        meal.updated_at = datetime.now(timezone.utc)
+        meal.updated_at = datetime.now(UTC)
         await db.flush()
         return meal
 
     async def search_with_pagination(
-            self,
-            db: AsyncSession,
-            recipe_name: str | None = None,
-            start_date: date | None = None,
-            end_date: date | None = None,
-            offset: int = 0,
-            limit: int = 20,
+        self,
+        db: AsyncSession,
+        recipe_name: str | None = None,
+        start_date: date | None = None,
+        end_date: date | None = None,
+        offset: int = 0,
+        limit: int = 20,
     ) -> MealSearchResult:
         query = (
             select(
@@ -248,9 +252,9 @@ class MealCRUD:
                 db, row[0].id
             )
 
-            total_cost_price = Decimal(sum(
-                meal_ingredient.total_price for meal_ingredient in meal_ingredients
-            ))
+            total_cost_price = Decimal(
+                sum(meal_ingredient.total_price for meal_ingredient in meal_ingredients)
+            )
 
             items.append(
                 MealRead(

@@ -1,9 +1,13 @@
-from datetime import date, datetime
+from datetime import datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, Field
 
-from app.schemas.shopping_item import ShoppingItemBase, ShoppingItemData, ShoppingItemRead
+from app.schemas.shopping_item import (
+    ShoppingItemBase,
+    ShoppingItemData,
+    ShoppingItemRead,
+)
 
 
 class ShoppingData(BaseModel):

@@ -1,33 +1,31 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.security import require_roles, limiter
+
+from app.core.config import settings
+from app.core.security import limiter, require_roles
+from app.crud.app_user_crud import app_user_crud_instance
 from app.crud.role_crud import role_crud_instance
+from app.db.database import get_db
 from app.schemas.app_user import (
     AppUserData,
     AppUserPasswordChange,
     AppUserPasswordReset,
-    AppUserUsernameChange,
     AppUserRead,
+    AppUserUsernameChange,
 )
-from app.db.database import get_db
-from app.crud.app_user_crud import app_user_crud_instance
-from fastapi import status
-
-from app.core.config import settings
-
-from app.schemas.role import RoleCreate, RoleBase
+from app.schemas.role import RoleBase, RoleCreate
 
 router = APIRouter(tags=["User"])
 
 
 @router.post("", response_model=AppUserRead, status_code=status.HTTP_201_CREATED)
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def register(
-    request : Request,
+    request: Request,
     user_in: AppUserData,
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(require_roles(settings.ADMIN_ROLE_DENOMINATION))
+    current_user=Depends(require_roles(settings.ADMIN_ROLE_DENOMINATION)),
 ):
     user = await app_user_crud_instance.create(db, user_in)
     await db.commit()
@@ -38,9 +36,9 @@ async def register(
     "/change-password", response_model=AppUserRead, status_code=status.HTTP_201_CREATED
 )
 @limiter.limit("1/hour")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def change_password(
-    request : Request,
+    request: Request,
     user_in: AppUserPasswordChange,
     db: AsyncSession = Depends(get_db),
 ):
@@ -54,16 +52,17 @@ async def change_password(
     await db.commit()
     return {"id": user.id, "username": user.username}
 
+
 @router.patch(
     "/password-reset", response_model=AppUserRead, status_code=status.HTTP_201_CREATED
 )
 @limiter.limit("5/hour")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def password_reset(
-    request : Request,
+    request: Request,
     user_in: AppUserPasswordReset,
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(require_roles(settings.ADMIN_ROLE_DENOMINATION))
+    current_user=Depends(require_roles(settings.ADMIN_ROLE_DENOMINATION)),
 ):
     """Register a new password for a user"""
     user = await app_user_crud_instance.change_password_with_verification(
@@ -79,9 +78,9 @@ async def password_reset(
     "/change-username", response_model=AppUserRead, status_code=status.HTTP_201_CREATED
 )
 @limiter.limit("1/hour")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def change_username(
-    request : Request,
+    request: Request,
     user_in: AppUserUsernameChange,
     db: AsyncSession = Depends(get_db),
 ):
@@ -95,12 +94,12 @@ async def change_username(
 
 @router.post("/roles", response_model=RoleBase, status_code=status.HTTP_201_CREATED)
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def register_roles(
-    request : Request,
+    request: Request,
     role_in: RoleCreate,
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(require_roles(settings.ADMIN_ROLE_DENOMINATION))
+    current_user=Depends(require_roles(settings.ADMIN_ROLE_DENOMINATION)),
 ):
     new_role = await role_crud_instance.create(db, data=role_in)
     await db.commit()
@@ -111,12 +110,11 @@ async def register_roles(
     "/user-roles", response_model=list[str], status_code=status.HTTP_201_CREATED
 )
 @limiter.limit("20/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def get_user_roles(
-    request : Request,
+    request: Request,
     user_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(require_roles(settings.ADMIN_ROLE_DENOMINATION))
+    current_user=Depends(require_roles(settings.ADMIN_ROLE_DENOMINATION)),
 ):
     return await app_user_crud_instance.list_user_roles(db, user_id)
-     

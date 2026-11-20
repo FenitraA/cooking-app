@@ -2,6 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, Field, field_validator
+
 from app.schemas.ingredient_type import IngredientTypeBase
 from app.schemas.ingredient_unit import IngredientUnitBase
 from app.schemas.validator import reject_empty_string
@@ -11,7 +12,8 @@ class IngredientData(BaseModel):
     name: str = Field(examples=["Tomato"], max_length=128, min_length=2)
     unit: str | None = Field(
         default=None,
-        description="Used for selection that needs the unit without complexifying the query",
+        description="Used for selection that needs "
+        "the unit without complexifying the query",
     )
     ref_ingredient_unit_id: str = Field(description="FK to ingredient_unit.id")
     ref_ingredient_type_id: str = Field(description="FK to ingredient_type.id")
@@ -20,7 +22,8 @@ class IngredientData(BaseModel):
     estimated_price: Decimal = Field(gt=0, examples=[20000])
     image_url: str | None = Field(description="CDN URL your frontend uses")
     storage_key: str | None = Field(
-        description="Cloudinary public_id OR S3/R2 object_key (super useful for deletes)"
+        description="Cloudinary public_id OR "
+        "S3/R2 object_key (super useful for deletes)"
     )
 
     _reject_empty = field_validator("name", "ref_ingredient_type_id")(
@@ -42,7 +45,8 @@ class IngredientImageData(BaseModel):
     id: str
     image_url: str = Field(description="CDN URL your frontend uses")
     storage_key: str = Field(
-        description="Cloudinary public_id OR S3/R2 object_key (super useful for deletes)"
+        description="Cloudinary public_id OR "
+        "S3/R2 object_key (super useful for deletes)"
     )
 
     _reject_empty = field_validator("id", "image_url", "storage_key")(
@@ -54,7 +58,7 @@ class IngredientRead(BaseModel):
     ingredient: IngredientBase
     ingredient_unit: IngredientUnitBase
     ingredient_type: IngredientTypeBase
-    quantity_left: Decimal = Decimal(0.0)
+    quantity_left: Decimal = Decimal("0.0")
     group_name: str
 
 

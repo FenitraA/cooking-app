@@ -2,6 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, Field, field_validator
+
 from app.schemas.validator import reject_empty_string
 
 
@@ -18,7 +19,8 @@ class RecipeData(BaseModel):
 
     image_url: str | None = Field(description="CDN URL your frontend uses")
     storage_key: str | None = Field(
-        description="Cloudinary public_id OR S3/R2 object_key (super useful for deletes)"
+        description="Cloudinary public_id OR "
+        "S3/R2 object_key (super useful for deletes)"
     )
 
     _reject_empty = field_validator("name", "description")(reject_empty_string)
@@ -28,7 +30,8 @@ class RecipeImageData(BaseModel):
     id: str
     image_url: str = Field(description="CDN URL your frontend uses")
     storage_key: str = Field(
-        description="Cloudinary public_id OR S3/R2 object_key (super useful for deletes)"
+        description="Cloudinary public_id OR S3/R2"
+        " object_key (super useful for deletes)"
     )
 
     _reject_empty = field_validator("id")(reject_empty_string)
@@ -38,9 +41,7 @@ class RecipeIngredientBase(BaseModel):
     insertion_id: str | None = Field(description="Unique insertion id")
     ref_ingredient_id: str | None = Field(description="FK to ingredient.id")
     ref_recipe_id: str = Field(description="FK to recipe.id")
-    quantity: Decimal = Field(
-        gt=0, examples=[0.8]
-    )  # Quantity needed
+    quantity: Decimal = Field(gt=0, examples=[0.8])  # Quantity needed
 
     _reject_empty = field_validator("ref_ingredient_id")(reject_empty_string)
 
@@ -53,7 +54,7 @@ class RecipeIngredientRead(BaseModel):
     recipe_name: str
     ingredient_name: str
     ingredient_unit: str
-    estimated_cost_per_unit: Decimal = Decimal(0.0)
+    estimated_cost_per_unit: Decimal = Decimal("0.0")
 
 
 class RecipeCreate(RecipeData):
@@ -77,7 +78,7 @@ class RecipeCreateResponse(BaseModel):
 
 class RecipeRead(BaseModel):
     recipe: RecipeBase
-    estimated_cost_price: Decimal = Decimal(0.0)
+    estimated_cost_price: Decimal = Decimal("0.0")
     recipe_ingredients: list[RecipeIngredientRead] = []
 
 

@@ -1,14 +1,15 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from app.models.user_role import UserRole
     from app.models.endpoint_access import EndpointAccess
+    from app.models.user_role import UserRole
 
 import uuid
+from datetime import UTC, datetime
 
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import TIMESTAMP, ForeignKey, Integer, String
-from datetime import datetime, timezone
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from app.db.database import Base
 
 prefix = "role"
@@ -27,7 +28,7 @@ class Role(Base):
     description: Mapped[str] = mapped_column(String(128), nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(UTC)
     )
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
@@ -47,10 +48,10 @@ class Role(Base):
         back_populates="child_roles",
     )
     child_roles = relationship("Role", back_populates="parent_role")
-    endpoint_accesses: Mapped[List["EndpointAccess"]] = relationship(
+    endpoint_accesses: Mapped[list["EndpointAccess"]] = relationship(
         back_populates="role"
     )
-    user_roles: Mapped[List["UserRole"]] = relationship(back_populates="role")
+    user_roles: Mapped[list["UserRole"]] = relationship(back_populates="role")
 
     @staticmethod
     def generate_id():

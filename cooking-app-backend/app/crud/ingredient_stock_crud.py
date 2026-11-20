@@ -1,7 +1,7 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import and_, case, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.ingredient import Ingredient
 from app.models.ingredient_stock import IngredientStock
@@ -20,19 +20,19 @@ ingredient_stock_left_subquery = (
         IngredientStock.id.label("ingredient_stock_id"),
         IngredientStock.ref_ingredient_id,
         (
-                IngredientStock.quantity
-                - func.coalesce(
-            func.sum(
-                case(
-                    (
-                        and_(MealIngredient.state > 0, Meal.state > 0),
-                        MealIngredient.quantity,
-                    ),
-                    else_=0,
-                )
-            ),
-            0,
-        )
+            IngredientStock.quantity
+            - func.coalesce(
+                func.sum(
+                    case(
+                        (
+                            and_(MealIngredient.state > 0, Meal.state > 0),
+                            MealIngredient.quantity,
+                        ),
+                        else_=0,
+                    )
+                ),
+                0,
+            )
         ).label("total_left"),
         IngredientStock.state.label("ingredient_stock_state"),
     )
@@ -52,7 +52,7 @@ ingredient_stock_left_subquery = (
 
 class IngredientStockCRUD:
     async def create(
-            self, db: AsyncSession, data: IngredientStockData
+        self, db: AsyncSession, data: IngredientStockData
     ) -> IngredientStock:
         new_ingredient_stock = IngredientStock(**data.model_dump())
         db.add(new_ingredient_stock)
@@ -61,7 +61,7 @@ class IngredientStockCRUD:
         return new_ingredient_stock
 
     async def soft_delete(
-            self, db: AsyncSession, household_id: str, ingredient_stock_id: str
+        self, db: AsyncSession, household_id: str, ingredient_stock_id: str
     ) -> IngredientStock | None:
         ingredient_stock = await db.scalar(
             select(IngredientStock).where(
@@ -74,17 +74,17 @@ class IngredientStockCRUD:
             return None
 
         ingredient_stock.state = -1
-        ingredient_stock.updated_at = datetime.now(timezone.utc)
+        ingredient_stock.updated_at = datetime.now(UTC)
         await db.flush()
         return ingredient_stock
 
     async def get_stocks_by_ingredient(
-            self,
-            db: AsyncSession,
-            household_id: str,
-            ingredient_id: str,
-            offset: int = 0,
-            limit: int = 10,
+        self,
+        db: AsyncSession,
+        household_id: str,
+        ingredient_id: str,
+        offset: int = 0,
+        limit: int = 10,
     ) -> list[IngredientStockRead]:
         query = (
             select(
@@ -134,7 +134,7 @@ class IngredientStockCRUD:
         ]
 
     async def get_ingredient_unit_ids_from_stock_ids(
-            self, db: AsyncSession, ids: list[str]
+        self, db: AsyncSession, ids: list[str]
     ) -> dict[str, str | None]:
         query = (
             select(IngredientStock.id, IngredientUnit.id)
@@ -152,10 +152,10 @@ class IngredientStockCRUD:
         return {stock_id: unit_id for stock_id, unit_id in rows}
 
     async def check_stocks_quantities(
-            self,
-            db: AsyncSession,
-            household_id: str,
-            stock_ids: list[str],
+        self,
+        db: AsyncSession,
+        household_id: str,
+        stock_ids: list[str],
     ):
         ingredient_stocks = (
             await db.scalars(
@@ -179,15 +179,15 @@ class IngredientStockCRUD:
 
         for ingredient_stock in ingredient_stocks:
             ingredient_stock.state = -1
-            ingredient_stock.updated_at = datetime.now(timezone.utc)
+            ingredient_stock.updated_at = datetime.now(UTC)
 
         await db.flush()
 
     async def check_stocks_households(
-            self,
-            db: AsyncSession,
-            stock_ids: list[str],
-            household_id: str,
+        self,
+        db: AsyncSession,
+        stock_ids: list[str],
+        household_id: str,
     ) -> None:
         stocks = (
             (
@@ -210,12 +210,12 @@ class IngredientStockCRUD:
             )
 
     async def get_stocks_by_ingredient_by_batch(
-            self,
-            db: AsyncSession,
-            household_id: str,
-            ingredient_ids: list[str],
-            offset: int = 0,
-            limit: int = 10,
+        self,
+        db: AsyncSession,
+        household_id: str,
+        ingredient_ids: list[str],
+        offset: int = 0,
+        limit: int = 10,
     ) -> list[IngredientStockRead]:
         query = (
             select(

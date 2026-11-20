@@ -1,7 +1,8 @@
-from typing import Any, Callable
-from fastapi import Request, Response
+from collections.abc import Callable
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from typing import Any
+
+from fastapi import FastAPI, Request, Response
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis.asyncio import Redis
@@ -25,13 +26,14 @@ async def lifespan(app: FastAPI):
 
     await redis.aclose()
 
+
 def household_aware_key_builder(
-        func: Callable[..., Any],
-        namespace: str = "",
-        request: Request | None = None,
-        response: Response | None = None,
-        *args: Any,
-        **kwargs: Any,
+    func: Callable[..., Any],
+    namespace: str = "",
+    request: Request | None = None,
+    response: Response | None = None,
+    *args: Any,
+    **kwargs: Any,
 ) -> str:
     cache_kwargs = {}
     for k, v in kwargs.items():

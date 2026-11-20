@@ -1,13 +1,14 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from app.models.role import Role
     from app.models.app_user import AppUser
+    from app.models.role import Role
 
-from sqlalchemy import ForeignKey
+from datetime import UTC, datetime
+
+from sqlalchemy import TIMESTAMP, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import TIMESTAMP, Integer, String
-from datetime import datetime, timezone
+
 from app.db.database import Base
 
 
@@ -15,7 +16,7 @@ class UserRole(Base):
     __tablename__ = "user_role"
 
     created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(UTC)
     )
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),

@@ -1,44 +1,42 @@
-from datetime import timedelta, timezone, datetime
+from datetime import UTC, datetime, timedelta
+
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.api.decorators import handle_endpoint_errors
-from app.crud.app_user_crud import app_user_crud_instance
-from app.models.refresh_token import RefreshToken
-from app.schemas.app_user import AppUserLogin
-from app.core.security import (
-    clear_auth_cookies,
-    create_refresh_token,
-    get_current_user,
-    set_auth_cookies,
-    verify_password,
-    create_access_token,
-)
-from app.db.database import get_db
-from jose import JWTError
 
 from app.core.config import settings
-
+from app.core.security import (
+    clear_auth_cookies,
+    create_access_token,
+    create_refresh_token,
+    get_current_user,
+    limiter,
+    set_auth_cookies,
+    verify_password,
+)
+from app.crud.app_user_crud import app_user_crud_instance
 from app.crud.refresh_token_crud import refresh_token_crud_instance
+from app.db.database import get_db
+from app.models.refresh_token import RefreshToken
+from app.schemas.app_user import AppUserLogin
 from app.schemas.exceptions import (
     RefreshTokenInvalid,
     RefreshTokenNotFound,
     RefreshTokenRevoked,
 )
-from app.core.security import limiter
 
 router = APIRouter(tags=["Auth"])
 
 
 @router.post("/login")
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def login(
     request: Request,
     data: AppUserLogin,
     db: AsyncSession = Depends(get_db),
 ):
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     user = await app_user_crud_instance.get_user_by_username(
         db,
@@ -96,7 +94,7 @@ async def login(
 
 @router.post("/refresh")
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def refresh_token(
     request: Request,
     db: AsyncSession = Depends(get_db),
@@ -170,14 +168,12 @@ async def refresh_token(
 
 @router.post("/logout")
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def logout(
     request: Request,
     db: AsyncSession = Depends(get_db),
 ):
-    response = JSONResponse(
-        {"message": "Logged out"}
-    )
+    response = JSONResponse({"message": "Logged out"})
 
     clear_auth_cookies(response)
     refresh_token_value = request.cookies.get("refresh_token")
@@ -198,9 +194,10 @@ async def logout(
         await db.rollback()
     return response
 
+
 @router.post("/logout-all")
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def logout_all(
     request: Request,
     db: AsyncSession = Depends(get_db),
@@ -211,15 +208,14 @@ async def logout_all(
         current_user["id"],
     )
     await db.commit()
-    response = JSONResponse(
-        {"message": "Logged out from all devices"}
-    )
+    response = JSONResponse({"message": "Logged out from all devices"})
     clear_auth_cookies(response)
     return response
 
+
 @router.get("/me")
 @limiter.limit("50/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def me(
     request: Request,
     db: AsyncSession = Depends(get_db),

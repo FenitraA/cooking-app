@@ -1,17 +1,16 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.seller import Seller
-from app.schemas.seller import SellerRead
 
 
 class SellerCRUD:
     async def select_search(
-            self,
-            db: AsyncSession,
-            name: str | None = None,
-            offset: int = 0,
-            limit: int = 10,
+        self,
+        db: AsyncSession,
+        name: str | None = None,
+        offset: int = 0,
+        limit: int = 10,
     ) -> list[Seller]:
         query = select(Seller).where(Seller.state > 0)
 

@@ -15,9 +15,9 @@ class HouseholdCRUD:
         return new_household
 
     async def select_search(
-            self,
-            db: AsyncSession,
-            name: str | None = None,
+        self,
+        db: AsyncSession,
+        name: str | None = None,
     ) -> list[Household]:
         query = select(Household).where(Household.state > 0)
 

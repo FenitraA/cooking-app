@@ -1,15 +1,15 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from app.models.recipe_ingredient import RecipeIngredient
-    from app.models.planning_recipe import PlanningRecipe
     from app.models.household import Household
     from app.models.meal import Meal
+    from app.models.planning_recipe import PlanningRecipe
+    from app.models.recipe_ingredient import RecipeIngredient
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from sqlalchemy import String, Integer, TIMESTAMP, Text, ForeignKey
+from sqlalchemy import TIMESTAMP, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
@@ -31,20 +31,20 @@ class Recipe(Base):
     estimated_time: Mapped[int] = mapped_column(Integer)
     parallel_cooking: Mapped[int] = mapped_column(Integer)
     created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(UTC)
     )
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
         nullable=True,
     )
     state: Mapped[int] = mapped_column(default=1)
-    
+
     # CDN URL your frontend uses
     image_url: Mapped[str] = mapped_column(String(2048), nullable=True)
 
     # Cloudinary public_id OR S3/R2 object_key (super useful for deletes)
     storage_key: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    
+
     # foreign keys
     ref_household_id: Mapped[str] = mapped_column(ForeignKey("household.id"))
 

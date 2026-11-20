@@ -4,17 +4,15 @@ from fastapi_cache.decorator import cache
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.cache_utils import household_aware_key_builder
-from app.core.security import require_roles
-from app.core.security import limiter
 from app.core.config import settings
+from app.core.security import limiter, require_roles
+from app.crud.item_category_crud import item_category_crud_instance
 from app.db.database import get_db
 from app.schemas.item_category import (
     ItemCategoryBase,
     ItemCategoryData,
     ItemCategoryRead,
 )
-
-from app.crud.item_category_crud import item_category_crud_instance
 
 router = APIRouter(tags=["ItemCategories"])
 
@@ -37,7 +35,11 @@ async def create_item_to_buy(
 
 @router.get("", response_model=list[ItemCategoryBase])
 @limiter.limit("30/minute")
-@cache(expire=60 * 60, namespace="item_categories:list", key_builder=household_aware_key_builder)
+@cache(
+    expire=60 * 60,
+    namespace="item_categories:list",
+    key_builder=household_aware_key_builder,
+)
 # @handle_endpoint_errors()
 async def select_search_category(
     request: Request,
@@ -50,9 +52,13 @@ async def select_search_category(
 
 @router.get("/ingredient", response_model=ItemCategoryRead)
 @limiter.limit("30/minute")
-@cache(expire=60 * 60, namespace="item_categories:ingredient", key_builder=household_aware_key_builder)
+@cache(
+    expire=60 * 60,
+    namespace="item_categories:ingredient",
+    key_builder=household_aware_key_builder,
+)
 # @handle_endpoint_errors()
-async def select_search_category(
+async def select_ingredient_category(
     request: Request,
     db: AsyncSession = Depends(get_db),
     current_user=Depends(require_roles(settings.READ_ONLY_ROLE_DENOMINATION)),

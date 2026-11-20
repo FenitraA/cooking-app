@@ -1,7 +1,10 @@
-import uvicorn
-from app.core.config import settings
 import asyncio
-from app.db.database import init_models,ENGINES
+
+import uvicorn
+
+from app.core.config import settings
+from app.db.database import ENGINES, init_models
+
 
 async def init_db_for_env():
     match settings.ENVIRONMENT:
@@ -15,13 +18,14 @@ async def init_db_for_env():
             print("Skipping DB initialization on PROD")
         case _:
             raise RuntimeError(f"Unknown environment: {settings.ENVIRONMENT}")
-        
+
+
 if __name__ == "__main__":
     url = f"http://{settings.HOST}:{settings.PORT}"
     asyncio.run(init_db_for_env())
-    
+
     # Open the default browser with the app's URL
     # webbrowser.open(url)
-    
+
     # Run the FastAPI app
-    uvicorn.run("app.main:app", host=settings.HOST, port=settings.PORT,reload=True)
+    uvicorn.run("app.main:app", host=settings.HOST, port=settings.PORT, reload=True)

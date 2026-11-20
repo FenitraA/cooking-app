@@ -1,18 +1,18 @@
+import asyncio
+
 import cloudinary
 import cloudinary.uploader
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-import asyncio
-
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from fastapi_cache import FastAPICache
 from fastapi_cache.decorator import cache
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.api.v1.cache_utils import household_aware_key_builder
-from app.core.security import require_roles
-from app.core.security import limiter
-from app.crud.seller_crud import seller_crud_instance
+from app.core.config import settings
+from app.core.security import limiter, require_roles
 from app.crud.ingredient_crud import ingredient_crud_instance
 from app.crud.ingredient_stock_crud import ingredient_stock_crud_instance
+from app.crud.seller_crud import seller_crud_instance
 from app.db.database import get_db
 from app.schemas.ingredient import (
     IngredientBase,
@@ -31,14 +31,13 @@ from app.schemas.ingredient_stock import (
 from app.schemas.ingredient_type import IngredientTypeRead
 from app.schemas.ingredient_unit import IngredientUnitRead
 from app.schemas.seller import SellerRead
-from app.core.config import settings
-
 
 router = APIRouter(tags=["Ingredients"])
 
+
 @router.post("", response_model=IngredientBase)
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def create_ingredient(
     request: Request,
     data: IngredientData,
@@ -56,7 +55,7 @@ async def create_ingredient(
 
 @router.patch("/image", response_model=IngredientRead)
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def set_ingredient_image(
     request: Request,
     data: IngredientImageData,
@@ -78,7 +77,7 @@ async def set_ingredient_image(
 
     # Delete older image from Cloudinary if exists
     if old_storage_key:
-        res = await asyncio.to_thread(
+        await asyncio.to_thread(
             cloudinary.uploader.destroy, old_storage_key, invalidate=True
         )
 
@@ -90,8 +89,12 @@ async def set_ingredient_image(
 
 @router.get("", response_model=IngredientSearchResult)
 @limiter.limit("30/minute")
-@cache(expire=60 * 60, namespace="ingredients:list", key_builder=household_aware_key_builder)
-#@handle_endpoint_errors()
+@cache(
+    expire=60 * 60,
+    namespace="ingredients:list",
+    key_builder=household_aware_key_builder,
+)
+# @handle_endpoint_errors()
 async def list_ingredients(
     request: Request,
     name: str | None = None,
@@ -111,8 +114,12 @@ async def list_ingredients(
 
 @router.get("/types", response_model=list[IngredientTypeRead])
 @limiter.limit("30/minute")
-@cache(expire=60 * 60 * 24, namespace="ingredient_types:list", key_builder=household_aware_key_builder)
-#@handle_endpoint_errors()
+@cache(
+    expire=60 * 60 * 24,
+    namespace="ingredient_types:list",
+    key_builder=household_aware_key_builder,
+)
+# @handle_endpoint_errors()
 async def list_types(
     request: Request,
     name: str | None = None,
@@ -124,8 +131,12 @@ async def list_types(
 
 @router.get("/units", response_model=list[IngredientUnitRead])
 @limiter.limit("30/minute")
-@cache(expire=60 * 60 * 24, namespace="ingredient_units:list", key_builder=household_aware_key_builder)
-#@handle_endpoint_errors()
+@cache(
+    expire=60 * 60 * 24,
+    namespace="ingredient_units:list",
+    key_builder=household_aware_key_builder,
+)
+# @handle_endpoint_errors()
 async def list_units(
     request: Request,
     name: str | None = None,
@@ -137,8 +148,12 @@ async def list_units(
 
 @router.get("/one", response_model=IngredientRead)
 @limiter.limit("30/minute")
-@cache(expire=60 * 60 * 24, namespace="ingredients:detail", key_builder=household_aware_key_builder)
-#@handle_endpoint_errors()
+@cache(
+    expire=60 * 60 * 24,
+    namespace="ingredients:detail",
+    key_builder=household_aware_key_builder,
+)
+# @handle_endpoint_errors()
 async def get_ingredient(
     request: Request,
     ingredient_id: str,
@@ -150,7 +165,7 @@ async def get_ingredient(
 
 @router.patch("/update", response_model=IngredientRead)
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def update_ingredient(
     request: Request,
     data: IngredientUpdateData,
@@ -170,8 +185,12 @@ async def update_ingredient(
 
 @router.get("/stocks", response_model=list[IngredientStockRead])
 @limiter.limit("30/minute")
-@cache(expire=60, namespace="ingredient_stocks:list", key_builder=household_aware_key_builder)
-#@handle_endpoint_errors()
+@cache(
+    expire=60,
+    namespace="ingredient_stocks:list",
+    key_builder=household_aware_key_builder,
+)
+# @handle_endpoint_errors()
 async def get_stock(
     request: Request,
     ingredient_id: str,
@@ -186,7 +205,7 @@ async def get_stock(
 
 @router.post("/stocks", response_model=IngredientStockBase)
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def create_stock(
     request: Request,
     data: IngredientStockData,
@@ -202,7 +221,7 @@ async def create_stock(
 
 @router.patch("/stocks/delete", response_model=IngredientStockBase)
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def delete_stock(
     request: Request,
     delete_data: DeleteIngredientStockData,
@@ -223,8 +242,12 @@ async def delete_stock(
 
 @router.get("/sellers", response_model=list[SellerRead])
 @limiter.limit("30/minute")
-@cache(expire=60 * 60 * 24, namespace="sellers:list", key_builder=household_aware_key_builder)
-#@handle_endpoint_errors()
+@cache(
+    expire=60 * 60 * 24,
+    namespace="sellers:list",
+    key_builder=household_aware_key_builder,
+)
+# @handle_endpoint_errors()
 async def list_sellers(
     request: Request,
     name: str | None = None,
@@ -236,8 +259,12 @@ async def list_sellers(
 
 @router.get("/select", response_model=list[IngredientBase])
 @limiter.limit("30/minute")
-@cache(expire=60 * 5, namespace="ingredients:select", key_builder=household_aware_key_builder)
-#@handle_endpoint_errors()
+@cache(
+    expire=60 * 5,
+    namespace="ingredients:select",
+    key_builder=household_aware_key_builder,
+)
+# @handle_endpoint_errors()
 async def autocomplete_ingredients(
     request: Request,
     name: str | None = None,

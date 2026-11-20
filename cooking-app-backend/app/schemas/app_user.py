@@ -1,4 +1,5 @@
 from typing import Annotated
+
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
 
 from app.schemas.validator import reject_empty_string
@@ -54,6 +55,4 @@ class AppUserPasswordReset(BaseModel):
     id: str
     new_password: str
 
-    _reject_empty = field_validator("id", "new_password")(
-        reject_empty_string
-    )
+    _reject_empty = field_validator("id", "new_password")(reject_empty_string)

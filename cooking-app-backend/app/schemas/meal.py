@@ -2,6 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, Field, field_validator
+
 from app.schemas.validator import reject_empty_string
 
 
@@ -55,7 +56,7 @@ class MealCreateResponse(BaseModel):
 class MealRead(BaseModel):
     meal: MealBase
     recipe_name: str | None = None
-    total_cost_price: Decimal = Decimal(0.0)
+    total_cost_price: Decimal = Decimal("0.0")
     meal_ingredients: list[MealIngredientRead] = []
 
 

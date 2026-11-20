@@ -1,17 +1,16 @@
 from typing import TYPE_CHECKING
 
-
 if TYPE_CHECKING:
     from app.models.household import Household
     from app.models.ingredient import Ingredient
-    from app.models.seller import Seller
     from app.models.meal_ingredient import MealIngredient
+    from app.models.seller import Seller
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 
-from sqlalchemy import String, DECIMAL, TIMESTAMP, ForeignKey
+from sqlalchemy import DECIMAL, TIMESTAMP, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
@@ -32,7 +31,7 @@ class IngredientStock(Base):
     quantity: Mapped[Decimal] = mapped_column(DECIMAL(16, 3))
 
     created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(UTC)
     )
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
@@ -51,7 +50,7 @@ class IngredientStock(Base):
         nullable=False,
     )
     ref_household_id: Mapped[str] = mapped_column(ForeignKey("household.id"))
-    
+
     # Relationships
     household: Mapped["Household"] = relationship(back_populates="ingredient_stocks")
     ingredient: Mapped["Ingredient"] = relationship(back_populates="ingredient_stocks")

@@ -1,17 +1,11 @@
 import logging
-
-from fastapi import HTTPException, status
-from sqlalchemy.exc import SQLAlchemyError
-from functools import wraps
-
-logger = logging.getLogger(__name__)
-
-
 import uuid
 from functools import wraps
 
 from fastapi import HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
+
+logger = logging.getLogger(__name__)
 
 
 def handle_endpoint_errors():
@@ -29,7 +23,7 @@ def handle_endpoint_errors():
                     await db.rollback()
                 raise
 
-            except SQLAlchemyError:
+            except SQLAlchemyError as sql_exc:
                 if db:
                     await db.rollback()
 
@@ -42,12 +36,12 @@ def handle_endpoint_errors():
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail={
                         "message": "We couldn't complete your request right now. "
-                        "Please try again later.",
+                                   "Please try again later.",
                         "error_id": error_id,
                     },
-                )
+                ) from sql_exc
 
-            except Exception:
+            except Exception as exc:
                 if db:
                     await db.rollback()
 
@@ -60,10 +54,10 @@ def handle_endpoint_errors():
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail={
                         "message": "Something went wrong on our side. "
-                        "Please try again later.",
+                                   "Please try again later.",
                         "error_id": error_id,
                     },
-                )
+                ) from exc
 
         return wrapper
 

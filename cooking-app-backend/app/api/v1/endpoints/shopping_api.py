@@ -6,9 +6,8 @@ from fastapi_cache.decorator import cache
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.cache_utils import household_aware_key_builder
-from app.core.security import require_roles
-from app.core.security import limiter
 from app.core.config import settings
+from app.core.security import limiter, require_roles
 from app.crud.shopping_crud import shopping_crud_instance
 from app.db.database import get_db
 from app.schemas.shopping import (
@@ -25,7 +24,7 @@ router = APIRouter(tags=["Shoppings"])
 
 @router.post("", response_model=ShoppingCreateResponse)
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def create_shopping(
     request: Request,
     data: ShoppingCreate,
@@ -41,7 +40,7 @@ async def create_shopping(
 
 @router.post("/from-items-to-buy", response_model=ShoppingCreateResponse)
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def create_shopping_from_items_to_buy(
     request: Request,
     data: ShoppingCreateFromItemsToBuy,
@@ -58,8 +57,10 @@ async def create_shopping_from_items_to_buy(
 
 @router.get("", response_model=ShoppingSearchResult)
 @limiter.limit("30/minute")
-@cache(expire=60 * 5, namespace="shoppings:list", key_builder=household_aware_key_builder)
-#@handle_endpoint_errors()
+@cache(
+    expire=60 * 5, namespace="shoppings:list", key_builder=household_aware_key_builder
+)
+# @handle_endpoint_errors()
 async def search_shoppings(
     request: Request,
     start_date: date | None = None,
@@ -80,7 +81,7 @@ async def search_shoppings(
 
 @router.patch("/delete", response_model=ShoppingBase)
 @limiter.limit("5/minute")
-#@handle_endpoint_errors()
+# @handle_endpoint_errors()
 async def delete_shopping(
     request: Request,
     delete_data: DeleteShoppingData,

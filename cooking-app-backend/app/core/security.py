@@ -1,17 +1,18 @@
-from datetime import datetime, timedelta, timezone
+import asyncio
 import secrets
-from fastapi import Depends, HTTPException
-from jose import jwt, JWTError, ExpiredSignatureError
-from passlib.context import CryptContext
-from app.core.config import settings
-from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware
+from datetime import UTC, datetime, timedelta
+from typing import Any
+
+from fastapi import Depends, HTTPException, status
 from fastapi.requests import Request
-from fastapi import status
+from fastapi.responses import JSONResponse
+from jose import ExpiredSignatureError, JWTError, jwt
+from passlib.context import CryptContext
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+from starlette.middleware.base import BaseHTTPMiddleware
 
-import asyncio
+from app.core.config import settings
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -27,9 +28,9 @@ def verify_password(plain: str, hashed: str):
 
 
 def create_access_token(
-    data: dict, expires_delta: timedelta | None = None, now: datetime | None = None
+        data: dict, expires_delta: timedelta | None = None, now: datetime | None = None
 ):
-    now = now or datetime.now(timezone.utc)
+    now = now or datetime.now(UTC)
     expires_delta = expires_delta or timedelta(
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
     )
@@ -92,7 +93,6 @@ class TokenAuthMiddleware(BaseHTTPMiddleware):
             user_roles = payload.get("roles")
 
             if path in admin_paths:
-
                 if settings.ADMIN_ROLE_DENOMINATION not in user_roles:
                     return JSONResponse({"detail": "Access forbidden"}, status_code=401)
 
@@ -106,7 +106,6 @@ class TokenAuthMiddleware(BaseHTTPMiddleware):
 
 
 class DelayMiddleware(BaseHTTPMiddleware):
-
     def __init__(self, app, delay: float = 2.0):
         super().__init__(app)
         self.delay = delay
@@ -122,31 +121,42 @@ class DelayMiddleware(BaseHTTPMiddleware):
         return await call_next(request)
 
 
-def get_current_user(request: Request):
-    try:
-        token = request.cookies.get("access_token")
-        if not token:
-            raise HTTPException(status_code=401, detail="No token")
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+def get_current_user(request: Request) -> dict[str, Any]:
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="No token",
         )
-        user_id: str = payload.get("sub")
-        user_roles: str = payload.get("roles")
-        ref_household_id: str = payload.get("ref_household_id")
-        if user_id is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        return {
-            "id": user_id,
-            "roles": user_roles,
-            "ref_household_id": ref_household_id,
-        }
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+
+    try:
+        payload = jwt.decode(
+            token,
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM],
+        )
+    except JWTError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+        ) from exc
+
+    user_id = payload.get("sub")
+    if user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+        )
+
+    return {
+        "id": user_id,
+        "roles": payload.get("roles"),
+        "ref_household_id": payload.get("ref_household_id"),
+    }
+
 
 def require_roles(*roles: str):
-
     def role_checker(user=Depends(get_current_user)):
-
         if not any(role in user["roles"] for role in roles):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden"
@@ -155,6 +165,7 @@ def require_roles(*roles: str):
         return user
 
     return role_checker
+
 
 def is_secure_cookie() -> bool:
     return settings.ENVIRONMENT in {"online_dev", "online_prod"}
@@ -166,9 +177,9 @@ def clear_auth_cookies(response: JSONResponse) -> None:
 
 
 def set_auth_cookies(
-    response: JSONResponse,
-    access_token: str,
-    refresh_token: str,
+        response: JSONResponse,
+        access_token: str,
+        refresh_token: str,
 ) -> None:
     secure = is_secure_cookie()
 
@@ -178,7 +189,7 @@ def set_auth_cookies(
         path="/",
         httponly=True,
         secure=secure,
-        samesite="None" if secure else "lax",
+        samesite="none" if secure else "lax",
         max_age=60 * settings.ACCESS_TOKEN_EXPIRE_MINUTES,
     )
 
@@ -188,6 +199,6 @@ def set_auth_cookies(
         path="/",
         httponly=True,
         secure=secure,
-        samesite="None" if secure else "lax",
+        samesite="none" if secure else "lax",
         max_age=24 * 3600 * settings.REFRESH_TOKEN_EXPIRE_DAYS,
     )

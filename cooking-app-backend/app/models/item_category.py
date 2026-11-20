@@ -6,9 +6,9 @@ if TYPE_CHECKING:
     from app.models.shopping_item import ShoppingItem
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from sqlalchemy import String, TIMESTAMP
+from sqlalchemy import TIMESTAMP, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
@@ -25,13 +25,13 @@ class ItemCategory(Base):
         default=lambda: f"{prefix}_{uuid.uuid4()}",
     )
 
-    name : Mapped[str] = mapped_column(String(128), unique=True, nullable=False)
-    
-    # internal and stable identifier 
-    code : Mapped[str] = mapped_column(String(128), unique=True, nullable=False)
-    
+    name: Mapped[str] = mapped_column(String(128), unique=True, nullable=False)
+
+    # internal and stable identifier
+    code: Mapped[str] = mapped_column(String(128), unique=True, nullable=False)
+
     created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)
+        TIMESTAMP(timezone=True), default=lambda: datetime.now(UTC)
     )
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),

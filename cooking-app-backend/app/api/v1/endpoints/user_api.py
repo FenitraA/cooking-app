@@ -1,7 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.api.decorators import handle_endpoint_errors
-from app.core.security import get_current_user, require_roles, limiter
+from app.core.security import require_roles, limiter
 from app.crud.role_crud import role_crud_instance
 from app.schemas.app_user import (
     AppUserData,
@@ -70,7 +69,6 @@ async def password_reset(
     user = await app_user_crud_instance.change_password_with_verification(
         db,
         user_id=user_in.id,
-        old_password=user_in.old_password,
         new_password=user_in.new_password,
     )
     await db.commit()

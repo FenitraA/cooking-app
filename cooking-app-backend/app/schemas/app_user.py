@@ -8,9 +8,9 @@ class AppUserData(BaseModel):
     username: Annotated[
         str,
         StringConstraints(min_length=3, max_length=50, pattern=r"^[a-zA-Z0-9_.-]+$"),
-    ] = Field(example="john_doe")
+    ] = Field(examples=["john_doe"])
     password: Annotated[str, StringConstraints(min_length=8, max_length=128)] = Field(
-        example="123"
+        examples=["123"]
     )
     ref_household_id: str = Field(description="FK to household.id")
 
@@ -48,11 +48,12 @@ class AppUserPasswordChange(BaseModel):
     _reject_empty = field_validator("id", "old_password", "new_password")(
         reject_empty_string
     )
-    
+
+
 class AppUserPasswordReset(BaseModel):
-    username: str
+    id: str
     new_password: str
 
-    _reject_empty = field_validator("username", "new_password")(
+    _reject_empty = field_validator("id", "new_password")(
         reject_empty_string
     )

@@ -95,6 +95,22 @@ class AppUserCRUD:
         await db.refresh(user)
         return user
 
+    async def reset_password_for_admin(
+            self,
+            db: AsyncSession,
+            user_id: str,
+            new_password: str,
+    ) -> AppUser | None:
+        user = await self.get_user_by_id(db, user_id)
+        if not user:
+            return None
+
+        user.password = hash_password(new_password)
+
+        await db.flush()
+        await db.refresh(user)
+        return user
+
     async def change_username(
         self, db: AsyncSession, user_id: str, new_username: str
     ) -> AppUser | None:

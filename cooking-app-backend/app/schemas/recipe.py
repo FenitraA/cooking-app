@@ -6,15 +6,15 @@ from app.schemas.validator import reject_empty_string
 
 
 class RecipeData(BaseModel):
-    name: str = Field(example="Pumpkin soup", max_length=128,min_length=2)
+    name: str = Field(examples=["Pumpkin soup"], max_length=128, min_length=2)
     ref_household_id: str | None = Field(description="FK to household.id")
     description: str = Field(
-        example="-Cut pumpkin, add salt and pepper, cook for 30min ..."
+        examples=["-Cut pumpkin, add salt and pepper, cook for 30min ..."]
     )
 
-    estimated_time: int = Field(ge=0, example=60)  # minutes
+    estimated_time: int = Field(ge=0, examples=[60])  # minutes
     # Number of servings that can be cooked in parallel
-    parallel_cooking: int = Field(gt=0, example=2)
+    parallel_cooking: int = Field(gt=0, examples=[2])
 
     image_url: str | None = Field(description="CDN URL your frontend uses")
     storage_key: str | None = Field(
@@ -39,7 +39,7 @@ class RecipeIngredientBase(BaseModel):
     ref_ingredient_id: str | None = Field(description="FK to ingredient.id")
     ref_recipe_id: str = Field(description="FK to recipe.id")
     quantity: Decimal = Field(
-        gt=0, example=0.8
+        gt=0, examples=[0.8]
     )  # Quantity needed
 
     _reject_empty = field_validator("ref_ingredient_id")(reject_empty_string)
@@ -53,7 +53,7 @@ class RecipeIngredientRead(BaseModel):
     recipe_name: str
     ingredient_name: str
     ingredient_unit: str
-    estimated_cost_per_unit: Decimal = 0.0
+    estimated_cost_per_unit: Decimal = Decimal(0.0)
 
 
 class RecipeCreate(RecipeData):
@@ -77,7 +77,7 @@ class RecipeCreateResponse(BaseModel):
 
 class RecipeRead(BaseModel):
     recipe: RecipeBase
-    estimated_cost_price: Decimal = 0.0
+    estimated_cost_price: Decimal = Decimal(0.0)
     recipe_ingredients: list[RecipeIngredientRead] = []
 
 
@@ -93,12 +93,12 @@ class RecipeUpdateData(BaseModel):
 
     id: str
 
-    name: str | None = Field(default=None, max_length=128, example="Pumpkin soup")
+    name: str | None = Field(default=None, max_length=128, examples=["Pumpkin soup"])
     description: str | None = Field(
-        default=None, example="-Cut pumpkin, add salt and pepper, cook for 30min ..."
+        default=None, examples=["-Cut pumpkin, add salt and pepper, cook for 30min ..."]
     )
-    estimated_time: int | None = Field(default=None, ge=0, example=60)
-    parallel_cooking: int | None = Field(default=None, gt=0, example=2)
+    estimated_time: int | None = Field(default=None, ge=0, examples=[60])
+    parallel_cooking: int | None = Field(default=None, gt=0, examples=[2])
 
     recipe_ingredients: list[RecipeIngredientBase] | None = None
 

@@ -9,19 +9,20 @@ from app.schemas.validator import reject_empty_string
 
 
 class ShoppingItemData(BaseModel):
-    name: str = Field(example="Tomato", max_length=128,min_length=2)
+    name: str = Field(examples=["Tomato"], max_length=128, min_length=2)
     description: str | None = Field(
-        example="Shopping for groceries...",default=None
+        examples=["Shopping for groceries..."], default=None
     )
-    unit_price: Decimal = Field(gt=0, example=20000)
-    units_bought: Decimal = Field(gt=0, example=2)
+    unit_price: Decimal = Field(gt=0, examples=[20000])
+    units_bought: Decimal = Field(gt=0, examples=[2])
     ref_ingredient_id: str | None = Field(description="FK to shopping_item.id")
-    ref_shopping_id : str = Field(description="FK to shopping.id")
-    ref_item_category_id : str = Field(description="FK to item_category.id")
-    
-    _reject_empty = field_validator("ref_item_category_id","name")(
+    ref_shopping_id: str = Field(description="FK to shopping.id")
+    ref_item_category_id: str = Field(description="FK to item_category.id")
+
+    _reject_empty = field_validator("ref_item_category_id", "name")(
         reject_empty_string
     )
+
 
 class ShoppingItemBase(ShoppingItemData):
     id: str
@@ -32,12 +33,14 @@ class ShoppingItemBase(ShoppingItemData):
     class Config:
         from_attributes = True
 
+
 class ShoppingItemRead(BaseModel):
-    shopping_item : ShoppingItemBase
-    item_category : ItemCategoryBase
-    ingredient_infos : IngredientBase | None
-    ingredient_unit : str | None = None
+    shopping_item: ShoppingItemBase
+    item_category: ItemCategoryBase
+    ingredient_infos: IngredientBase | None
+    ingredient_unit: str | None = None
     shopping_date: datetime
+
 
 class ShoppingItemSearchResult(BaseModel):
     items: list[ShoppingItemRead]
@@ -45,5 +48,6 @@ class ShoppingItemSearchResult(BaseModel):
     offset: int
     limit: int
 
+
 class DeleteShoppingItemData(BaseModel):
-    shopping_item_id : str
+    shopping_item_id: str

@@ -8,7 +8,7 @@ from app.schemas.validator import reject_empty_string
 
 
 class IngredientData(BaseModel):
-    name: str = Field(example="Tomato", max_length=128,min_length=2)
+    name: str = Field(examples=["Tomato"], max_length=128, min_length=2)
     unit: str | None = Field(
         default=None,
         description="Used for selection that needs the unit without complexifying the query",
@@ -17,7 +17,7 @@ class IngredientData(BaseModel):
     ref_ingredient_type_id: str = Field(description="FK to ingredient_type.id")
 
     # Ariary
-    estimated_price: Decimal = Field(gt=0, example=20000)
+    estimated_price: Decimal = Field(gt=0, examples=[20000])
     image_url: str | None = Field(description="CDN URL your frontend uses")
     storage_key: str | None = Field(
         description="Cloudinary public_id OR S3/R2 object_key (super useful for deletes)"
@@ -54,8 +54,8 @@ class IngredientRead(BaseModel):
     ingredient: IngredientBase
     ingredient_unit: IngredientUnitBase
     ingredient_type: IngredientTypeBase
-    quantity_left: Decimal = 0.0
-    group_name : str
+    quantity_left: Decimal = Decimal(0.0)
+    group_name: str
 
 
 class IngredientSearchResult(BaseModel):
@@ -77,7 +77,7 @@ class IngredientUpdateData(BaseModel):
     ref_ingredient_type_id: str | None = Field(
         default=None, description="FK to ingredient_type.id"
     )
-    estimated_price: Decimal | None = Field(default=None, gt=0, example=20000)
+    estimated_price: Decimal | None = Field(default=None, gt=0, examples=[20000])
 
     _reject_empty = field_validator(
         "name", "ref_ingredient_unit_id", "ref_ingredient_type_id"

@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, Field, field_validator
@@ -9,10 +9,10 @@ from app.schemas.validator import reject_empty_string
 
 
 class ItemToBuyData(BaseModel):
-    name: str = Field(example="Tomato", max_length=128,min_length=2)
-    description: str | None = Field(example="Shopping for groceries...", default=None)
-    estimated_unit_price: Decimal = Field(gt=0, example=20000)
-    units_to_buy: Decimal = Field(gt=0, example=2)
+    name: str = Field(examples=["Tomato"], max_length=128, min_length=2)
+    description: str | None = Field(examples=["Shopping for groceries..."], default=None)
+    estimated_unit_price: Decimal = Field(gt=0, examples=[20000])
+    units_to_buy: Decimal = Field(gt=0, examples=[2])
     ref_ingredient_id: str | None = Field(description="FK to shopping_item.id")
     ref_shopping_item_id: str | None = Field(description="FK to shopping_item.id")
     ref_item_category_id: str = Field(description="FK to item_category.id")
@@ -37,7 +37,7 @@ class ItemToBuyRead(BaseModel):
     item_to_buy: ItemToBuyBase
     item_category: ItemCategoryBase
     ingredient_infos: IngredientBase | None
-    ingredient_unit : str | None = None
+    ingredient_unit: str | None = None
 
 
 class ItemToBuySearchResult(BaseModel):
@@ -45,18 +45,21 @@ class ItemToBuySearchResult(BaseModel):
     total: int
     offset: int
     limit: int
-    
+
+
 class ChangeStateToBoughtData(BaseModel):
-    item_to_buy_id : str
+    item_to_buy_id: str
     shopping_item_id: str
-    
+
+
 class DeleteItemToBuyData(BaseModel):
-    item_to_buy_id : str
-    
+    item_to_buy_id: str
+
+
 class ItemToBuyUpdateData(BaseModel):
     """Schema used to update an item to buy."""
 
     id: str
 
-    estimated_unit_price: Decimal | None  = Field(gt=0, example=20000)
-    units_to_buy: Decimal | None  = Field(gt=0, example=2)
+    estimated_unit_price: Decimal | None = Field(gt=0, examples=[20000])
+    units_to_buy: Decimal | None = Field(gt=0, examples=[2])

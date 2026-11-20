@@ -132,10 +132,10 @@ export default function AccountSettingsForm() {
       </div>
 
       {success && (
-        <div className="rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
-          {success}
-        </div>
-      )}
+            <div className="rounded-lg bg-white/10 px-3 py-2 text-sm text-green-500">
+              {success}
+            </div>
+          )}
       {error && (
         <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
           {error}

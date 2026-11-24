@@ -1,3 +1,4 @@
+
 import Redis from "ioredis";
 import { logger } from "@/lib/logger";
 
@@ -13,19 +14,37 @@ export function getRedis(): Redis {
   }
 
   redis = new Redis(redisUrl, {
-    lazyConnect: true,
     connectTimeout: 5_000,
     maxRetriesPerRequest: 1,
-    enableOfflineQueue: false,
+
+    // Let ioredis queue commands until the connection is ready.
+    // enableOfflineQueue defaults to true.
+
     retryStrategy(times) {
       return Math.min(times * 200, 2_000);
     },
+  });
+
+  redis.on("connect", () => {
+    logger.info("Redis connection established");
+  });
+
+  redis.on("ready", () => {
+    logger.info("Redis is ready to accept commands");
   });
 
   redis.on("error", (error) => {
     logger.error("Redis connection error", {
       message: error.message,
     });
+  });
+
+  redis.on("close", () => {
+    logger.warn("Redis connection closed");
+  });
+
+  redis.on("reconnecting", (delay) => {
+    logger.warn("Redis reconnecting", { delay });
   });
 
   return redis;

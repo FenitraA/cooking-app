@@ -1,4 +1,5 @@
 import { UnauthorizedError } from "@/lib/errors";
+import { logger } from "@/lib/logger";
 import { API_URL } from "@/lib/variables";
 import { NextResponse } from "next/server";
 
@@ -9,11 +10,15 @@ type RefreshResult = {
 
 type CachedRefresh = RefreshResult & { expiresAt: number };
 
+// Short-lived cache so requests arriving milliseconds after a refresh
+// reuse the new tokens instead of triggering another /auth/refresh call.
 const recentRefreshCache = new Map<string, CachedRefresh>();
-const RECENT_TTL_MS = 3_000; // 2–5 seconds is usually enough
+const RECENT_TTL_MS = 3_000;
+const MAX_CACHE_ENTRIES = 1_000;
 
+// In-flight deduplication map: concurrent 401s for the same user await
+// the exact same refresh Promise instead of racing each other.
 const refreshLocks = new Map<string, Promise<RefreshResult>>();
-// value is Promise<cookieHeader> (merged cookies) to use for retry
 
 export const runtime = "nodejs";
 
@@ -34,130 +39,159 @@ export async function PATCH(req: Request) {
 }
 
 async function proxy(request: Request) {
+  // 1. Build the upstream URL by stripping "/proxy" and keeping the rest of the path + query string.
   const url = new URL(request.url);
-  const idPath = url.pathname.replace("/proxy", "");
+  const upstreamPath = url.pathname.replace(/^\/proxy/, "");
+  const target = `${API_URL}${upstreamPath}${url.search}`;
+
+  // 2. Buffer the request body once so it can be reused if we need to retry after a 401.
+  // (A raw Request stream can only be read once.)
+  const hasBody = ["POST", "PUT", "PATCH", "DELETE"].includes(request.method);
+  const bufferedBody = hasBody ? await request.arrayBuffer() : undefined;
+
   const cookieHeader = request.headers.get("cookie") ?? "";
-
-  const path = idPath.replace(/\/\d+/g, "");
-
-  const target = `${API_URL}${path}${url.search}`;
-
-  const bodyUsed = ["POST", "PUT", "PATCH", "DELETE"].includes(request.method);
-  const bufferedBody = bodyUsed ? await request.arrayBuffer() : undefined;
-
   const contentType = request.headers.get("content-type");
-  const headers: Record<string, string> = { cookie: cookieHeader };
-  if (contentType) headers["content-type"] = contentType;
-  headers["accept-encoding"] = "identity";
-  
-  console.log(target)
-  
-  // 1) First attempt
-  let res = await fetch(target, {
-    method: request.method,
-    headers: headers,
-    body: bufferedBody,
-    // @ts-expect-error - 'duplex' is required when sending a body stream in Node.js fetch
-    duplex: bodyUsed ? "half" : undefined,
-  });
 
-  // If not unauthorized → return immediately (but still forward any Set-Cookie)
+  // 3. First attempt: forward the request to the backend as-is.
+  let res: Response;
+  try {
+    res = await fetch(target, {
+      method: request.method,
+      headers: buildUpstreamHeaders(cookieHeader, contentType),
+      body: bufferedBody,
+    });
+  } catch (error) {
+    logger.error("Upstream request failed", { target, error });
+    return NextResponse.json({ detail: "Bad Gateway" }, { status: 502 });
+  }
+
+  // Happy path: if the request succeeded (or failed with anything other than 401),
+  // forward the response straight back to the browser.
   if (res.status !== 401) {
     return forward(res);
   }
 
-  // 2) Refresh (single-flight) + recent cache
-
+  // 4. Token refresh flow (triggered only on 401 Unauthorized)
   const lockKey = getRefreshLockKey(cookieHeader);
 
-  // if we refreshed in the last few seconds, reuse it
+  // 4a. Fast path: check if we already refreshed this session in the last 3 seconds.
   const recent = getRecent(lockKey);
   if (recent) {
-    const refreshedHeaders: Record<string, string> = {
-      cookie: recent.cookieHeader,
-    };
-    refreshedHeaders["accept-encoding"] = "identity";
-    if (contentType) refreshedHeaders["content-type"] = contentType;
-
-    res = await fetch(target, {
+    logger.warn("Refresh reused from cache", { endpoint: url.pathname });
+    return retryWithRefreshedCookies({
+      target,
       method: request.method,
-      headers: refreshedHeaders,
-      body: bufferedBody,
-      // @ts-expect-error - 'duplex' is required when sending a body stream in Node.js fetch
-      duplex: bodyUsed ? "half" : undefined,
+      contentType,
+      bufferedBody,
+      refreshed: recent,
     });
-
-    const response = forward(res);
-    for (const sc of recent.setCookies)
-      response.headers.append("set-cookie", sc);
-    return response;
   }
 
+  // 4b. Single-flight lock: join an in-progress refresh if one exists, or start a new one.
   let refreshPromise = refreshLocks.get(lockKey);
 
-  if (!refreshPromise) {
-    refreshPromise = (async () => {
-      const refreshRes = await fetch(
-        `${API_URL}/auth/refresh`,
-        {
-          method: "POST",
-          headers: { cookie: cookieHeader },
-          cache: "no-store",
-        },
-      );
+  if (refreshPromise) {
+    logger.info("Joined in-flight refresh", {
+      method: request.method,
+      endpoint: url.pathname,
+    });
+  } else {
+    logger.info("Initiating token refresh", {
+      method: request.method,
+      endpoint: url.pathname,
+    });
 
-      if (!refreshRes.ok) throw new UnauthorizedError();
-
-      const refreshSetCookies = refreshRes.headers.getSetCookie?.() ?? [];
-      if (refreshSetCookies.length === 0) throw new UnauthorizedError();
-
-      const mergedCookieHeader = mergeCookieHeaders(
-        cookieHeader,
-        refreshSetCookies,
-      );
-
-      const result = {
-        cookieHeader: mergedCookieHeader,
-        setCookies: refreshSetCookies,
-      };
-
-      // cache for a short window to cover the browser gap
-      setRecent(lockKey, result);
-
-      return result;
-    })();
-
+    refreshPromise = executeTokenRefresh(lockKey, cookieHeader);
     refreshLocks.set(lockKey, refreshPromise);
+
+    // Always clean up the lock once the refresh settles (whether it succeeds or fails).
     refreshPromise.finally(() => refreshLocks.delete(lockKey));
   }
-  let refreshed;
+
+  // 5. Wait for the refresh result (either ours or the shared one).
+  let refreshed: RefreshResult;
   try {
     refreshed = await refreshPromise;
   } catch {
+    logger.error("Token refresh failed", { endpoint: url.pathname });
     return NextResponse.json({ detail: "Unauthorized" }, { status: 401 });
   }
 
-  const refreshedContentType = request.headers.get("content-type");
-  const refreshedHeaders: Record<string, string> = {
-    cookie: refreshed.cookieHeader,
-  };
-  refreshedHeaders["accept-encoding"] = "identity";
-  if (refreshedContentType)
-    refreshedHeaders["content-type"] = refreshedContentType;
-
-  // 3) Retry original request with refreshed cookies
-  res = await fetch(target, {
+  // 6. Retry the original request using the newly refreshed cookies,
+  // and send those Set-Cookie headers back to the browser.
+  return retryWithRefreshedCookies({
+    target,
     method: request.method,
-    headers: refreshedHeaders,
-    body: bufferedBody,
-    // @ts-expect-error - 'duplex' is required when sending a body stream in Node.js fetch
-    duplex: bodyUsed ? "half" : undefined,
+    contentType,
+    bufferedBody,
+    refreshed,
+  });
+}
+
+/**
+ * Calls the backend's /auth/refresh endpoint, merges new cookies with existing ones,
+ * and caches the result briefly to absorb concurrent requests.
+ */
+async function executeTokenRefresh(
+  lockKey: string,
+  cookieHeader: string,
+): Promise<RefreshResult> {
+  const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
+    method: "POST",
+    headers: { cookie: cookieHeader },
+    cache: "no-store",
   });
 
-  // 4) Return response, forwarding cookies to browser
-  const response = forward(res);
+  if (!refreshRes.ok) {
+    throw new UnauthorizedError();
+  }
 
-  //  forward refresh cookies to browser so it stores them
+  const refreshSetCookies = refreshRes.headers.getSetCookie?.() ?? [];
+  if (refreshSetCookies.length === 0) {
+    throw new UnauthorizedError();
+  }
+
+  const result: RefreshResult = {
+    cookieHeader: mergeCookieHeaders(cookieHeader, refreshSetCookies),
+    setCookies: refreshSetCookies,
+  };
+
+  setRecent(lockKey, result);
+  return result;
+}
+
+/**
+ * Re-sends the original request with updated cookies and attaches the refresh
+ * Set-Cookie headers so the browser updates its stored cookies.
+ */
+async function retryWithRefreshedCookies({
+  target,
+  method,
+  contentType,
+  bufferedBody,
+  refreshed,
+}: {
+  target: string;
+  method: string;
+  contentType: string | null;
+  bufferedBody?: ArrayBuffer;
+  refreshed: RefreshResult;
+}) {
+  let retryRes: Response;
+  try {
+    retryRes = await fetch(target, {
+      method,
+      headers: buildUpstreamHeaders(refreshed.cookieHeader, contentType),
+      body: bufferedBody,
+    });
+  } catch (error) {
+    logger.error("Upstream retry failed", { target, error });
+    return NextResponse.json({ detail: "Bad Gateway" }, { status: 502 });
+  }
+
+  const response = forward(retryRes);
+
+  // Forward the refreshed cookies to the browser so subsequent requests use them.
   for (const sc of refreshed.setCookies) {
     response.headers.append("set-cookie", sc);
   }
@@ -165,10 +199,32 @@ async function proxy(request: Request) {
   return response;
 }
 
+/**
+ * Builds clean headers for the upstream backend request.
+ * Forces "identity" encoding so Node doesn't decompress a response while keeping
+ * the original Content-Encoding / Content-Length headers.
+ */
+function buildUpstreamHeaders(
+  cookieHeader: string,
+  contentType: string | null,
+): Record<string, string> {
+  const headers: Record<string, string> = {
+    cookie: cookieHeader,
+    "accept-encoding": "identity",
+  };
+  if (contentType) {
+    headers["content-type"] = contentType;
+  }
+  return headers;
+}
+
+/**
+ * Converts an upstream Fetch Response into a NextResponse while stripping
+ * hop-by-hop and encoding headers that can break proxying.
+ */
 function forward(res: Response) {
   const responseHeaders = new Headers(res.headers);
 
-  // Strip headers that can cause decoding/length mismatches when proxying
   [
     "content-encoding",
     "content-length",
@@ -180,63 +236,89 @@ function forward(res: Response) {
     "te",
     "trailers",
     "upgrade",
+    "set-cookie", // Removed here and re-appended cleanly below
   ].forEach((h) => responseHeaders.delete(h));
-
-  // We'll re-append set-cookie manually (and avoid duplicates)
-  responseHeaders.delete("set-cookie");
 
   const nextRes = new NextResponse(res.body, {
     status: res.status,
     headers: responseHeaders,
   });
 
-  // Forward any upstream set-cookie (may be multiple)
+  // Preserve multiple Set-Cookie headers without merging them into a comma-separated string.
   const setCookies = res.headers.getSetCookie?.() ?? [];
-  for (const sc of setCookies) nextRes.headers.append("set-cookie", sc);
+  for (const sc of setCookies) {
+    nextRes.headers.append("set-cookie", sc);
+  }
 
   return nextRes;
 }
 
+/**
+ * Merges incoming browser cookies with new Set-Cookie headers from /auth/refresh
+ * so the retry request sends the updated tokens.
+ */
 function mergeCookieHeaders(original: string, setCookies: string[]) {
   const map = new Map<string, string>();
 
-  // parse "a=1; b=2"
+  // Parse existing "key=value; key2=value2" header
   for (const part of original.split(";")) {
     const [k, ...rest] = part.trim().split("=");
     if (!k || rest.length === 0) continue;
     map.set(k, rest.join("="));
   }
 
-  // overwrite with refreshed Set-Cookie values
+  // Apply updates (or deletions) from Set-Cookie headers
   for (const sc of setCookies) {
-    const firstPart = sc.split(";")[0]; // name=value
-    const [k, ...rest] = firstPart.trim().split("=");
+    const segments = sc.split(";").map((s) => s.trim());
+    const [k, ...rest] = segments[0].split("=");
     if (!k || rest.length === 0) continue;
-    map.set(k, rest.join("="));
+
+    // If the server explicitly expired/deleted the cookie, remove it from the retry header
+    const isDeleted = segments.some(
+      (attr) =>
+        attr.toLowerCase() === "max-age=0" ||
+        attr.toLowerCase().startsWith("expires=thu, 01 jan 1970"),
+    );
+
+    if (isDeleted) {
+      map.delete(k);
+    } else {
+      map.set(k, rest.join("="));
+    }
   }
 
-  // rebuild
   return Array.from(map.entries())
     .map(([k, v]) => `${k}=${v}`)
     .join("; ");
 }
 
+/**
+ * Derives a lock/cache key per user session based on their refresh cookie.
+ */
 function getRefreshLockKey(cookieHeader: string) {
-  // simplest: use refresh cookie value as the key (if present)
   const match = cookieHeader.match(/(?:^|;\s*)refresh=([^;]+)/);
   return match?.[1] ? `refresh:${match[1]}` : `anon:${cookieHeader}`;
 }
+
 function getRecent(lockKey: string): RefreshResult | null {
   const cached = recentRefreshCache.get(lockKey);
   if (!cached) return null;
+
   if (Date.now() > cached.expiresAt) {
     recentRefreshCache.delete(lockKey);
     return null;
   }
+
   return { cookieHeader: cached.cookieHeader, setCookies: cached.setCookies };
 }
 
 function setRecent(lockKey: string, value: RefreshResult) {
+  // Prevent unbounded memory growth if many distinct keys hit the cache
+  if (recentRefreshCache.size >= MAX_CACHE_ENTRIES) {
+    const oldestKey = recentRefreshCache.keys().next().value;
+    if (oldestKey) recentRefreshCache.delete(oldestKey);
+  }
+
   recentRefreshCache.set(lockKey, {
     ...value,
     expiresAt: Date.now() + RECENT_TTL_MS,

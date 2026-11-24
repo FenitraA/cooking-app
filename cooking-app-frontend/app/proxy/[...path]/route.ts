@@ -2,7 +2,9 @@ import { UnauthorizedError } from "@/lib/errors";
 import { logger } from "@/lib/logger";
 import { API_URL } from "@/lib/variables";
 import { NextResponse } from "next/server";
+import { randomUUID, createHash } from "node:crypto";
 
+const INSTANCE_ID = randomUUID();
 type RefreshResult = {
   cookieHeader: string;
   setCookies: string[];
@@ -73,6 +75,16 @@ async function proxy(request: Request) {
 
   // 4. Token refresh flow (triggered only on 401 Unauthorized)
   const lockKey = getRefreshLockKey(cookieHeader);
+  const refreshFingerprint = createHash("sha256")
+    .update(lockKey)
+    .digest("hex")
+    .slice(0, 10);
+
+  logger.info("Refresh coordination diagnostic", {
+    instanceId: INSTANCE_ID,
+    refreshFingerprint,
+    endpoint: url.pathname,
+  });
 
   // 4a. Fast path: check if we already refreshed this session in the last 3 seconds.
   const recent = getRecent(lockKey);

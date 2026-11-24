@@ -1,4 +1,3 @@
-
 import { UnauthorizedError } from "@/lib/errors";
 import { logger } from "@/lib/logger";
 import { API_URL } from "@/lib/variables";
@@ -38,13 +37,9 @@ async function proxy(request: Request) {
   const target = `${API_URL}${upstreamPath}${url.search}`;
 
   // 2. Buffer the request body once for potential retry.
-  const hasBody = ["POST", "PUT", "PATCH", "DELETE"].includes(
-    request.method,
-  );
+  const hasBody = ["POST", "PUT", "PATCH", "DELETE"].includes(request.method);
 
-  const bufferedBody = hasBody
-    ? await request.arrayBuffer()
-    : undefined;
+  const bufferedBody = hasBody ? await request.arrayBuffer() : undefined;
 
   const cookieHeader = request.headers.get("cookie") ?? "";
   const contentType = request.headers.get("content-type");
@@ -61,10 +56,7 @@ async function proxy(request: Request) {
   } catch (error) {
     logger.error("Upstream request failed", { target, error });
 
-    return NextResponse.json(
-      { detail: "Bad Gateway" },
-      { status: 502 },
-    );
+    return NextResponse.json({ detail: "Bad Gateway" }, { status: 502 });
   }
 
   // 4. Happy path: no refresh required.
@@ -88,10 +80,7 @@ async function proxy(request: Request) {
         method: request.method,
       });
 
-      return NextResponse.json(
-        { detail: "Unauthorized" },
-        { status: 401 },
-      );
+      return NextResponse.json({ detail: "Unauthorized" }, { status: 401 });
     }
 
     if (error instanceof RefreshWaitTimeoutError) {
@@ -138,19 +127,21 @@ async function proxy(request: Request) {
 async function executeTokenRefresh(
   cookieHeader: string,
 ): Promise<RefreshResult> {
-  const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
+  const endpoint = `${API_URL}/auth/refresh`;
+  const refreshRes = await fetch(endpoint, {
     method: "POST",
     headers: { cookie: cookieHeader },
     cache: "no-store",
     signal: AbortSignal.timeout(10_000),
   });
-
+  logger.info("Execution of the execute token refresher", {
+    endpoint,
+  });
   if (!refreshRes.ok) {
     throw new UnauthorizedError();
   }
 
-  const refreshSetCookies =
-    refreshRes.headers.getSetCookie?.() ?? [];
+  const refreshSetCookies = refreshRes.headers.getSetCookie?.() ?? [];
 
   if (refreshSetCookies.length === 0) {
     throw new UnauthorizedError();
@@ -159,10 +150,7 @@ async function executeTokenRefresh(
   logger.info("Backend token refresh successful");
 
   return {
-    cookieHeader: mergeCookieHeaders(
-      cookieHeader,
-      refreshSetCookies,
-    ),
+    cookieHeader: mergeCookieHeaders(cookieHeader, refreshSetCookies),
     setCookies: refreshSetCookies,
   };
 }
@@ -189,19 +177,13 @@ async function retryWithRefreshedCookies({
   try {
     retryRes = await fetch(target, {
       method,
-      headers: buildUpstreamHeaders(
-        refreshed.cookieHeader,
-        contentType,
-      ),
+      headers: buildUpstreamHeaders(refreshed.cookieHeader, contentType),
       body: bufferedBody,
     });
   } catch (error) {
     logger.error("Upstream retry failed", { target, error });
 
-    return NextResponse.json(
-      { detail: "Bad Gateway" },
-      { status: 502 },
-    );
+    return NextResponse.json({ detail: "Bad Gateway" }, { status: 502 });
   }
 
   const response = forward(retryRes);
@@ -273,10 +255,7 @@ function forward(res: Response) {
  * Merges original browser cookies with updated Set-Cookie headers
  * received from the backend.
  */
-function mergeCookieHeaders(
-  original: string,
-  setCookies: string[],
-) {
+function mergeCookieHeaders(original: string, setCookies: string[]) {
   const map = new Map<string, string>();
 
   // Parse existing cookies.
@@ -298,9 +277,7 @@ function mergeCookieHeaders(
     const isDeleted = segments.some(
       (attr) =>
         attr.toLowerCase() === "max-age=0" ||
-        attr.toLowerCase().startsWith(
-          "expires=thu, 01 jan 1970",
-        ),
+        attr.toLowerCase().startsWith("expires=thu, 01 jan 1970"),
     );
 
     if (isDeleted) {

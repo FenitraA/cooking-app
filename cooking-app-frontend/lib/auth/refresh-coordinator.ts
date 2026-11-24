@@ -37,16 +37,17 @@ function sleep(ms: number) {
 }
 
 function getRefreshFingerprint(cookieHeader: string): string {
-  const match = cookieHeader.match(/(?:^|;\s*)refresh=([^;]+)/);
+  const match = cookieHeader.match(/(?:^|;\s*)refresh_token=([^;]+)/);
 
   if (!match?.[1]) {
     throw new UnauthorizedError();
   }
 
-  // Never use the raw refresh token as a Redis key.
-  return createHash("sha256")
+  const fingerprint = createHash("sha256")
     .update(match[1])
     .digest("hex");
+
+  return fingerprint;
 }
 
 function getRedisKeys(fingerprint: string) {
@@ -96,6 +97,11 @@ export async function coordinateRefresh({
   const redis = getRedis();
 
   const fingerprint = getRefreshFingerprint(cookieHeader);
+
+  logger.info("Refresh fingerprint extracted", {
+    endpoint,
+    fingerprint: fingerprint.slice(0, 10),
+  });
   const { lock: lockKey, result: resultKey } =
     getRedisKeys(fingerprint);
 
@@ -142,6 +148,10 @@ export async function coordinateRefresh({
         }
 
         // 3. We own the lock. Perform the actual refresh.
+        logger.info("Executing actual backend refresh request", {
+  endpoint,
+});
+
         const refreshed = await executeRefresh();
 
         // 4. Publish the result BEFORE releasing the lock.

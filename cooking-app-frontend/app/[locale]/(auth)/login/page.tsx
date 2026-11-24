@@ -57,14 +57,14 @@ export default function LoginPage() {
 
       if (!res.ok) {
         const msg = await safeReadError(res);
-        throw new Error(msg || translations("errors.quantityLeft"));
+        throw new Error(msg || translations("errors.loginFailed"));
       }
 
       router.push("/");
     } catch (error: unknown) {
       console.error("Login error:", error);
       setErrors({
-        general: translations("errors.quantityLeft"),
+        general: translations("errors.loginFailed"),
       });
     } finally {
       setIsSubmitting(false);

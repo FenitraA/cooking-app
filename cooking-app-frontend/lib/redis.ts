@@ -43,7 +43,7 @@ export function getRedis(): Redis {
     logger.warn("Redis connection closed");
   });
 
-  redis.on("reconnecting", (delay) => {
+  redis.on("reconnecting", (delay : number) => {
     logger.warn("Redis reconnecting", { delay });
   });
 

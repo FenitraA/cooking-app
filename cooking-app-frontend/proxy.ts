@@ -10,7 +10,7 @@ export default function middleware(req: NextRequest) {
   // Redirect the root to a default page under the default locale
   if (pathname === "/") {
     return NextResponse.redirect(
-      new URL(`/${routing.defaultLocale}/planning`, req.url)
+      new URL(`/${routing.defaultLocale}/shopping/to-buy`, req.url)
     );
   }
 

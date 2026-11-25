@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     CLOUDINARY_API_SECRET: str
 
     CORS_ORIGINS: list[str]
+    CORS_ORIGIN_REGEX: str
 
     model_config = ConfigDict(env_file=".env")
 

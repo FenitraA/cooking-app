@@ -28,7 +28,7 @@ def verify_password(plain: str, hashed: str):
 
 
 def create_access_token(
-        data: dict, expires_delta: timedelta | None = None, now: datetime | None = None
+    data: dict, expires_delta: timedelta | None = None, now: datetime | None = None
 ):
     now = now or datetime.now(UTC)
     expires_delta = expires_delta or timedelta(
@@ -177,9 +177,9 @@ def clear_auth_cookies(response: JSONResponse) -> None:
 
 
 def set_auth_cookies(
-        response: JSONResponse,
-        access_token: str,
-        refresh_token: str,
+    response: JSONResponse,
+    access_token: str,
+    refresh_token: str,
 ) -> None:
     secure = is_secure_cookie()
 

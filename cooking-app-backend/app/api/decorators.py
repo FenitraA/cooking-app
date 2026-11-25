@@ -36,7 +36,7 @@ def handle_endpoint_errors():
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail={
                         "message": "We couldn't complete your request right now. "
-                                   "Please try again later.",
+                        "Please try again later.",
                         "error_id": error_id,
                     },
                 ) from sql_exc
@@ -54,7 +54,7 @@ def handle_endpoint_errors():
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail={
                         "message": "Something went wrong on our side. "
-                                   "Please try again later.",
+                        "Please try again later.",
                         "error_id": error_id,
                     },
                 ) from exc

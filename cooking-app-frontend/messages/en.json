@@ -9,6 +9,7 @@
     "totalCost": "Total cost",
     "itemsSelected": "item(s) selected",
     "actions": {
+      "installApp": "Install app",
       "selectAll": "Select all",
       "deselectAll": "Deselect all",
       "save": "Save",

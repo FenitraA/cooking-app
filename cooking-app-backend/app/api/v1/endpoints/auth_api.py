@@ -32,9 +32,9 @@ router = APIRouter(tags=["Auth"])
 @limiter.limit("5/minute")
 # @handle_endpoint_errors()
 async def login(
-    request: Request,
-    data: AppUserLogin,
-    db: AsyncSession = Depends(get_db),
+        request: Request,
+        data: AppUserLogin,
+        db: AsyncSession = Depends(get_db),
 ):
     now = datetime.now(UTC)
 
@@ -62,11 +62,11 @@ async def login(
         now=now,
     )
 
-    refresh_token = create_refresh_token()
+    new_refresh_token = create_refresh_token()
 
     await refresh_token_crud_instance.create(
         db,
-        token_hash=RefreshToken.hash_refresh(refresh_token),
+        token_hash=RefreshToken.hash_refresh(new_refresh_token),
         user_id=user.id,
         created_at=now,
         expire_at=now + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS),
@@ -86,7 +86,7 @@ async def login(
     set_auth_cookies(
         response,
         access_token,
-        refresh_token,
+        new_refresh_token,
     )
 
     return response
@@ -96,8 +96,8 @@ async def login(
 @limiter.limit("5/minute")
 # @handle_endpoint_errors()
 async def refresh_token(
-    request: Request,
-    db: AsyncSession = Depends(get_db),
+        request: Request,
+        db: AsyncSession = Depends(get_db),
 ):
     refresh_token_value = request.cookies.get("refresh_token")
     if not refresh_token_value:
@@ -153,10 +153,19 @@ async def refresh_token(
         clear_auth_cookies(response)
         return response
 
-    except (RefreshTokenInvalid, RefreshTokenNotFound):
+    except RefreshTokenInvalid:
         await db.rollback()
         response = JSONResponse(
-            {"detail": "Invalid refresh token"},
+            {"detail": "Refresh token is invalid or expired. Please log in again."},
+            status_code=401,
+        )
+        clear_auth_cookies(response)
+        return response
+
+    except RefreshTokenNotFound:
+        await db.rollback()
+        response = JSONResponse(
+            {"detail": "Refresh token is missing. Please log in again."},
             status_code=401,
         )
         clear_auth_cookies(response)
@@ -170,8 +179,8 @@ async def refresh_token(
 @limiter.limit("5/minute")
 # @handle_endpoint_errors()
 async def logout(
-    request: Request,
-    db: AsyncSession = Depends(get_db),
+        request: Request,
+        db: AsyncSession = Depends(get_db),
 ):
     response = JSONResponse({"message": "Logged out"})
 
@@ -187,9 +196,9 @@ async def logout(
 
         await db.commit()
     except (
-        RefreshTokenNotFound,
-        RefreshTokenInvalid,
-        RefreshTokenRevoked,
+            RefreshTokenNotFound,
+            RefreshTokenInvalid,
+            RefreshTokenRevoked,
     ):
         await db.rollback()
     return response
@@ -199,9 +208,9 @@ async def logout(
 @limiter.limit("5/minute")
 # @handle_endpoint_errors()
 async def logout_all(
-    request: Request,
-    db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user),
+        request: Request,
+        db: AsyncSession = Depends(get_db),
+        current_user=Depends(get_current_user),
 ):
     await refresh_token_crud_instance.revoke_all_for_user(
         db,
@@ -217,9 +226,9 @@ async def logout_all(
 @limiter.limit("50/minute")
 # @handle_endpoint_errors()
 async def me(
-    request: Request,
-    db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user),
+        request: Request,
+        db: AsyncSession = Depends(get_db),
+        current_user=Depends(get_current_user),
 ):
     full_user = await app_user_crud_instance.get_user_by_id(db, id=current_user["id"])
     return {"id": full_user.id, "username": full_user.username}

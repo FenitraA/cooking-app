@@ -8,6 +8,7 @@ import { ChevronDown, Globe, LogOut, Menu, Settings, User } from "lucide-react";
 import { BASE_URL, LOCALES } from "@/lib/variables";
 import { useUser } from "./dashboardShell";
 import { fetchHealth } from "@/lib/users/api";
+import { InstallPrompt } from "@/components/pwa/install-prompt";
 
 export default function Bannert({
   toggleMobileMenu,
@@ -182,7 +183,7 @@ export default function Bannert({
                 className="
               flex items-center px-4 py-3 text-sm
               text-white/90 hover:bg-white/10
-              transition-colors
+              transition-colors cursor-pointer
             "
               >
                 <Settings size={18} className="mr-3" />
@@ -201,6 +202,7 @@ export default function Bannert({
                 <LogOut size={18} className="mr-3" />
                 {gt("actions.logout")}
               </button>
+              <InstallPrompt />
             </div>
           )}
         </div>

@@ -1,4 +1,3 @@
-
 import { createHash, randomUUID } from "node:crypto";
 
 import { getRedis } from "@/lib/redis";
@@ -43,9 +42,7 @@ function getRefreshFingerprint(cookieHeader: string): string {
     throw new UnauthorizedError();
   }
 
-  const fingerprint = createHash("sha256")
-    .update(match[1])
-    .digest("hex");
+  const fingerprint = createHash("sha256").update(match[1]).digest("hex");
 
   return fingerprint;
 }
@@ -65,9 +62,7 @@ function parseRefreshResult(value: string): RefreshResult {
   if (
     typeof parsed?.cookieHeader !== "string" ||
     !Array.isArray(parsed?.setCookies) ||
-    !parsed.setCookies.every(
-      (cookie: unknown) => typeof cookie === "string",
-    )
+    !parsed.setCookies.every((cookie: unknown) => typeof cookie === "string")
   ) {
     throw new Error("Invalid cached refresh result");
   }
@@ -98,22 +93,12 @@ export async function coordinateRefresh({
 
   const fingerprint = getRefreshFingerprint(cookieHeader);
 
-  logger.info("Refresh fingerprint extracted", {
-    endpoint,
-    fingerprint: fingerprint.slice(0, 10),
-  });
-  const { lock: lockKey, result: resultKey } =
-    getRedisKeys(fingerprint);
+  const { lock: lockKey, result: resultKey } = getRedisKeys(fingerprint);
 
   // 1. Fast path: an earlier instance already completed the refresh.
   const cached = await getCachedResult(resultKey);
 
   if (cached) {
-    logger.info("Refresh reused from Redis cache", {
-      endpoint,
-      fingerprint: fingerprint.slice(0, 10),
-    });
-
     return cached;
   }
 
@@ -124,20 +109,9 @@ export async function coordinateRefresh({
   while (Date.now() < deadline) {
     const ownerId = randomUUID();
 
-    const acquired = await redis.set(
-      lockKey,
-      ownerId,
-      "PX",
-      LOCK_TTL_MS,
-      "NX",
-    );
+    const acquired = await redis.set(lockKey, ownerId, "PX", LOCK_TTL_MS, "NX");
 
     if (acquired === "OK") {
-      logger.info("Distributed refresh lock acquired", {
-        endpoint,
-        fingerprint: fingerprint.slice(0, 10),
-      });
-
       try {
         // Another request may have completed just before we acquired
         // the lock. Always check the result again.
@@ -148,9 +122,6 @@ export async function coordinateRefresh({
         }
 
         // 3. We own the lock. Perform the actual refresh.
-        logger.info("Executing actual backend refresh request", {
-  endpoint,
-});
 
         const refreshed = await executeRefresh();
 
@@ -161,22 +132,11 @@ export async function coordinateRefresh({
           "PX",
           RESULT_TTL_MS,
         );
-
-        logger.info("Refresh result published to Redis", {
-          endpoint,
-          fingerprint: fingerprint.slice(0, 10),
-        });
-
         return refreshed;
       } finally {
         // 5. Release only if we still own the lock.
         try {
-          await redis.eval(
-            RELEASE_LOCK_SCRIPT,
-            1,
-            lockKey,
-            ownerId,
-          );
+          await redis.eval(RELEASE_LOCK_SCRIPT, 1, lockKey, ownerId);
         } catch (error) {
           // The lock will eventually expire automatically.
           logger.error("Failed to release refresh lock", {
@@ -190,22 +150,12 @@ export async function coordinateRefresh({
     // 6. Someone else owns the lock.
     if (!hasWaited) {
       hasWaited = true;
-
-      logger.info("Waiting for distributed refresh", {
-        endpoint,
-        fingerprint: fingerprint.slice(0, 10),
-      });
     }
 
     // Check whether the other instance has published its result.
     const result = await getCachedResult(resultKey);
 
     if (result) {
-      logger.info("Received shared refresh result from Redis", {
-        endpoint,
-        fingerprint: fingerprint.slice(0, 10),
-      });
-
       return result;
     }
 

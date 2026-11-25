@@ -1,5 +1,4 @@
 import { UnauthorizedError } from "@/lib/errors";
-import { logger } from "@/lib/logger";
 import { API_URL } from "@/lib/variables";
 import {
   coordinateRefresh,
@@ -54,8 +53,6 @@ async function proxy(request: Request) {
       body: bufferedBody,
     });
   } catch (error) {
-    logger.error("Upstream request failed", { target, error });
-
     return NextResponse.json({ detail: "Bad Gateway" }, { status: 502 });
   }
 
@@ -75,20 +72,10 @@ async function proxy(request: Request) {
     });
   } catch (error) {
     if (error instanceof UnauthorizedError) {
-      logger.warn("Token refresh rejected", {
-        endpoint: url.pathname,
-        method: request.method,
-      });
-
       return NextResponse.json({ detail: "Unauthorized" }, { status: 401 });
     }
 
     if (error instanceof RefreshWaitTimeoutError) {
-      logger.warn("Timed out waiting for distributed refresh", {
-        endpoint: url.pathname,
-        method: request.method,
-      });
-
       return NextResponse.json(
         { detail: "Authentication refresh is still in progress" },
         {
@@ -97,12 +84,6 @@ async function proxy(request: Request) {
         },
       );
     }
-
-    logger.error("Refresh coordination failed", {
-      endpoint: url.pathname,
-      method: request.method,
-      error,
-    });
 
     return NextResponse.json(
       { detail: "Authentication service temporarily unavailable" },
@@ -134,9 +115,6 @@ async function executeTokenRefresh(
     cache: "no-store",
     signal: AbortSignal.timeout(10_000),
   });
-  logger.info("Execution of the execute token refresher", {
-    endpoint,
-  });
   if (!refreshRes.ok) {
     throw new UnauthorizedError();
   }
@@ -146,8 +124,6 @@ async function executeTokenRefresh(
   if (refreshSetCookies.length === 0) {
     throw new UnauthorizedError();
   }
-
-  logger.info("Backend token refresh successful");
 
   return {
     cookieHeader: mergeCookieHeaders(cookieHeader, refreshSetCookies),
@@ -181,8 +157,6 @@ async function retryWithRefreshedCookies({
       body: bufferedBody,
     });
   } catch (error) {
-    logger.error("Upstream retry failed", { target, error });
-
     return NextResponse.json({ detail: "Bad Gateway" }, { status: 502 });
   }
 

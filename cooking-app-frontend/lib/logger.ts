@@ -1,6 +1,10 @@
 type LogLevel = "info" | "warn" | "error";
 
-const formatLog = (level: LogLevel, message: string, data?: unknown): [string, unknown] => {
+const formatLog = (
+  level: LogLevel,
+  message: string,
+  data?: unknown,
+): [string, unknown] => {
   const timestamp = new Date().toISOString();
   return [`[${timestamp}] [${level.toUpperCase()}] ${message}`, data ?? ""];
 };

@@ -93,57 +93,55 @@ export default function CreatePlanning({
         onSubmit={handleSubmit}
         className="flex flex-col flex-1 justify-between h-full space-y-6"
       >
-        <div className="flex items-end rounded-xl flex-wrap">
-          <div className="flex flex-col justify-left gap-6 sm:px-6 py-6 items-end">
-            <GeneralAutocomplete<RecipeBase>
-              label={translations("fields.chooseRecipe")}
-              translationsKey="Recipe"
-              showShadow={false}
-              className="w-full lg:min-w-50"
-              value={selectedRecipe}
-              onSelect={(d) => {
-                setSelectedRecipe(d);
-                setPlanningRecipe((p) => ({
-                  ...p,
-                  refRecipeId: d.id,
-                }));
-              }}
-              onClear={() => {
-                setSelectedRecipe(null);
-                setPlanningRecipe((p) => ({
-                  ...p,
-                  refRecipeId: "",
-                }));
-              }}
-              getName={getRecipeName}
-              fetchOptions={fetchRecipeByName}
-            />
-            <Field
-              id="nbServing"
-              label={translations("fields.nbServing")}
-              type="decimal"
-              className="w-full lg:min-w-50"
-              value={String(planningRecipe.nbServing ?? "")}
-              onChange={(v) =>
-                setPlanningRecipe((p) => ({
-                  ...p,
-                  nbServing: v,
-                }))
-              }
-            />
-            <MultipleDateField
-              label={translations("fields.planningDate")}
-              className="w-full lg:min-w-50"
-              value={planningDates}
-              onChange={(v) => {
-                setPlanningRecipe((p) => ({
-                  ...p,
-                  planningDates: toPythonCompatibleDate(v || []),
-                }));
-                setPlanningDates(v || []);
-              }}
-            />
-          </div>
+        <div className="flex flex-row justify-left gap-6 items-end flex-wrap">
+          <GeneralAutocomplete<RecipeBase>
+            label={translations("fields.chooseRecipe")}
+            translationsKey="Recipe"
+            showShadow={false}
+            className="w-full lg:min-w-50"
+            value={selectedRecipe}
+            onSelect={(d) => {
+              setSelectedRecipe(d);
+              setPlanningRecipe((p) => ({
+                ...p,
+                refRecipeId: d.id,
+              }));
+            }}
+            onClear={() => {
+              setSelectedRecipe(null);
+              setPlanningRecipe((p) => ({
+                ...p,
+                refRecipeId: "",
+              }));
+            }}
+            getName={getRecipeName}
+            fetchOptions={fetchRecipeByName}
+          />
+          <Field
+            id="nbServing"
+            label={translations("fields.nbServing")}
+            type="decimal"
+            className="w-full lg:min-w-50"
+            value={String(planningRecipe.nbServing ?? "")}
+            onChange={(v) =>
+              setPlanningRecipe((p) => ({
+                ...p,
+                nbServing: v,
+              }))
+            }
+          />
+          <MultipleDateField
+            label={translations("fields.planningDate")}
+            className="w-full lg:min-w-50"
+            value={planningDates}
+            onChange={(v) => {
+              setPlanningRecipe((p) => ({
+                ...p,
+                planningDates: toPythonCompatibleDate(v || []),
+              }));
+              setPlanningDates(v || []);
+            }}
+          />
         </div>
 
         <div className="space-y-3">

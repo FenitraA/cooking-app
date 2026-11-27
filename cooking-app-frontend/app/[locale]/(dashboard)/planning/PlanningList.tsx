@@ -371,43 +371,57 @@ export default function PlanningList({
           <div className="mt-3 space-y-2 pt-4 border-t border-white/20 pb-6 flex flex-col max-h-[40vh] overflow-auto">
             {planning?.ingredientsToBuy.map((item) => (
               <div
-                key={item.recipeIngredientBase.refIngredientId}
-                className="
-                          flex
-                          items-center
-                          justify-between
-                          gap-4
-                          border-l-4
-                          border-custom-sand-dune/50
-                          bg-white/10
-                          p-3
-                          w-full
-                        "
+                key={item.ingredientName}
+                className={`
+                  group relative rounded-xl border px-3 py-2.5
+                  transition-all duration-200
+                  border-white/10 bg-white/5 hover:border-l-4 hover:border-l-custom-sand-dune hover:bg-white/8
+                `}
               >
-                <div
-                  className="
-                            flex
-                            flex-col
-                            gap-2
-                            flex-1
-                          "
-                >
-                  <div className="font-semibold text-gray-300">
-                    {item.ingredientName}
+                <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-5">
+                  <div className="flex pl-5 items-center gap-2.5 min-w-0 lg:flex-1">
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-sm text-gray-100 truncate">
+                        {item.ingredientName}
+                      </h3>
+                    </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                    <span className="text-custom-sand-dune">
-                      {formatNumber(item.recipeIngredientBase.quantity)}{" "}
-                      {item.ingredientUnit}
-                    </span>
+                  <div className="grid grid-cols-3 gap-2 lg:gap-5 lg:w-auto lg:flex lg:items-center">
+                    {/* Price Group */}
+                    <div className="min-w-0">
+                      <p className="text-[9px] uppercase tracking-wider text-gray-500 mb-1">
+                        Unit price
+                      </p>
 
-                    <span className="ml-2 text-custom-money-green font-semibold">
-                      {formatNumberToCurrency(
-                        item.estimatedCostPerUnit *
-                          Number(item.recipeIngredientBase.quantity),
-                      )}
-                    </span>
+                      <p className="font-semibold text-xs text-custom-money-green truncate">
+                        {formatNumberToCurrency(item.estimatedCostPerUnit)}
+                      </p>
+                    </div>
+                    {/* Quantity Group */}
+                    <div className="min-w-0 lg:w-28">
+                      <p className="text-[9px] uppercase tracking-wider text-gray-500 mb-1">
+                        Quantity
+                      </p>
+
+                      <p className="font-semibold text-xs text-gray-200 truncate">
+                        {formatNumber(item.recipeIngredientBase.quantity)}{" "}
+                        {item.ingredientUnit ?? "pc"}
+                      </p>
+                    </div>
+                    {/* Total */}
+                    <div className="min-w-0 lg:w-32">
+                      <p className="text-[9px] uppercase tracking-wider text-gray-500 mb-1">
+                        Total
+                      </p>
+
+                      <p className="font-bold text-sm text-custom-money-green truncate">
+                        {formatNumberToCurrency(
+                          Number(item.recipeIngredientBase.quantity) *
+                            Number(item.estimatedCostPerUnit),
+                        )}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>

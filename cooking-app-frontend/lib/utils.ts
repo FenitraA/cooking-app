@@ -72,13 +72,17 @@ export function normStr(value: unknown): string {
 
   return String(value).trim();
 }
-export function formatNumber(value: string | number): string {
+export function formatNumber(
+  value: string | number,
+  decimals: number = 2,
+): string {
   const number = typeof value === "string" ? Number.parseFloat(value) : value;
 
-  if (Number.isNaN(number)) {
+  if (!Number.isFinite(number)) {
     return "";
   }
-  return Number(value).toString();
+
+  return Number(number.toFixed(decimals)).toString();
 }
 export function formatNumberToCurrency(value: string | number): string {
   const number = typeof value === "string" ? Number.parseFloat(value) : value;
@@ -251,4 +255,3 @@ export function getWeekRange(date: Date) {
 
   return { start, end };
 }
-

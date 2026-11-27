@@ -81,7 +81,7 @@ async def get_planning_weekly(
     expire=60 * 5, namespace="plannings:list", key_builder=household_aware_key_builder
 )
 # @handle_endpoint_errors()
-async def get_planning_from_dates(
+async def get_planning_by_dates(
     request: Request,
     start_date: date,
     end_date: date,

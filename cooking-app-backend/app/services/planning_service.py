@@ -72,20 +72,15 @@ def get_total_ingredients_to_buy(
                     continue
 
                 total_quantity = ingredient.recipe_ingredient_base.quantity * servings
-                total_estimated_price = ingredient.estimated_cost_per_unit * servings
 
                 if ingredient_id not in ingredients:
                     aggregated = deepcopy(ingredient)
                     aggregated.recipe_ingredient_base.quantity = total_quantity
-                    aggregated.estimated_cost_per_unit = total_estimated_price
+                    aggregated.estimated_cost_per_unit = ingredient.estimated_cost_per_unit
                     ingredients[ingredient_id] = aggregated
                 else:
                     ingredients[
                         ingredient_id
                     ].recipe_ingredient_base.quantity += total_quantity
-
-                    ingredients[
-                        ingredient_id
-                    ].estimated_cost_per_unit += total_estimated_price
 
     return list(ingredients.values())

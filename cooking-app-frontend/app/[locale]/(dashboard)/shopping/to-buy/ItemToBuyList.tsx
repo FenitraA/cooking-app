@@ -435,14 +435,14 @@ export default function ItemToBuyListPage({
               <div
                 key={id}
                 className={`
-    group relative rounded-xl border px-3 py-2.5
-    transition-all duration-200
-    ${
-      isSelected
-        ? "bg-custom-sand-dune/10 border-custom-sand-dune/70 shadow-sm"
-        : "border-white/10 bg-white/5 hover:border-custom-sand-dune/30 hover:bg-white/8"
-    }
-  `}
+                  group relative rounded-xl border px-3 py-2.5
+                  transition-all duration-200
+                  ${
+                    isSelected
+                      ? "bg-custom-sand-dune/10 border-custom-sand-dune/70 shadow-sm"
+                      : "border-white/10 bg-white/5 hover:border-custom-sand-dune/30 hover:bg-white/8"
+                  }
+                `}
               >
                 <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-5">
                   {/* Selection + Name */}

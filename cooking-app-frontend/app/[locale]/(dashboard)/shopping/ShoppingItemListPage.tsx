@@ -217,7 +217,7 @@ export default function ShoppingItemListPage() {
         >
           {Filters}
         </div>
-        
+
         {error && (
           <div className="rounded-lg bg-white/10 px-3 py-2 text-sm text-red-500">
             {error}
@@ -233,45 +233,59 @@ export default function ShoppingItemListPage() {
           {shoppingItems.map((item) => (
             <div
               key={item.shoppingItem.id}
-              className={`relative flex flex-row items-center w-full min-h-12 px-3 py-1 bg-white/10 border border-white/20 shrink-0 text-gray-300 cursor-pointer`}
+              className={`
+                  group relative rounded-xl border px-3 py-2.5
+                  transition-all duration-200
+                  border-white/10 bg-white/5 hover:border-custom-sand-dune/30 hover:bg-white/8
+                `}
             >
-              <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4 flex-1 w-full">
-                <span className="font-semibold text-base sm:text-sm mt-0.5 sm:mt-0 wrap-break-word">
-                  <span className="text-custom-sand-dune">
-                    {formatDateFRNoTime(item.shoppingDate)}
-                  </span>{" "}
-                  {" - "}
-                  {item.shoppingItem.name}
-                </span>
-
-                {/* Math & Actions Container */}
-                <div className="flex flex-row flex-wrap items-center gap-2 sm:gap-4 font-medium text-sm w-full sm:w-auto">
-                  {/* Price & Quantity Group */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-custom-money-green">
-                      <span>
-                        {formatNumberToCurrency(item.shoppingItem.unitPrice)}
-                      </span>
-                    </span>
-                    <span className="text-custom-sand-dune">x</span>
-                    <span className="text-custom-sand-dune">
-                      <span>
-                        {formatNumber(item.shoppingItem.unitsBought)}  {item.ingredientUnit}
-                      </span>
-                    </span>
+              <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-5">
+                
+                <div className="flex pl-5 items-center gap-2.5 min-w-0 lg:flex-1">
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-sm text-gray-100 truncate">
+                      {item.shoppingItem.name}
+                    </h3>
+                    <p className="text-sm font-bold text-gray-500">
+                      {formatDateFRNoTime(item.shoppingDate)}
+                    </p>
                   </div>
+                </div>
 
-                  {/* Total & Action Buttons Group */}
-                  <div className="flex items-center justify-between flex-1 sm:flex-initial gap-4">
-                    <span className="text-custom-money-green font-semibold flex items-center gap-1.5">
-                      <span>=</span>
-                      <span>
-                        {formatNumberToCurrency(
-                          Number(item.shoppingItem.unitsBought) *
-                            Number(item.shoppingItem.unitPrice),
-                        )}
-                      </span>
-                    </span>
+                <div className="grid grid-cols-3 gap-2 lg:gap-5 lg:w-auto lg:flex lg:items-center">
+                  {/* Price Group */}
+                  <div className="min-w-0">
+                    <p className="text-[9px] uppercase tracking-wider text-gray-500 mb-1">
+                      Unit price
+                    </p>
+
+                    <p className="font-semibold text-xs text-custom-money-green truncate">
+                      {formatNumberToCurrency(item.shoppingItem.unitPrice)}
+                    </p>
+                  </div>
+                  {/* Quantity Group */}
+                  <div className="min-w-0 lg:w-28">
+                    <p className="text-[9px] uppercase tracking-wider text-gray-500 mb-1">
+                      Quantity
+                    </p>
+
+                    <p className="font-semibold text-xs text-gray-200 truncate">
+                      {formatNumber(item.shoppingItem.unitsBought)}{" "}
+                      {item.ingredientUnit ?? "pc"}
+                    </p>
+                  </div>
+                  {/* Total */}
+                  <div className="min-w-0 lg:w-32">
+                    <p className="text-[9px] uppercase tracking-wider text-gray-500 mb-1">
+                      Total
+                    </p>
+
+                    <p className="font-bold text-sm text-custom-money-green truncate">
+                      {formatNumberToCurrency(
+                        Number(item.shoppingItem.unitsBought) *
+                          Number(item.shoppingItem.unitPrice),
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>

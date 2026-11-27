@@ -236,7 +236,7 @@ export default function ShoppingItemListPage() {
               className={`
                   group relative rounded-xl border px-3 py-2.5
                   transition-all duration-200
-                  border-white/10 bg-white/5 hover:border-custom-sand-dune/30 hover:bg-white/8
+                  border-white/10 bg-white/5 hover:border-l-4 hover:border-l-custom-sand-dune hover:bg-white/8
                 `}
             >
               <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-5">

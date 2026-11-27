@@ -13,6 +13,7 @@ import { fetchRecipeByName } from "@/lib/recipe/api";
 import { RecipeBase } from "@/lib/recipe/types";
 import MultipleDateField from "@/components/forms/MultipleDateField";
 import { toPythonCompatibleDate } from "@/lib/planning/services";
+import { logger } from "@/lib/logger";
 
 export default function CreatePlanning({
   onCreated,
@@ -27,6 +28,7 @@ export default function CreatePlanning({
     id: "",
     refRecipeId: "",
     refHouseholdId: "",
+    // Placeholder date
     planningDate: "2000-01-01",
     description: "",
     nbServing: "0",
@@ -53,7 +55,7 @@ export default function CreatePlanning({
     setSubmitting(true);
 
     try {
-      console.log(planningRecipe.planningDates);
+      logger.info("Planning recipe",planningRecipe);
       await createPlanningRecipe(planningRecipe);
 
       setPlanningRecipe((v) => ({
@@ -61,10 +63,11 @@ export default function CreatePlanning({
         id: "",
         refRecipeId: "",
         refHouseholdId: "",
-        planningDate: "",
         nbServing: "0",
         state: 1,
       }));
+      setSelectedRecipe(null);
+      setPlanningDates([]);
       onCreated?.();
     } catch (e: unknown) {
       if (e instanceof UnauthorizedError) {

@@ -1,26 +1,41 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.crud.general_crud import smart_search
+from app.models import Recipe
 from app.models.seller import Seller
 
 
 class SellerCRUD:
     async def select_search(
-        self,
-        db: AsyncSession,
-        name: str | None = None,
-        offset: int = 0,
-        limit: int = 10,
+            self,
+            db: AsyncSession,
+            name: str | None = None,
+            offset: int = 0,
+            limit: int = 10,
     ) -> list[Seller]:
         query = select(Seller).where(Seller.state > 0)
 
         # Filters
-        if name:
-            pattern = f"%{name}%"
-            query = query.where(Seller.name.ilike(pattern))
+        if name and name.strip():
+            search_filter, ranking = smart_search(
+                Recipe.name,
+                name,
+            )
 
-        # Order
-        query = query.order_by(Seller.name)
+            query = (
+                query
+                .where(search_filter)
+                .order_by(
+                    ranking.desc(),
+                    Recipe.name.asc(),
+                )
+            )
+        else:
+            query = query.order_by(Recipe.name.asc())
+
+        # Pagination
+        query = query.offset(offset).limit(limit)
 
         # Pagination
         query = query.offset(offset).limit(limit)

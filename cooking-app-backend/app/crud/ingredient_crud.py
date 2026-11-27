@@ -4,6 +4,7 @@ from decimal import Decimal
 from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.crud.general_crud import smart_search
 from app.crud.ingredient_stock_crud import ingredient_stock_left_subquery
 from app.models.ingredient import Ingredient
 from app.models.ingredient_type import IngredientType
@@ -46,7 +47,7 @@ class IngredientCRUD:
         return new_ingredient
 
     async def set_image(
-        self, db: AsyncSession, image: IngredientImageData
+            self, db: AsyncSession, image: IngredientImageData
     ) -> IngredientRead | None:
         """
         Update ingredients image fields
@@ -67,7 +68,7 @@ class IngredientCRUD:
         return await ingredient_crud_instance.get_one(db, ingredient.id)
 
     async def get_one(
-        self, db: AsyncSession, ingredient_id: str
+            self, db: AsyncSession, ingredient_id: str
     ) -> IngredientRead | None:
         result = await db.execute(
             select(
@@ -104,25 +105,25 @@ class IngredientCRUD:
         )
 
     async def search_with_pagination(
-        self,
-        db: AsyncSession,
-        name: str | None = None,
-        ingredient_type_id: str | None = None,
-        min_stock: Decimal | None = None,
-        sort_by: str | None = None,
-        sort_direction: str = "asc",
-        offset: int = 0,
-        limit: int = 20,
+            self,
+            db: AsyncSession,
+            name: str | None = None,
+            ingredient_type_id: str | None = None,
+            min_stock: Decimal | None = None,
+            sort_by: str | None = None,
+            sort_direction: str = "asc",
+            offset: int = 0,
+            limit: int = 20,
     ) -> IngredientSearchResult:
 
         SORT_COLUMNS = {
             "unit_cost": (
-                Ingredient.estimated_price
-                / func.coalesce(IngredientUnit.multiplier_to_base, 1)
+                    Ingredient.estimated_price
+                    / func.coalesce(IngredientUnit.multiplier_to_base, 1)
             ),
             "quantity_left": (
-                ingredient_quantity_left_subquery.c.quantity_left
-                * func.coalesce(IngredientUnit.multiplier_to_base, 1)
+                    ingredient_quantity_left_subquery.c.quantity_left
+                    * func.coalesce(IngredientUnit.multiplier_to_base, 1)
             ),
         }
         query = (
@@ -225,9 +226,9 @@ class IngredientCRUD:
         )
 
     async def select_type_search(
-        self,
-        db: AsyncSession,
-        name: str | None = None,
+            self,
+            db: AsyncSession,
+            name: str | None = None,
     ) -> list[IngredientType]:
         query = select(IngredientType).where(IngredientType.state > 0)
 
@@ -245,9 +246,9 @@ class IngredientCRUD:
         return list(result.scalars().all())
 
     async def select_unit_search(
-        self,
-        db: AsyncSession,
-        name: str | None = None,
+            self,
+            db: AsyncSession,
+            name: str | None = None,
     ) -> list[IngredientUnit]:
         query = select(IngredientUnit).where(IngredientUnit.state > 0)
 
@@ -265,32 +266,41 @@ class IngredientCRUD:
         return list(result.scalars().all())
 
     async def select_search(
-        self,
-        db: AsyncSession,
-        name: str | None = None,
-        offset: int = 0,
-        limit: int = 10,
+            self,
+            db: AsyncSession,
+            name: str | None = None,
+            offset: int = 0,
+            limit: int = 10,
     ) -> list[IngredientBase]:
+
         query = (
             select(Ingredient, IngredientUnit.symbol)
             .outerjoin(
-                IngredientUnit, IngredientUnit.id == Ingredient.ref_ingredient_unit_id
+                IngredientUnit,
+                IngredientUnit.id == Ingredient.ref_ingredient_unit_id,
             )
             .where(Ingredient.state > 0)
         )
 
-        # Filters
-        if name:
-            pattern = f"%{name}%"
-            query = query.where(Ingredient.name.ilike(pattern))
+        if name and name.strip():
+            search_filter, ranking = smart_search(
+                Ingredient.name,
+                name,
+            )
 
-        # Order
-        query = query.order_by(Ingredient.name)
+            query = (
+                query
+                .where(search_filter)
+                .order_by(
+                    ranking.desc(),
+                    Ingredient.name.asc(),
+                )
+            )
+        else:
+            query = query.order_by(Ingredient.name.asc())
 
-        # Pagination
         query = query.offset(offset).limit(limit)
 
-        # Execute
         result = await db.execute(query)
         rows = result.all()
 
@@ -303,7 +313,7 @@ class IngredientCRUD:
         ]
 
     async def update(
-        self, db: AsyncSession, data: IngredientUpdateData
+            self, db: AsyncSession, data: IngredientUpdateData
     ) -> IngredientRead | None:
         """
         Update ingredients core fields

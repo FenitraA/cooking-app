@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 from sqlalchemy import and_, case, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.crud.general_crud import smart_search
 from app.models.ingredient import Ingredient
 from app.models.ingredient_unit import IngredientUnit
 from app.models.recipe import Recipe
@@ -52,7 +53,7 @@ recipe_cost_price_subquery = (
 
 class RecipeCRUD:
     async def create(
-        self, db: AsyncSession, data: RecipeCreate
+            self, db: AsyncSession, data: RecipeCreate
     ) -> RecipeCreateResponse:
         new_recipe = Recipe(**data.model_dump(exclude={"recipe_ingredients"}))
         db.add(new_recipe)
@@ -79,7 +80,7 @@ class RecipeCRUD:
         )
 
     async def set_image(
-        self, db: AsyncSession, household_id: str, images: RecipeImageData
+            self, db: AsyncSession, household_id: str, images: RecipeImageData
     ) -> RecipeRead | None:
         """
         Update recipe image fields
@@ -104,7 +105,7 @@ class RecipeCRUD:
         return await recipe_crud_instance.get_one(db, household_id, recipe.id)
 
     async def create_recipe_ingredient(
-        self, db: AsyncSession, data: RecipeIngredientBase
+            self, db: AsyncSession, data: RecipeIngredientBase
     ) -> RecipeIngredient:
         new_recipe_ingredient = RecipeIngredient(**data.model_dump())
         db.add(new_recipe_ingredient)
@@ -114,7 +115,7 @@ class RecipeCRUD:
         return new_recipe_ingredient
 
     async def get_recipe_ingredients(
-        self, db: AsyncSession, recipe_id: str
+            self, db: AsyncSession, recipe_id: str
     ) -> list[RecipeIngredientRead]:
         result = await db.execute(
             select(
@@ -147,7 +148,7 @@ class RecipeCRUD:
         ]
 
     async def get_recipe_ingredients_batch(
-        self, db: AsyncSession, recipe_ids: list[str]
+            self, db: AsyncSession, recipe_ids: list[str]
     ) -> list[RecipeIngredientRead]:
         result = await db.execute(
             select(
@@ -180,7 +181,7 @@ class RecipeCRUD:
         ]
 
     async def get_one(
-        self, db: AsyncSession, household_id: str, recipe_ingredient: str
+            self, db: AsyncSession, household_id: str, recipe_ingredient: str
     ) -> RecipeRead | None:
 
         result = await db.execute(
@@ -209,23 +210,35 @@ class RecipeCRUD:
         )
 
     async def select_search(
-        self,
-        db: AsyncSession,
-        household_id: str,
-        name: str | None = None,
-        offset: int = 0,
-        limit: int = 10,
+            self,
+            db: AsyncSession,
+            household_id: str,
+            name: str | None = None,
+            offset: int = 0,
+            limit: int = 10,
     ) -> list[Recipe]:
         query = select(Recipe).where(Recipe.state > 0)
 
         # Filters
         query = query.where(Recipe.ref_household_id == household_id)
-        if name:
-            pattern = f"%{name}%"
-            query = query.where(Recipe.name.ilike(pattern))
 
-        # Order
-        query = query.order_by(Recipe.name)
+        # Filters
+        if name and name.strip():
+            search_filter, ranking = smart_search(
+                Recipe.name,
+                name,
+            )
+
+            query = (
+                query
+                .where(search_filter)
+                .order_by(
+                    ranking.desc(),
+                    Recipe.name.asc(),
+                )
+            )
+        else:
+            query = query.order_by(Recipe.name.asc())
 
         # Pagination
         query = query.offset(offset).limit(limit)
@@ -236,14 +249,14 @@ class RecipeCRUD:
         return list(result.scalars().all())
 
     async def search_with_pagination(
-        self,
-        db: AsyncSession,
-        household_id: str,
-        name: str | None = None,
-        max_making_time: int | None = None,
-        ingredient_ids=None,
-        offset: int = 0,
-        limit: int = 20,
+            self,
+            db: AsyncSession,
+            household_id: str,
+            name: str | None = None,
+            max_making_time: int | None = None,
+            ingredient_ids=None,
+            offset: int = 0,
+            limit: int = 20,
     ) -> RecipeSearchResult:
 
         if ingredient_ids is None:
@@ -382,7 +395,7 @@ class RecipeCRUD:
         await db.execute(stmt)
 
     async def update(
-        self, db: AsyncSession, household_id: str, data: RecipeUpdateData
+            self, db: AsyncSession, household_id: str, data: RecipeUpdateData
     ) -> RecipeRead | None:
         """
         Update recipe core fields + replace ingredients list.

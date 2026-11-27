@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.crud.general_crud import smart_search
 from app.models.item_category import ItemCategory
 from app.schemas.item_category import ItemCategoryData
 
@@ -15,19 +16,33 @@ class ItemCategoryCRUD:
         return item_category
 
     async def select_search(
-        self,
-        db: AsyncSession,
-        name: str | None = None,
+            self,
+            db: AsyncSession,
+            name: str | None = None,
+            offset: int = 0,
+            limit: int = 10,
     ) -> list[ItemCategory]:
         query = select(ItemCategory).where(ItemCategory.state > 0)
 
         # Filters
-        if name:
-            pattern = f"%{name}%"
-            query = query.where(ItemCategory.name.ilike(pattern))
+        if name and name.strip():
+            search_filter, ranking = smart_search(
+                ItemCategory.name,
+                name,
+            )
 
-        # Order
-        query = query.order_by(ItemCategory.name)
+            query = (
+                query
+                .where(search_filter)
+                .order_by(
+                    ranking.desc(),
+                    ItemCategory.name.asc(),
+                )
+            )
+        else:
+            query = query.order_by(ItemCategory.name.asc())
+
+        query = query.offset(offset).limit(limit)
 
         # Execute
         result = await db.execute(query)

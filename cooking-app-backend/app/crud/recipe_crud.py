@@ -358,7 +358,7 @@ class RecipeCRUD:
         result = await db.execute(query)
         rows = result.all()
 
-        total: int = int(await db.scalar(count_query) or int)
+        total: int = int(await db.scalar(count_query) or 0)
 
         # Get Recipe ingredients
         recipe_ids = [row[0].id for row in rows]

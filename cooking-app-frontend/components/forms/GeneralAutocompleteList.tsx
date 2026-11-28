@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { SquareX, RotateCw, Plus } from "lucide-react";
+import { SquareX, RotateCw, Plus, Search } from "lucide-react";
 
 import { UnauthorizedError } from "@/lib/errors";
 
@@ -160,61 +160,92 @@ export default function GeneralAutocompleteList<T>({
         <label className="text-xs font-medium text-gray-300">{label}</label>
       )}
 
-      <div className="flex gap-2 mt-1">
+      <div className="flex items-end gap-2 mt-1">
         <div className="relative flex-1">
-          <input
+
+          {/* Search field */}
+          <div
             className={[
-              "mt-1 w-full rounded-xl border bg-white/5 text-sm text-white",
-              "px-3 py-2.5 pr-10 outline-none",
-              "focus:ring-2 focus:ring-black/10",
-              showShadow ? "shadow-hard-br" : "",
-              error
-                ? "border-red-500 focus:ring-2 focus:ring-red-500/50"
-                : "border-white/20 focus:border-custom-sand-dune focus:ring-2 focus:ring-custom-sand-dune/30 hover:bg-white/10",
+              "relative rounded-xl border border-dashed",
+              "bg-white/3 transition-colors",
+              "focus-within:border-custom-sand-dune",
+              "focus-within:bg-white/6",
+              error ? "border-red-500" : "border-white/30",
             ].join(" ")}
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setOpen(true);
-            }}
-            onFocus={() => {
-              setOpen(true);
+          >
+            <div className="flex items-center px-3">
+              <Search size={17} className="text-gray-400 shrink-0" />
 
-              if (options.length === 0) {
-                void loadOptions("");
-              }
-            }}
-            placeholder={t("typeToSearch")}
-          />
+              <input
+                className={[
+                  "w-full bg-transparent text-sm text-white",
+                  "px-3 py-3 outline-none",
+                  "placeholder:text-gray-500",
+                ].join(" ")}
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setOpen(true);
+                  setSelectedItem(null);
+                }}
+                onFocus={() => {
+                  setOpen(true);
 
-          {loading && (
-            <div className="absolute right-2 top-1/2 -translate-y-1/2">
-              <RotateCw className="animate-spin text-white" size={18} />
+                  if (options.length === 0) {
+                    void loadOptions("");
+                  }
+                }}
+                placeholder={t("searchAndSelect")}
+              />
+
+              {loading && (
+                <RotateCw
+                  className="animate-spin text-custom-sand-dune shrink-0"
+                  size={17}
+                />
+              )}
             </div>
-          )}
+          </div>
 
+          {/* Dropdown */}
           {open && (
-            <div className="absolute z-20 mt-2 w-full rounded-lg bg-gray-800 shadow-sm overflow-hidden">
-              <div className="max-h-60 overflow-auto">
+            <div
+              className="absolute z-20 mt-2 w-full overflow-hidden
+      rounded-xl border border-white/15 bg-gray-800 shadow-xl"
+            >
+              <div className="px-3 py-2 border-b border-white/10">
+                <span
+                  className="text-[10px] uppercase tracking-wider
+          text-gray-500 font-semibold"
+                >
+                  {t("availableOptions")}
+                </span>
+              </div>
+
+              <div className="max-h-60 overflow-auto p-1.5">
                 {!loading && options.length === 0 ? (
-                  <div className="px-3 py-3 text-sm text-gray-500">
+                  <div className="px-3 py-4 text-sm text-gray-500 text-center">
                     {t("errors.noResults")}
                   </div>
                 ) : (
-                  options.map((item, i) => (
+                  options.map((item) => (
                     <button
-                      key={i}
+                      key={getKey(item)}
                       type="button"
                       onClick={() => {
                         setSelectedItem(item);
                         setQuery(getName(item));
                         setOpen(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-700 cursor-pointer border border-white/10"
+                      className="flex items-center justify-between w-full
+                rounded-lg px-3 py-2.5 text-left
+                hover:bg-white/10 transition-colors"
                     >
-                      <div className="font-medium text-gray-300">
+                      <span className="text-sm text-gray-200">
                         {getName(item)}
-                      </div>
+                      </span>
+
+                      <Plus size={16} className="text-custom-sand-dune" />
                     </button>
                   ))
                 )}
@@ -227,33 +258,45 @@ export default function GeneralAutocompleteList<T>({
           type="button"
           onClick={addItem}
           disabled={!selectedItem}
-          className="h-10 px-3 rounded-lg bg-green-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-700"
+          className="h-11 px-3 rounded-lg bg-green-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-700"
         >
           <Plus size={18} />
         </button>
       </div>
 
       {values.length > 0 && (
-        <div className="mt-3 space-y-2">
-          {values.map((item) => (
-            <div
-              key={getKey(item)}
-              className="flex items-center justify-between rounded-lg border border-white/20 bg-white/5 px-3 py-2"
-            >
-              <span className="text-sm text-gray-300">{getName(item)}</span>
+        <div className="mt-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-gray-400">
+              {t("selectedItems")}
+            </span>
 
-              <button
-                type="button"
-                onClick={() => removeItem(item)}
-                className="cursor-pointer"
+            <span className="text-[10px] text-gray-500">{values.length}</span>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {values.map((item) => (
+              <div
+                key={getKey(item)}
+                className="flex items-center gap-2 rounded-full
+            border border-custom-sand-dune/30
+            bg-custom-sand-dune/10 px-3 py-1.5"
               >
-                <SquareX
-                  size={18}
-                  className="text-red-400 hover:text-red-300"
-                />
-              </button>
-            </div>
-          ))}
+                <span className="text-xs text-custom-sand-dune">
+                  {getName(item)}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => removeItem(item)}
+                  className="text-custom-sand-dune/70
+              hover:text-red-400 transition-colors"
+                >
+                  <SquareX size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
       {error && (

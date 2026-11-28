@@ -100,6 +100,9 @@
     "countLabel": "Total",
     "editTitle": "Détails de l’ingrédient",
     "typeToSearch": "Nom de l’ingrédient",
+    "searchAndSelect": "Chercher et choisir...",
+    "availableOptions": "Options disponibles",
+    "selectedItems": "Options choisies",
     "images": {
       "choose": "Choisir une image",
       "chooseNew": "Choisir une nouvelle image"
